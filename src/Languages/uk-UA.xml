@@ -2,7 +2,7 @@
 <Language Name="українська">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.6</Version>
+    <Version>3.5.13</Version>
     <TranslatedBy>Переклад: Максим Кобєлєв http://mazepa-studio.com</TranslatedBy>
     <CultureName>uk-UA</CultureName>
     <HelpFile />
@@ -176,7 +176,6 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <SplitLongLines>Розділити довгі рядки</SplitLongLines>
     <AutoBalance>Автобалансування рядків</AutoBalance>
     <ScanFolder>Сканувати теку...</ScanFolder>
-    <ScanningFolder>Скануємо {0} та підтеки на наявність файлів субтитрів...</ScanningFolder>
     <Recursive>Включаючи підтеки</Recursive>
     <SetMinMsBetweenSubtitles>Встановити мін. відстань між субтитрами</SetMinMsBetweenSubtitles>
     <PlainText>Простий текст</PlainText>
@@ -623,7 +622,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
   <GetDictionaries>
     <Title>Потрібні словники?</Title>
     <DescriptionLine1>Перевірка правопису Subtitle Edit базується на рушії NHunspell, який</DescriptionLine1>
-    <DescriptionLine2>використовує правописні словники від Open Office.</DescriptionLine2>
+    <DescriptionLine2>використовує правописні словники від LibreOffice.</DescriptionLine2>
     <GetDictionariesHere>Отримати словники тут:</GetDictionariesHere>
     <ChooseLanguageAndClickDownload>Оберіть мову і натисніть "Звантажити"</ChooseLanguageAndClickDownload>
     <OpenDictionariesFolder>Відкрити теку зі словниками</OpenDictionariesFolder>
@@ -1806,7 +1805,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <CopyTextOnly>Скопіювати до буферу обміну тільки текст (обрані рядки)</CopyTextOnly>
     <CopyTextOnlyFromOriginalToCurrent>Скопіювати текст з оригіналу в поточний субтитр</CopyTextOnlyFromOriginalToCurrent>
     <AutoDurationSelectedLines>Автоматична тривалість (вибрані рядки)</AutoDurationSelectedLines>
-    <ReverseStartAndEndingForRTL>Обміняти місцями початок/кінець RTL</ReverseStartAndEndingForRTL>
+    <ReverseStartAndEndingForRtl>Обміняти місцями початок/кінець RTL</ReverseStartAndEndingForRtl>
     <VerticalZoom>Збільшити вертикальний масштаб</VerticalZoom>
     <VerticalZoomOut>Зменшити вертикальний масштаб</VerticalZoomOut>
     <WaveformSeekSilenceForward>Шукати тишу вперед</WaveformSeekSilenceForward>

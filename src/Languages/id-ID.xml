@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Language Name="Bahasa Indonesia">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.6</Version>
+    <Version>3.5.13</Version>
     <TranslatedBy>Diterjemahkan oleh Nicedward (04/2018)</TranslatedBy>
     <CultureName>id-ID</CultureName>
-    <HelpFile></HelpFile>
+    <HelpFile />
     <Ok>&amp;Oke</Ok>
     <Cancel>B&amp;atal</Cancel>
     <Apply>Terapkan</Apply>
@@ -189,7 +189,6 @@ Catatan: Periksa ruang kosong disk.</WaveFileMalformed>
     <SplitLongLines>Pisahkan baris yg panjang</SplitLongLines>
     <AutoBalance>Oto. seimbangkan baris</AutoBalance>
     <ScanFolder>Pindai folder...</ScanFolder>
-    <ScanningFolder>Memindai {0} dan subfolder untuk file subjudul...</ScanningFolder>
     <Recursive>Sertakan sub folder</Recursive>
     <SetMinMsBetweenSubtitles>Atur milidetik min. di antara subjudul</SetMinMsBetweenSubtitles>
     <BridgeGaps>Celah jembatan</BridgeGaps>
@@ -663,7 +662,7 @@ Catatan: Periksa ruang kosong disk.</WaveFileMalformed>
   <GetDictionaries>
     <Title>Butuh kamus?</Title>
     <DescriptionLine1>Pemeriksaan ejaan Subtitle Edit berdasarkan mesin NHunspell</DescriptionLine1>
-    <DescriptionLine2>yg menggunakan kamus pemeriksaan ejaan dari Open Office.</DescriptionLine2>
+    <DescriptionLine2>yg menggunakan kamus pemeriksaan ejaan dari LibreOffice.</DescriptionLine2>
     <GetDictionariesHere>Dapatkan kamus di sini:</GetDictionariesHere>
     <ChooseLanguageAndClickDownload>Pilih bahasa Anda dan klik unduh</ChooseLanguageAndClickDownload>
     <OpenDictionariesFolder>Buka folder 'Kamus'</OpenDictionariesFolder>
@@ -759,7 +758,6 @@ Catatan: Periksa ruang kosong disk.</WaveFileMalformed>
     <FileName>Nama file</FileName>
     <Join>Gabung</Join>
     <TotalNumberOfLinesX>Jumlah total baris: {0:#,###,###}</TotalNumberOfLinesX>
-    <Note>Catatan: File harus sudah memiliki kode waktu yg benar</Note>
   </JoinSubtitles>
   <LanguageNames>
     <NotSpecified>Tidak Ditentukan</NotSpecified>
@@ -1919,7 +1917,7 @@ bisa mengedit dlm file subjudul yg sama (kolaborasi)</Information>
     <CopyTextOnly>Salin teks hanya ke papan klip (baris terpilih)</CopyTextOnly>
     <CopyTextOnlyFromOriginalToCurrent>Salin teks dari asli ke saat ini</CopyTextOnlyFromOriginalToCurrent>
     <AutoDurationSelectedLines>Durasi oto. (baris terpilih)</AutoDurationSelectedLines>
-    <ReverseStartAndEndingForRTL>Balikkan mulai/akhir RTL</ReverseStartAndEndingForRTL>
+    <ReverseStartAndEndingForRtl>Balikkan mulai/akhir RTL</ReverseStartAndEndingForRtl>
     <VerticalZoom>Perbesar vertikal</VerticalZoom>
     <VerticalZoomOut>Perkecil vertikal</VerticalZoomOut>
     <WaveformSeekSilenceForward>Cari (durasi) hening maju</WaveformSeekSilenceForward>

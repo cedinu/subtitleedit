@@ -18,8 +18,8 @@ namespace Nikse.SubtitleEdit.Forms
         private string _xmlName;
         private int _testAllIndex = -1;
 
-        public string SelectedEnglishName { get; private set; } = null;
-
+        public string SelectedEnglishName { get; private set; }
+        public string LastDownload { get; private set; }
 
         public GetDictionaries()
         {
@@ -70,13 +70,17 @@ namespace Nikse.SubtitleEdit.Forms
 
                     string description = string.Empty;
                     if (node.SelectSingleNode("Description") != null)
+                    {
                         description = node.SelectSingleNode("Description").InnerText;
+                    }
 
                     if (!string.IsNullOrEmpty(downloadLink))
                     {
                         string name = englishName;
                         if (!string.IsNullOrEmpty(nativeName))
+                        {
                             name += " - " + nativeName;
+                        }
 
                         comboBoxDictionaries.Items.Add(name);
                         _dictionaryDownloadLinks.Add(downloadLink);
@@ -93,7 +97,10 @@ namespace Nikse.SubtitleEdit.Forms
         private void FixLargeFonts()
         {
             if (labelDescription1.Left + labelDescription1.Width + 5 > Width)
+            {
                 Width = labelDescription1.Left + labelDescription1.Width + 5;
+            }
+
             UiUtil.FixLargeFonts(this, buttonOK);
         }
 
@@ -114,9 +121,11 @@ namespace Nikse.SubtitleEdit.Forms
         {
             string dictionaryFolder = Utilities.DictionaryFolder;
             if (!Directory.Exists(dictionaryFolder))
+            {
                 Directory.CreateDirectory(dictionaryFolder);
+            }
 
-            System.Diagnostics.Process.Start(dictionaryFolder);
+            UiUtil.OpenFolder(dictionaryFolder);
         }
 
         private void buttonDownload_Click(object sender, EventArgs e)
@@ -137,6 +146,10 @@ namespace Nikse.SubtitleEdit.Forms
 
                 var wc = new WebClient { Proxy = Utilities.GetProxy() };
                 wc.DownloadDataCompleted += wc_DownloadDataCompleted;
+                wc.DownloadProgressChanged += (o, args) =>
+                {
+                    labelPleaseWait.Text = Configuration.Settings.Language.General.PleaseWait + "  " + args.ProgressPercentage + "%";
+                };
                 wc.DownloadDataAsync(new Uri(url));
             }
             catch (Exception exception)
@@ -166,7 +179,8 @@ namespace Nikse.SubtitleEdit.Forms
                 Cursor = Cursors.Default;
                 return;
             }
-            else if (e.Error != null)
+
+            if (e.Error != null)
             {
                 MessageBox.Show(Configuration.Settings.Language.GetTesseractDictionaries.DownloadFailed + Environment.NewLine +
                                 Environment.NewLine +
@@ -177,7 +191,9 @@ namespace Nikse.SubtitleEdit.Forms
 
             string dictionaryFolder = Utilities.DictionaryFolder;
             if (!Directory.Exists(dictionaryFolder))
+            {
                 Directory.CreateDirectory(dictionaryFolder);
+            }
 
             int index = comboBoxDictionaries.SelectedIndex;
 
@@ -221,7 +237,7 @@ namespace Nikse.SubtitleEdit.Forms
             MessageBox.Show(string.Format(Configuration.Settings.Language.GetDictionaries.XDownloaded, comboBoxDictionaries.Items[index]));
         }
 
-        private static void ExtractDic(string dictionaryFolder, ZipExtractor zip, List<ZipExtractor.ZipFileEntry> dir, ref bool found)
+        private void ExtractDic(string dictionaryFolder, ZipExtractor zip, List<ZipExtractor.ZipFileEntry> dir, ref bool found)
         {
             foreach (ZipExtractor.ZipFileEntry entry in dir)
             {
@@ -231,20 +247,28 @@ namespace Nikse.SubtitleEdit.Forms
 
                     // French fix
                     if (fileName.StartsWith("fr-moderne", StringComparison.Ordinal))
+                    {
                         fileName = fileName.Replace("fr-moderne", "fr_FR");
+                    }
 
                     // German fix
                     if (fileName.StartsWith("de_DE_frami", StringComparison.Ordinal))
+                    {
                         fileName = fileName.Replace("de_DE_frami", "de_DE");
+                    }
 
                     // Russian fix
                     if (fileName.StartsWith("russian-aot", StringComparison.Ordinal))
+                    {
                         fileName = fileName.Replace("russian-aot", "ru_RU");
+                    }
 
                     string path = Path.Combine(dictionaryFolder, fileName);
                     zip.ExtractFile(entry, path);
 
                     found = true;
+
+                    LastDownload = fileName;
                 }
             }
         }
@@ -259,7 +283,10 @@ namespace Nikse.SubtitleEdit.Forms
         {
             _testAllIndex = comboBoxDictionaries.SelectedIndex - 1;
             if (_testAllIndex < -1)
+            {
                 _testAllIndex = -1;
+            }
+
             DownloadNext();
         }
 
@@ -274,7 +301,7 @@ namespace Nikse.SubtitleEdit.Forms
             else
             {
                 LoadDictionaryList("Nikse.SubtitleEdit.Resources.HunspellBackupDictionaries.xml.gz");
-            }            
+            }
         }
 
     }

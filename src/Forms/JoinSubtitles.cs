@@ -4,6 +4,7 @@ using Nikse.SubtitleEdit.Logic;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -28,16 +29,33 @@ namespace Nikse.SubtitleEdit.Forms
             listViewParts.Columns[2].Text = Configuration.Settings.Language.JoinSubtitles.EndTime;
             listViewParts.Columns[3].Text = Configuration.Settings.Language.JoinSubtitles.FileName;
 
-            buttonAddVobFile.Text = Configuration.Settings.Language.DvdSubRip.Add;
-            ButtonRemoveVob.Text = Configuration.Settings.Language.DvdSubRip.Remove;
+            buttonAddFile.Text = Configuration.Settings.Language.DvdSubRip.Add;
+            buttonRemoveFile.Text = Configuration.Settings.Language.DvdSubRip.Remove;
             buttonClear.Text = Configuration.Settings.Language.DvdSubRip.Clear;
 
             Text = Configuration.Settings.Language.JoinSubtitles.Title;
-            labelNote.Text = Configuration.Settings.Language.JoinSubtitles.Note;
             groupBoxPreview.Text = Configuration.Settings.Language.JoinSubtitles.Information;
             buttonJoin.Text = Configuration.Settings.Language.JoinSubtitles.Join;
             buttonCancel.Text = Configuration.Settings.Language.General.Cancel;
+
+            radioButtonJoinPlain.Text = Configuration.Settings.Language.JoinSubtitles.AlreadyCorrectTimeCodes;
+            radioButtonJoinAddTime.Text = Configuration.Settings.Language.JoinSubtitles.AppendTimeCodes;
+            labelAddTime.Text = Configuration.Settings.Language.JoinSubtitles.AddMs;
+
+            labelAddTime.Left = radioButtonJoinAddTime.Left + radioButtonJoinAddTime.Width + 20;
+            numericUpDownAddMs.Left = labelAddTime.Left + labelAddTime.Width + 5;
+
             UiUtil.FixLargeFonts(this, buttonCancel);
+
+            if (Configuration.Settings.Tools.JoinCorrectTimeCodes)
+            {
+                radioButtonJoinPlain.Checked = true;
+            }
+            else
+            {
+                radioButtonJoinAddTime.Checked = true;
+            }
+            numericUpDownAddMs.Value = Configuration.Settings.Tools.JoinAddMs;
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
@@ -53,13 +71,17 @@ namespace Nikse.SubtitleEdit.Forms
         private void JoinSubtitles_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void listViewParts_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+            {
                 e.Effect = DragDropEffects.All;
+            }
         }
 
         private void listViewParts_DragDrop(object sender, DragEventArgs e)
@@ -67,17 +89,10 @@ namespace Nikse.SubtitleEdit.Forms
             var files = (string[])e.Data.GetData(DataFormats.FileDrop);
             foreach (string fileName in files)
             {
-                bool alreadyInList = false;
-                foreach (string existingFileName in _fileNamesToJoin)
+                if (!_fileNamesToJoin.Any(file => file.Equals(fileName, StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (existingFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        alreadyInList = true;
-                        break;
-                    }
-                }
-                if (!alreadyInList)
                     _fileNamesToJoin.Add(fileName);
+                }
             }
             SortAndLoad();
         }
@@ -94,58 +109,68 @@ namespace Nikse.SubtitleEdit.Forms
                 try
                 {
                     var sub = new Subtitle();
-                    Encoding encoding;
-                    var format = sub.LoadSubtitle(fileName, out encoding, null);
+                    SubtitleFormat format;
+                    var lines = FileUtil.ReadAllLinesShared(fileName, LanguageAutoDetect.GetEncodingFromFile(fileName));
+                    if (lastFormat != null && lastFormat.IsMine(lines, fileName))
+                    {
+                        format = lastFormat;
+                        format.LoadSubtitle(sub, lines, fileName);
+                    }
+
+                    format = sub.LoadSubtitle(fileName, out _, null);
 
                     if (format == null)
                     {
-                        var ebu = new Ebu();
-                        if (ebu.IsMine(null, fileName))
+                        if (lines.Count > 0 && lines.Count < 10 && lines[0].Trim() == "WEBVTT")
                         {
-                            ebu.LoadSubtitle(sub, null, fileName);
-                            format = ebu;
-                        }
-                    }
-                    if (format == null)
-                    {
-                        var pac = new Pac();
-                        if (pac.IsMine(null, fileName))
-                        {
-                            pac.LoadSubtitle(sub, null, fileName);
-                            format = pac;
-                        }
-                    }
-                    if (format == null)
-                    {
-                        var cavena890 = new Cavena890();
-                        if (cavena890.IsMine(null, fileName))
-                        {
-                            cavena890.LoadSubtitle(sub, null, fileName);
-                            format = cavena890;
+                            format = new WebVTT(); // empty WebVTT
                         }
                     }
 
                     if (format == null)
                     {
-                        for (int j = k; j < _fileNamesToJoin.Count; j++)
-                            _fileNamesToJoin.RemoveAt(j);
-                        MessageBox.Show("Unkown subtitle format: " + fileName);
-                        return;
+                        foreach (var binaryFormat in SubtitleFormat.GetBinaryFormats(true))
+                        {
+                            if (binaryFormat.IsMine(null, fileName))
+                            {
+                                binaryFormat.LoadSubtitle(sub, null, fileName);
+                                format = binaryFormat;
+                                break;
+                            }
+                        }
                     }
+
+                    if (format == null)
+                    {
+                        foreach (var f in SubtitleFormat.GetTextOtherFormats())
+                        {
+                            if (f.IsMine(lines, fileName))
+                            {
+                                f.LoadSubtitle(sub, lines, fileName);
+                                format = f;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (format == null)
+                    {
+                        Revert(k, Configuration.Settings.Language.UnknownSubtitle.Title + Environment.NewLine + fileName);
+                        break;
+                    }
+
                     if (sub.Header != null)
+                    {
                         header = sub.Header;
+                    }
 
-                    if (lastFormat == null || lastFormat.FriendlyName == format.FriendlyName)
-                        lastFormat = format;
-                    else
-                        lastFormat = new SubRip(); // default subtitle format
+                    lastFormat = lastFormat == null || lastFormat.FriendlyName == format.FriendlyName ? format : new SubRip();
+
                     subtitles.Add(sub);
                 }
                 catch (Exception exception)
                 {
-                    for (int j = k; j < _fileNamesToJoin.Count; j++)
-                        _fileNamesToJoin.RemoveAt(j);
-                    MessageBox.Show(exception.Message);
+                    Revert(k, exception.Message);
                     return;
                 }
             }
@@ -176,7 +201,7 @@ namespace Nikse.SubtitleEdit.Forms
             foreach (string fileName in _fileNamesToJoin)
             {
                 var sub = subtitles[i];
-                var lvi = new ListViewItem(string.Format("{0:#,###,###}", sub.Paragraphs.Count));
+                var lvi = new ListViewItem($"{sub.Paragraphs.Count:#,###,###}");
                 if (sub.Paragraphs.Count > 0)
                 {
                     lvi.SubItems.Add(sub.Paragraphs[0].StartTime.ToString());
@@ -195,16 +220,36 @@ namespace Nikse.SubtitleEdit.Forms
 
             JoinedSubtitle = new Subtitle();
             if (JoinedFormat != null && JoinedFormat.FriendlyName != SubRip.NameOfFormat)
+            {
                 JoinedSubtitle.Header = header;
+            }
+
+            var addTime = radioButtonJoinAddTime.Checked;
             foreach (var sub in subtitles)
             {
+                double addMs = 0;
+                if (addTime && JoinedSubtitle.Paragraphs.Count > 0)
+                {
+                    addMs = JoinedSubtitle.Paragraphs.Last().EndTime.TotalMilliseconds + Convert.ToDouble(numericUpDownAddMs.Value);
+                }
                 foreach (var p in sub.Paragraphs)
                 {
+                    p.StartTime.TotalMilliseconds += addMs;
+                    p.EndTime.TotalMilliseconds += addMs;
                     JoinedSubtitle.Paragraphs.Add(p);
                 }
             }
             JoinedSubtitle.Renumber();
             labelTotalLines.Text = string.Format(Configuration.Settings.Language.JoinSubtitles.TotalNumberOfLinesX, JoinedSubtitle.Paragraphs.Count);
+        }
+
+        private void Revert(int idx, string message)
+        {
+            for (int i = _fileNamesToJoin.Count - 1; i >= idx; i--)
+            {
+                _fileNamesToJoin.RemoveAt(i);
+            }
+            MessageBox.Show(message);
         }
 
         private void JoinSubtitles_Resize(object sender, EventArgs e)
@@ -223,19 +268,16 @@ namespace Nikse.SubtitleEdit.Forms
                 var sb = new StringBuilder();
                 foreach (string fileName in openFileDialog1.FileNames)
                 {
+                    Application.DoEvents();
                     if (File.Exists(fileName))
                     {
                         var fileInfo = new FileInfo(fileName);
                         if (fileInfo.Length < Subtitle.MaxFileSize)
                         {
-                            bool alreadyInList = false;
-                            foreach (string existingFileName in _fileNamesToJoin)
+                            if (!_fileNamesToJoin.Any(file => file.Equals(fileName, StringComparison.OrdinalIgnoreCase)))
                             {
-                                if (existingFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
-                                    alreadyInList = true;
-                            }
-                            if (!alreadyInList)
                                 _fileNamesToJoin.Add(fileName);
+                            }
                         }
                         else
                         {
@@ -248,22 +290,24 @@ namespace Nikse.SubtitleEdit.Forms
                 {
                     MessageBox.Show(sb.ToString());
                 }
+                JoinSubtitles_Resize(sender, e);
             }
         }
 
-        private void ButtonRemoveVob_Click(object sender, EventArgs e)
+        private void ButtonRemoveSubtitle_Click(object sender, EventArgs e)
         {
-            var indices = new List<int>();
-            foreach (int index in listViewParts.SelectedIndices)
-                indices.Add(index);
-            indices.Reverse();
-            foreach (int index in indices)
-                _fileNamesToJoin.RemoveAt(index);
-
+            for (int i = listViewParts.SelectedIndices.Count - 1; i >= 0; i--)
+            {
+                _fileNamesToJoin.RemoveAt(listViewParts.SelectedIndices[i]);
+            }
             if (_fileNamesToJoin.Count == 0)
+            {
                 buttonClear_Click(null, null);
+            }
             else
+            {
                 SortAndLoad();
+            }
         }
 
         private void buttonClear_Click(object sender, EventArgs e)
@@ -278,5 +322,22 @@ namespace Nikse.SubtitleEdit.Forms
             columnHeaderFileName.Width = -2;
         }
 
+        private void JoinSubtitles_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Configuration.Settings.Tools.JoinCorrectTimeCodes = radioButtonJoinPlain.Checked;
+            Configuration.Settings.Tools.JoinAddMs = (int)numericUpDownAddMs.Value;
+        }
+
+        private void RadioButtonJoinAddTime_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownAddMs.Enabled = radioButtonJoinAddTime.Checked;
+            labelAddTime.Enabled = radioButtonJoinAddTime.Checked;
+        }
+
+        private void RadioButtonJoinPlain_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownAddMs.Enabled = radioButtonJoinAddTime.Checked;
+            labelAddTime.Enabled = radioButtonJoinAddTime.Checked;
+        }
     }
 }

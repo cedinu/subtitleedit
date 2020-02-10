@@ -34,7 +34,7 @@
             this.labelText = new System.Windows.Forms.Label();
             this.textBoxText = new System.Windows.Forms.TextBox();
             this.numericUpDownExpandCount = new System.Windows.Forms.NumericUpDown();
-            this.labelExpandCount = new System.Windows.Forms.Label();
+            this.labelImageInfo = new System.Windows.Forms.Label();
             this.pictureBoxInspectItem = new System.Windows.Forms.PictureBox();
             this.listBoxInspectItems = new System.Windows.Forms.ListBox();
             this.buttonCancel = new System.Windows.Forms.Button();
@@ -54,12 +54,12 @@
             this.groupBoxInspectItems.Controls.Add(this.labelText);
             this.groupBoxInspectItems.Controls.Add(this.textBoxText);
             this.groupBoxInspectItems.Controls.Add(this.numericUpDownExpandCount);
-            this.groupBoxInspectItems.Controls.Add(this.labelExpandCount);
+            this.groupBoxInspectItems.Controls.Add(this.labelImageInfo);
             this.groupBoxInspectItems.Controls.Add(this.pictureBoxInspectItem);
             this.groupBoxInspectItems.Controls.Add(this.listBoxInspectItems);
             this.groupBoxInspectItems.Location = new System.Drawing.Point(12, 12);
             this.groupBoxInspectItems.Name = "groupBoxInspectItems";
-            this.groupBoxInspectItems.Size = new System.Drawing.Size(455, 287);
+            this.groupBoxInspectItems.Size = new System.Drawing.Size(521, 284);
             this.groupBoxInspectItems.TabIndex = 1;
             this.groupBoxInspectItems.TabStop = false;
             // 
@@ -122,14 +122,14 @@
             0});
             this.numericUpDownExpandCount.ValueChanged += new System.EventHandler(this.NumericUpDownExpandCountValueChanged);
             // 
-            // labelExpandCount
+            // labelImageInfo
             // 
-            this.labelExpandCount.AutoSize = true;
-            this.labelExpandCount.Location = new System.Drawing.Point(253, 168);
-            this.labelExpandCount.Name = "labelExpandCount";
-            this.labelExpandCount.Size = new System.Drawing.Size(93, 13);
-            this.labelExpandCount.TabIndex = 5;
-            this.labelExpandCount.Text = "labelExpandCount";
+            this.labelImageInfo.AutoSize = true;
+            this.labelImageInfo.Location = new System.Drawing.Point(253, 168);
+            this.labelImageInfo.Name = "labelImageInfo";
+            this.labelImageInfo.Size = new System.Drawing.Size(45, 13);
+            this.labelImageInfo.TabIndex = 5;
+            this.labelImageInfo.Text = "Preview";
             // 
             // pictureBoxInspectItem
             // 
@@ -156,9 +156,9 @@
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonCancel.Location = new System.Drawing.Point(392, 305);
+            this.buttonCancel.Location = new System.Drawing.Point(458, 302);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 0;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -169,9 +169,9 @@
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.buttonOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonOK.Location = new System.Drawing.Point(311, 305);
+            this.buttonOK.Location = new System.Drawing.Point(377, 302);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -181,7 +181,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(479, 338);
+            this.ClientSize = new System.Drawing.Size(545, 335);
             this.Controls.Add(this.groupBoxInspectItems);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
@@ -193,7 +193,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "AddBeterMultiMatch";
+            this.Text = "Add better multi match";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddBeterMultiMatch_KeyDown);
             this.groupBoxInspectItems.ResumeLayout(false);
             this.groupBoxInspectItems.PerformLayout();
@@ -205,7 +205,7 @@
 
         #endregion
         private System.Windows.Forms.GroupBox groupBoxInspectItems;
-        private System.Windows.Forms.Label labelExpandCount;
+        private System.Windows.Forms.Label labelImageInfo;
         private System.Windows.Forms.PictureBox pictureBoxInspectItem;
         private System.Windows.Forms.ListBox listBoxInspectItems;
         private System.Windows.Forms.Button buttonCancel;

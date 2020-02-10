@@ -25,12 +25,14 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             //
 
             var sb = new StringBuilder();
-            foreach (Paragraph p in subtitle.Paragraphs)
+            foreach (var p in subtitle.Paragraphs)
             {
                 var lines = HtmlUtil.RemoveHtmlTags(p.Text).SplitToLines();
-                sb.AppendLine(EncodeTimeCode(p.StartTime) + "\t" + lines[0]);
+                sb.AppendLine(EncodeTimeCode(p.StartTime) + "\t" + lines[0].Trim());
                 for (int i = 1; i < lines.Count; i++)
-                    sb.AppendLine("\t" + lines[i]);
+                {
+                    sb.AppendLine("\t" + lines[i].Trim());
+                }
             }
 
             return sb.ToString().Trim();
@@ -49,116 +51,139 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             foreach (string line in lines)
             {
                 string s = line.Trim();
-                if (RegexTimeCodes.Match(s).Success || RegexTimeCodes2.IsMatch(s))
+                if (s.Length > 7 && char.IsDigit(s[0]) && char.IsDigit(s[1]) && s[2] == ':')
                 {
-                    if (RegexTimeCodes2.IsMatch(s))
-                        _errorCount++;
-                    try
+                    if (RegexTimeCodes.Match(s).Success || RegexTimeCodes2.IsMatch(s))
                     {
-                        p = new Paragraph();
-                        string[] start = s.Substring(0, 8).Split(':');
-                        string[] end = s.Remove(0, s.Length - 8).Split(':');
-                        if (start.Length == 3)
+                        if (RegexTimeCodes2.IsMatch(s))
                         {
-                            int hours = int.Parse(start[0]);
-                            int minutes = int.Parse(start[1]);
-                            int seconds = int.Parse(start[2]);
-                            p.StartTime = new TimeCode(hours, minutes, seconds, 0);
+                            _errorCount++;
+                        }
 
-                            hours = int.Parse(end[0]);
-                            minutes = int.Parse(end[1]);
-                            seconds = int.Parse(end[2]);
-                            p.EndTime = new TimeCode(hours, minutes, seconds, 0);
+                        try
+                        {
+                            p = new Paragraph();
+                            string[] start = s.Substring(0, 8).Split(':');
+                            string[] end = s.Remove(0, s.Length - 8).Split(':');
+                            if (start.Length == 3)
+                            {
+                                int hours = int.Parse(start[0]);
+                                int minutes = int.Parse(start[1]);
+                                int seconds = int.Parse(start[2]);
+                                p.StartTime = new TimeCode(hours, minutes, seconds, 0);
 
-                            string text = s.Remove(0, 8).Trim();
-                            text = text.Substring(0, text.Length - 8).Trim();
-                            p.Text = text;
-                            if (text.Length > 1 && Utilities.IsInteger(text.Substring(0, 2)))
-                                _errorCount++;
-                            subtitle.Paragraphs.Add(p);
+                                hours = int.Parse(end[0]);
+                                minutes = int.Parse(end[1]);
+                                seconds = int.Parse(end[2]);
+                                p.EndTime = new TimeCode(hours, minutes, seconds, 0);
+
+                                string text = s.Remove(0, 8).Trim();
+                                text = text.Substring(0, text.Length - 8).Trim();
+                                p.Text = text;
+                                if (text.Length > 1 && Utilities.IsInteger(text.Substring(0, 2)))
+                                {
+                                    _errorCount++;
+                                }
+
+                                subtitle.Paragraphs.Add(p);
+                            }
+                        }
+                        catch
+                        {
+                            _errorCount++;
                         }
                     }
-                    catch
+                    else if (RegexStartOnly.Match(s).Success)
                     {
-                        _errorCount++;
-                    }
-                }
-                else if (RegexStartOnly.Match(s).Success)
-                {
-                    try
-                    {
-                        p = new Paragraph();
-                        string[] start = s.Substring(0, 8).Split(':');
-                        if (start.Length == 3)
+                        try
                         {
-                            int hours = int.Parse(start[0]);
-                            int minutes = int.Parse(start[1]);
-                            int seconds = int.Parse(start[2]);
-                            p.StartTime = new TimeCode(hours, minutes, seconds, 0);
+                            p = new Paragraph();
+                            string[] start = s.Substring(0, 8).Split(':');
+                            if (start.Length == 3)
+                            {
+                                int hours = int.Parse(start[0]);
+                                int minutes = int.Parse(start[1]);
+                                int seconds = int.Parse(start[2]);
+                                p.StartTime = new TimeCode(hours, minutes, seconds, 0);
 
-                            string text = s.Remove(0, 8).Trim();
-                            p.Text = text;
-                            if (text.Length > 1 && Utilities.IsInteger(text.Substring(0, 2)))
-                                _errorCount++;
-                            subtitle.Paragraphs.Add(p);
+                                string text = s.Remove(0, 8).Trim();
+                                p.Text = text;
+                                if (text.Length > 1 && Utilities.IsInteger(text.Substring(0, 2)))
+                                {
+                                    _errorCount++;
+                                }
+
+                                subtitle.Paragraphs.Add(p);
+                            }
+                        }
+                        catch
+                        {
+                            _errorCount++;
                         }
                     }
-                    catch
+                    else if (RegexEndOnly.Match(s).Success)
                     {
-                        _errorCount++;
-                    }
-                }
-                else if (RegexEndOnly.Match(s).Success)
-                {
-                    try
-                    {
-                        string[] end = s.Remove(0, s.Length - 8).Split(':');
-                        if (end.Length == 3 && p != null)
+                        try
                         {
-                            int hours = int.Parse(end[0]);
-                            int minutes = int.Parse(end[1]);
-                            int seconds = int.Parse(end[2]);
-                            p.EndTime = new TimeCode(hours, minutes, seconds, 0);
+                            string[] end = s.Remove(0, s.Length - 8).Split(':');
+                            if (end.Length == 3 && p != null)
+                            {
+                                int hours = int.Parse(end[0]);
+                                int minutes = int.Parse(end[1]);
+                                int seconds = int.Parse(end[2]);
+                                p.EndTime = new TimeCode(hours, minutes, seconds, 0);
 
-                            string text = s.Substring(0, s.Length - 8).Trim();
-                            p.Text = p.Text + Environment.NewLine + text;
-                            if (text.Length > 1 && Utilities.IsInteger(text.Substring(0, 2)))
-                                _errorCount++;
-                            p = null;
+                                string text = s.Substring(0, s.Length - 8).Trim();
+                                p.Text = p.Text + Environment.NewLine + text;
+                                if (text.Length > 1 && Utilities.IsInteger(text.Substring(0, 2)))
+                                {
+                                    _errorCount++;
+                                }
+
+                                p = null;
+                            }
+                        }
+                        catch
+                        {
+                            _errorCount++;
                         }
                     }
-                    catch
+                    else if (!Utilities.IsInteger(s))
                     {
-                        _errorCount++;
+                        if (p != null && !p.Text.Contains(Environment.NewLine))
+                        {
+                            p.Text = p.Text + Environment.NewLine + s.Trim();
+                        }
+                        else
+                        {
+                            _errorCount++;
+                        }
                     }
-                }
-                else if (line.StartsWith("\t", StringComparison.Ordinal) && p != null)
-                {
-                    if (p.Text.Length > 1000)
-                    {
-                        _errorCount += 100;
-                        return;
-                    }
-                    p.Text = (p.Text + Environment.NewLine + s).Trim();
                 }
                 else if (s.Length > 0 && !Utilities.IsInteger(s))
                 {
                     if (p != null && !p.Text.Contains(Environment.NewLine))
+                    {
                         p.Text = p.Text + Environment.NewLine + s.Trim();
+                    }
                     else
+                    {
                         _errorCount++;
+                    }
                 }
             }
 
-            foreach (Paragraph p2 in subtitle.Paragraphs)
+            foreach (var p2 in subtitle.Paragraphs)
             {
                 if (p2.Duration.TotalMilliseconds > Configuration.Settings.General.SubtitleMaximumDisplayMilliseconds)
+                {
                     p2.EndTime.TotalMilliseconds = p2.StartTime.TotalMilliseconds + Configuration.Settings.General.SubtitleMaximumDisplayMilliseconds;
+                }
+
                 p2.Text = Utilities.AutoBreakLine(p2.Text);
             }
 
             subtitle.Renumber();
         }
-
     }
 }

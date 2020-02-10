@@ -20,6 +20,10 @@ namespace Nikse.SubtitleEdit.Forms
 
             LanguageStructure.ChooseEncoding language = Configuration.Settings.Language.ChooseEncoding;
             Text = language.Title;
+            labelShortcutsSearch.Text = Configuration.Settings.Language.General.Search;
+            buttonSearchClear.Text = Configuration.Settings.Language.DvdSubRip.Clear;
+            textBoxSearch.Left = labelShortcutsSearch.Left + labelShortcutsSearch.Width + 5;
+            buttonSearchClear.Left = textBoxSearch.Left + textBoxSearch.Width + 5;
             LabelPreview.Text = Configuration.Settings.Language.General.Preview;
             listView1.Columns[0].Text = language.CodePage;
             listView1.Columns[1].Text = Configuration.Settings.Language.General.Name;
@@ -33,38 +37,48 @@ namespace Nikse.SubtitleEdit.Forms
         {
             try
             {
-                var file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-                int length = (int)file.Length;
-                if (length > 100000)
-                    length = 100000;
-
-                file.Position = 0;
-                _fileBuffer = new byte[length];
-                file.Read(_fileBuffer, 0, length);
-                file.Close();
+                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    int readCount = (int)Math.Min(100000, fs.Length);
+                    _fileBuffer = new byte[readCount];
+                    fs.Read(_fileBuffer, 0, readCount);
+                }
             }
             catch
             {
                 _fileBuffer = new byte[0];
             }
 
-            var encoding = LanguageAutoDetect.DetectAnsiEncoding(_fileBuffer);
+            Encoding encoding;
+            if (_fileBuffer.Length > 10 && _fileBuffer[0] == 0xef && _fileBuffer[1] == 0xbb && _fileBuffer[2] == 0xbf)
+            {
+                encoding = Encoding.UTF8;
+            }
+            else
+            {
+                encoding = LanguageAutoDetect.DetectAnsiEncoding(_fileBuffer);
+            }
+
+            listView1.BeginUpdate();
             foreach (var enc in Configuration.AvailableEncodings)
             {
                 var item = new ListViewItem(new[] { enc.CodePage.ToString(), enc.WebName, enc.EncodingName });
                 listView1.Items.Add(item);
                 if (enc.CodePage == encoding.CodePage)
+                {
                     item.Selected = true;
+                }
             }
-
             listView1.ListViewItemSorter = new ListViewSorter { ColumnNumber = 0, IsNumber = true };
+            listView1.EndUpdate();
         }
 
         private void FormChooseEncoding_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         internal Encoding GetEncoding()
@@ -75,7 +89,9 @@ namespace Nikse.SubtitleEdit.Forms
         private void ButtonOkClick(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0)
+            {
                 MessageBox.Show(Configuration.Settings.Language.ChooseEncoding.PleaseSelectAnEncoding);
+            }
             else
             {
                 _encoding = Encoding.GetEncoding(int.Parse(listView1.SelectedItems[0].Text));
@@ -91,12 +107,19 @@ namespace Nikse.SubtitleEdit.Forms
                 textBoxPreview.Text = encoding.GetString(_fileBuffer).Replace("\0", " ");
                 LabelPreview.Text = Configuration.Settings.Language.General.Preview + " - " + encoding.EncodingName;
             }
+            else
+            {
+                textBoxPreview.Text = string.Empty;
+                LabelPreview.Text = string.Empty;
+            }
         }
 
         private void ChooseEncoding_Load(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count >= 1)
+            {
                 listView1.EnsureVisible(listView1.SelectedItems[0].Index);
+            }
         }
 
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -114,6 +137,31 @@ namespace Nikse.SubtitleEdit.Forms
                 sorter.IsNumber = e.Column == 0; // only index 1 is numeric
             }
             listView1.Sort();
+        }
+
+        private void textBoxSearch_TextChanged(object sender, EventArgs e)
+        {
+            listView1.BeginUpdate();
+            listView1.Items.Clear();
+            foreach (var enc in Configuration.AvailableEncodings)
+            {
+                if (textBoxSearch.Text.Length < 2 ||
+                    enc.CodePage.ToString().Contains(textBoxSearch.Text, StringComparison.OrdinalIgnoreCase) ||
+                    enc.WebName.Contains(textBoxSearch.Text, StringComparison.OrdinalIgnoreCase) ||
+                    enc.EncodingName.Contains(textBoxSearch.Text, StringComparison.OrdinalIgnoreCase))
+                {
+                    var item = new ListViewItem(new[] { enc.CodePage.ToString(), enc.WebName, enc.EncodingName });
+                    listView1.Items.Add(item);
+                }
+            }
+            listView1.EndUpdate();
+            buttonSearchClear.Enabled = textBoxSearch.Text.Length > 0;
+            listView1_SelectedIndexChanged(null, null);
+        }
+
+        private void buttonSearchClear_Click(object sender, EventArgs e)
+        {
+            textBoxSearch.Text = string.Empty;
         }
     }
 }

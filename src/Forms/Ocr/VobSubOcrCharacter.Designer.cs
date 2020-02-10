@@ -173,9 +173,9 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonOK.Location = new System.Drawing.Point(329, 365);
+            this.buttonOK.Location = new System.Drawing.Point(329, 373);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -186,9 +186,9 @@
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonCancel.Location = new System.Drawing.Point(410, 365);
+            this.buttonCancel.Location = new System.Drawing.Point(410, 373);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 3;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -208,9 +208,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBoxSubtitleImage.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxSubtitleImage.Location = new System.Drawing.Point(12, 29);
+            this.pictureBoxSubtitleImage.Location = new System.Drawing.Point(12, 35);
             this.pictureBoxSubtitleImage.Name = "pictureBoxSubtitleImage";
-            this.pictureBoxSubtitleImage.Size = new System.Drawing.Size(554, 156);
+            this.pictureBoxSubtitleImage.Size = new System.Drawing.Size(554, 164);
             this.pictureBoxSubtitleImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxSubtitleImage.TabIndex = 12;
             this.pictureBoxSubtitleImage.TabStop = false;
@@ -219,7 +219,7 @@
             // 
             this.labelCharactersAsText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelCharactersAsText.AutoSize = true;
-            this.labelCharactersAsText.Location = new System.Drawing.Point(9, 317);
+            this.labelCharactersAsText.Location = new System.Drawing.Point(9, 325);
             this.labelCharactersAsText.Name = "labelCharactersAsText";
             this.labelCharactersAsText.Size = new System.Drawing.Size(105, 13);
             this.labelCharactersAsText.TabIndex = 17;
@@ -230,7 +230,7 @@
             this.textBoxCharacters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxCharacters.ContextMenuStrip = this.contextMenuStripLetters;
             this.textBoxCharacters.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxCharacters.Location = new System.Drawing.Point(12, 333);
+            this.textBoxCharacters.Location = new System.Drawing.Point(12, 341);
             this.textBoxCharacters.Name = "textBoxCharacters";
             this.textBoxCharacters.Size = new System.Drawing.Size(225, 27);
             this.textBoxCharacters.TabIndex = 0;
@@ -918,7 +918,7 @@
             // pictureBoxCharacter
             // 
             this.pictureBoxCharacter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.pictureBoxCharacter.Location = new System.Drawing.Point(12, 263);
+            this.pictureBoxCharacter.Location = new System.Drawing.Point(12, 271);
             this.pictureBoxCharacter.Name = "pictureBoxCharacter";
             this.pictureBoxCharacter.Size = new System.Drawing.Size(99, 47);
             this.pictureBoxCharacter.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -929,7 +929,7 @@
             // 
             this.labelCharacters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelCharacters.AutoSize = true;
-            this.labelCharacters.Location = new System.Drawing.Point(14, 242);
+            this.labelCharacters.Location = new System.Drawing.Point(14, 250);
             this.labelCharacters.Name = "labelCharacters";
             this.labelCharacters.Size = new System.Drawing.Size(68, 13);
             this.labelCharacters.TabIndex = 19;
@@ -940,9 +940,9 @@
             this.buttonAbort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAbort.DialogResult = System.Windows.Forms.DialogResult.Abort;
             this.buttonAbort.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonAbort.Location = new System.Drawing.Point(491, 365);
+            this.buttonAbort.Location = new System.Drawing.Point(491, 373);
             this.buttonAbort.Name = "buttonAbort";
-            this.buttonAbort.Size = new System.Drawing.Size(75, 21);
+            this.buttonAbort.Size = new System.Drawing.Size(75, 23);
             this.buttonAbort.TabIndex = 4;
             this.buttonAbort.Text = "&Abort";
             this.buttonAbort.UseVisualStyleBackColor = true;
@@ -951,7 +951,7 @@
             // 
             this.checkBoxItalic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxItalic.AutoSize = true;
-            this.checkBoxItalic.Location = new System.Drawing.Point(243, 341);
+            this.checkBoxItalic.Location = new System.Drawing.Point(243, 349);
             this.checkBoxItalic.Name = "checkBoxItalic";
             this.checkBoxItalic.Size = new System.Drawing.Size(49, 17);
             this.checkBoxItalic.TabIndex = 1;
@@ -965,7 +965,7 @@
             this.buttonExpandSelection.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonExpandSelection.Location = new System.Drawing.Point(453, 2);
             this.buttonExpandSelection.Name = "buttonExpandSelection";
-            this.buttonExpandSelection.Size = new System.Drawing.Size(112, 21);
+            this.buttonExpandSelection.Size = new System.Drawing.Size(112, 23);
             this.buttonExpandSelection.TabIndex = 20;
             this.buttonExpandSelection.Text = "Expand selection";
             this.buttonExpandSelection.UseVisualStyleBackColor = true;
@@ -977,7 +977,7 @@
             this.buttonShrinkSelection.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonShrinkSelection.Location = new System.Drawing.Point(335, 2);
             this.buttonShrinkSelection.Name = "buttonShrinkSelection";
-            this.buttonShrinkSelection.Size = new System.Drawing.Size(112, 21);
+            this.buttonShrinkSelection.Size = new System.Drawing.Size(112, 23);
             this.buttonShrinkSelection.TabIndex = 21;
             this.buttonShrinkSelection.Text = "Shrink selection";
             this.buttonShrinkSelection.UseVisualStyleBackColor = true;
@@ -987,9 +987,9 @@
             // 
             this.buttonLastEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonLastEdit.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonLastEdit.Location = new System.Drawing.Point(329, 337);
+            this.buttonLastEdit.Location = new System.Drawing.Point(329, 345);
             this.buttonLastEdit.Name = "buttonLastEdit";
-            this.buttonLastEdit.Size = new System.Drawing.Size(156, 21);
+            this.buttonLastEdit.Size = new System.Drawing.Size(156, 23);
             this.buttonLastEdit.TabIndex = 22;
             this.buttonLastEdit.Text = "Edit:";
             this.buttonLastEdit.UseVisualStyleBackColor = true;
@@ -998,7 +998,7 @@
             // pictureBoxLastEdit
             // 
             this.pictureBoxLastEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxLastEdit.Location = new System.Drawing.Point(491, 337);
+            this.pictureBoxLastEdit.Location = new System.Drawing.Point(491, 345);
             this.pictureBoxLastEdit.Name = "pictureBoxLastEdit";
             this.pictureBoxLastEdit.Size = new System.Drawing.Size(39, 21);
             this.pictureBoxLastEdit.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -1009,9 +1009,9 @@
             // 
             this.buttonGuess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonGuess.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonGuess.Location = new System.Drawing.Point(211, 365);
+            this.buttonGuess.Location = new System.Drawing.Point(211, 373);
             this.buttonGuess.Name = "buttonGuess";
-            this.buttonGuess.Size = new System.Drawing.Size(112, 21);
+            this.buttonGuess.Size = new System.Drawing.Size(112, 23);
             this.buttonGuess.TabIndex = 24;
             this.buttonGuess.Text = "Best guess";
             this.buttonGuess.UseVisualStyleBackColor = true;
@@ -1021,7 +1021,7 @@
             // 
             this.checkBoxAutoSubmitOfFirstChar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxAutoSubmitOfFirstChar.AutoSize = true;
-            this.checkBoxAutoSubmitOfFirstChar.Location = new System.Drawing.Point(12, 372);
+            this.checkBoxAutoSubmitOfFirstChar.Location = new System.Drawing.Point(12, 380);
             this.checkBoxAutoSubmitOfFirstChar.Name = "checkBoxAutoSubmitOfFirstChar";
             this.checkBoxAutoSubmitOfFirstChar.Size = new System.Drawing.Size(144, 17);
             this.checkBoxAutoSubmitOfFirstChar.TabIndex = 25;
@@ -1033,11 +1033,11 @@
             // 
             this.labelItalicOn.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.labelItalicOn.AutoSize = true;
-            this.labelItalicOn.Font = new System.Drawing.Font("Tahoma", 28F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelItalicOn.Font = new System.Drawing.Font("Tahoma", 24F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelItalicOn.ForeColor = System.Drawing.Color.Red;
-            this.labelItalicOn.Location = new System.Drawing.Point(193, 1);
+            this.labelItalicOn.Location = new System.Drawing.Point(193, -1);
             this.labelItalicOn.Name = "labelItalicOn";
-            this.labelItalicOn.Size = new System.Drawing.Size(119, 46);
+            this.labelItalicOn.Size = new System.Drawing.Size(101, 39);
             this.labelItalicOn.TabIndex = 26;
             this.labelItalicOn.Text = "Italic";
             // 
@@ -1070,7 +1070,7 @@
             this.Column14,
             this.Column15});
             this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 191);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 199);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
@@ -1237,9 +1237,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
-            this.ClientSize = new System.Drawing.Size(577, 396);
+            this.ClientSize = new System.Drawing.Size(577, 404);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.labelItalicOn);
             this.Controls.Add(this.checkBoxAutoSubmitOfFirstChar);
             this.Controls.Add(this.buttonLastEdit);
             this.Controls.Add(this.buttonGuess);
@@ -1256,6 +1255,7 @@
             this.Controls.Add(this.labelSubtitleImage);
             this.Controls.Add(this.pictureBoxSubtitleImage);
             this.Controls.Add(this.pictureBoxLastEdit);
+            this.Controls.Add(this.labelItalicOn);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.KeyPreview = true;
             this.MaximizeBox = false;

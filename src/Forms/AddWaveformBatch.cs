@@ -4,6 +4,7 @@ using Nikse.SubtitleEdit.Logic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 
@@ -11,7 +12,6 @@ namespace Nikse.SubtitleEdit.Forms
 {
     public sealed partial class AddWaveformBatch : PositionAndSizeForm
     {
-
         private int _delayInMilliseconds;
         private bool _converting;
         private bool _abort;
@@ -39,6 +39,9 @@ namespace Nikse.SubtitleEdit.Forms
             buttonSearchFolder.Text = l.ScanFolder;
             checkBoxScanFolderRecursive.Text = l.Recursive;
             checkBoxScanFolderRecursive.Left = buttonSearchFolder.Left - checkBoxScanFolderRecursive.Width - 5;
+            checkBoxGenerateSceneChanges.Text = Configuration.Settings.Language.ImportSceneChanges.GetSceneChangesWithFfmpeg;
+            checkBoxGenerateSceneChanges.Left = groupBoxInput.Left + listViewInputFiles.Width - checkBoxGenerateSceneChanges.Width;
+            checkBoxGenerateSceneChanges.Visible = !string.IsNullOrWhiteSpace(Configuration.Settings.General.FFmpegLocation) && File.Exists(Configuration.Settings.General.FFmpegLocation);
             UiUtil.FixLargeFonts(this, buttonDone);
         }
 
@@ -54,8 +57,10 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void RemoveSelectedFiles()
         {
-            if (_converting)
+            if (_converting || listViewInputFiles.SelectedIndices.Count == 0)
+            {
                 return;
+            }
 
             for (int i = listViewInputFiles.SelectedIndices.Count - 1; i >= 0; i--)
             {
@@ -85,7 +90,7 @@ namespace Nikse.SubtitleEdit.Forms
         {
             try
             {
-                var ext = Path.GetExtension(fileName).ToLowerInvariant();
+                var ext = Path.GetExtension(fileName)?.ToLowerInvariant();
                 if (string.IsNullOrEmpty(ext) || ExcludedExtensions.Contains(ext))
                 {
                     return;
@@ -94,7 +99,9 @@ namespace Nikse.SubtitleEdit.Forms
                 foreach (ListViewItem lvi in listViewInputFiles.Items)
                 {
                     if (lvi.Text.Equals(fileName, StringComparison.OrdinalIgnoreCase))
+                    {
                         return;
+                    }
                 }
 
                 var fi = new FileInfo(fileName);
@@ -142,7 +149,7 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 try
                 {
-                    string ext = Path.GetExtension(fileName).ToLower();
+                    string ext = Path.GetExtension(fileName).ToLowerInvariant();
                     if (Utilities.VideoFileExtensions.Contains(ext))
                     {
                         var fi = new FileInfo(fileName);
@@ -157,11 +164,14 @@ namespace Nikse.SubtitleEdit.Forms
                         progressBar1.Refresh();
                         Application.DoEvents();
                         if (_abort)
+                        {
                             return;
+                        }
                     }
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             if (checkBoxScanFolderRecursive.Checked)
@@ -169,9 +179,14 @@ namespace Nikse.SubtitleEdit.Forms
                 foreach (string directory in Directory.GetDirectories(path))
                 {
                     if (directory != "." && directory != "..")
+                    {
                         SearchFolder(directory);
+                    }
+
                     if (_abort)
+                    {
                         return;
+                    }
                 }
             }
         }
@@ -208,7 +223,10 @@ namespace Nikse.SubtitleEdit.Forms
             _abort = false;
             listViewInputFiles.BeginUpdate();
             foreach (ListViewItem item in listViewInputFiles.Items)
+            {
                 item.SubItems[3].Text = "-";
+            }
+
             listViewInputFiles.EndUpdate();
             Refresh();
             int index = 0;
@@ -228,8 +246,7 @@ namespace Nikse.SubtitleEdit.Forms
                     Process process;
                     try
                     {
-                        string encoderName;
-                        process = AddWaveform.GetCommandLineProcess(fileName, -1, targetFile, Configuration.Settings.General.VlcWaveTranscodeSettings, out encoderName);
+                        process = AddWaveform.GetCommandLineProcess(fileName, -1, targetFile, Configuration.Settings.General.VlcWaveTranscodeSettings, out var encoderName);
                         labelInfo.Text = encoderName;
                     }
                     catch (DllNotFoundException)
@@ -239,7 +256,7 @@ namespace Nikse.SubtitleEdit.Forms
                                             Configuration.Settings.Language.AddWaveform.VlcMediaPlayerNotFoundTitle,
                                             MessageBoxButtons.YesNo) == DialogResult.Yes)
                         {
-                            Process.Start("http://www.videolan.org/");
+                            UiUtil.OpenURL("http://www.videolan.org/");
                         }
                         buttonRipWave.Enabled = true;
                         return;
@@ -254,29 +271,34 @@ namespace Nikse.SubtitleEdit.Forms
                     // check for delay in matroska files
                     var audioTrackNames = new List<string>();
                     var mkvAudioTrackNumbers = new Dictionary<int, int>();
-                    if (fileName.ToLower().EndsWith(".mkv", StringComparison.OrdinalIgnoreCase))
+                    if (fileName.ToLowerInvariant().EndsWith(".mkv", StringComparison.OrdinalIgnoreCase))
                     {
-                        MatroskaFile matroska = null;
                         try
                         {
-                            matroska = new MatroskaFile(fileName);
-
-                            if (matroska.IsValid)
+                            using (var matroska = new MatroskaFile(fileName))
                             {
-                                foreach (var track in matroska.GetTracks())
+                                if (matroska.IsValid)
                                 {
-                                    if (track.IsAudio)
+                                    foreach (var track in matroska.GetTracks())
                                     {
-                                        if (track.CodecId != null && track.Language != null)
-                                            audioTrackNames.Add("#" + track.TrackNumber + ": " + track.CodecId.Replace("\0", string.Empty) + " - " + track.Language.Replace("\0", string.Empty));
-                                        else
-                                            audioTrackNames.Add("#" + track.TrackNumber);
-                                        mkvAudioTrackNumbers.Add(mkvAudioTrackNumbers.Count, track.TrackNumber);
+                                        if (track.IsAudio)
+                                        {
+                                            if (track.CodecId != null && track.Language != null)
+                                            {
+                                                audioTrackNames.Add("#" + track.TrackNumber + ": " + track.CodecId.Replace("\0", string.Empty) + " - " + track.Language.Replace("\0", string.Empty));
+                                            }
+                                            else
+                                            {
+                                                audioTrackNames.Add("#" + track.TrackNumber);
+                                            }
+
+                                            mkvAudioTrackNumbers.Add(mkvAudioTrackNumbers.Count, track.TrackNumber);
+                                        }
                                     }
-                                }
-                                if (mkvAudioTrackNumbers.Count > 0)
-                                {
-                                    _delayInMilliseconds = (int)matroska.GetTrackStartTime(mkvAudioTrackNumbers[0]);
+                                    if (mkvAudioTrackNumbers.Count > 0)
+                                    {
+                                        _delayInMilliseconds = (int)matroska.GetTrackStartTime(mkvAudioTrackNumbers[0]);
+                                    }
                                 }
                             }
                         }
@@ -284,17 +306,15 @@ namespace Nikse.SubtitleEdit.Forms
                         {
                             _delayInMilliseconds = 0;
                         }
-                        finally
-                        {
-                            if (matroska != null)
-                            {
-                                matroska.Dispose();
-                            }
-                        }
                     }
 
                     updateStatus(Configuration.Settings.Language.AddWaveformBatch.Calculating);
                     MakeWaveformAndSpectrogram(fileName, targetFile, _delayInMilliseconds);
+
+                    if (checkBoxGenerateSceneChanges.Visible && checkBoxGenerateSceneChanges.Checked)
+                    {
+                        GenerateSceneChanges(fileName);
+                    }
 
                     // cleanup
                     try
@@ -328,6 +348,35 @@ namespace Nikse.SubtitleEdit.Forms
             buttonSearchFolder.Enabled = true;
         }
 
+        private void GenerateSceneChanges(string videoFileName)
+        {
+            var sceneChangesGenerator = new SceneChangesGenerator();
+            var threshold = 0.4m;
+            if (decimal.TryParse(Configuration.Settings.General.FFmpegSceneThreshold, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var d))
+            {
+                threshold = d;
+            }
+            using (var process = sceneChangesGenerator.GetProcess(videoFileName, threshold))
+            {
+                while (!process.HasExited)
+                {
+                    Application.DoEvents();
+                    System.Threading.Thread.Sleep(100);
+                    if (_abort)
+                    {
+                        DialogResult = DialogResult.Cancel;
+                        process.Kill();
+                        return;
+                    }
+                }
+            }
+            var seconds = SceneChangesGenerator.GetSeconds(sceneChangesGenerator.TimeCodes.ToString().SplitToLines().ToArray());
+            if (seconds.Count > 0)
+            {
+                SceneChangeHelper.SaveSceneChanges(videoFileName, seconds);
+            }
+        }
+
         private void MakeWaveformAndSpectrogram(string videoFileName, string targetFile, int delayInMilliseconds)
         {
             using (var waveFile = new WavePeakGenerator(targetFile))
@@ -344,7 +393,10 @@ namespace Nikse.SubtitleEdit.Forms
         private void IncrementAndShowProgress()
         {
             if (progressBar1.Value < progressBar1.Maximum)
+            {
                 progressBar1.Value++;
+            }
+
             TaskbarList.SetProgressValue(Owner.Handle, progressBar1.Value, progressBar1.Maximum);
             labelProgress.Text = progressBar1.Value + " / " + progressBar1.Maximum;
         }
@@ -352,13 +404,18 @@ namespace Nikse.SubtitleEdit.Forms
         private void AddWaveformBatch_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 _abort = true;
+            }
         }
 
         private void contextMenuStripFiles_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (listViewInputFiles.Items.Count == 0)
+            {
                 e.Cancel = true;
+            }
+
             removeToolStripMenuItem.Visible = listViewInputFiles.SelectedItems.Count > 0;
         }
 
@@ -371,7 +428,9 @@ namespace Nikse.SubtitleEdit.Forms
             }
 
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+            {
                 e.Effect = DragDropEffects.All;
+            }
         }
 
         private void listViewInputFiles_DragDrop(object sender, DragEventArgs e)
@@ -388,5 +447,12 @@ namespace Nikse.SubtitleEdit.Forms
             }
         }
 
+        private void ListViewInputFiles_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                RemoveSelectedFiles();
+            }
+        }
     }
 }

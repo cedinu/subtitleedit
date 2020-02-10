@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Core.Enums;
 
 namespace Nikse.SubtitleEdit.Forms
 {
@@ -48,7 +49,9 @@ namespace Nikse.SubtitleEdit.Forms
                 foreach (string fileName in openFileDialog1.FileNames)
                 {
                     if (!_filesAlreadyInList.Contains(fileName))
+                    {
                         AddInputFile(fileName);
+                    }
                 }
             }
             buttonInputBrowse.Enabled = true;
@@ -71,6 +74,7 @@ namespace Nikse.SubtitleEdit.Forms
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -111,6 +115,7 @@ namespace Nikse.SubtitleEdit.Forms
                     }
                     catch (Exception)
                     {
+                        // ignored
                     }
                 }
             }
@@ -125,6 +130,7 @@ namespace Nikse.SubtitleEdit.Forms
                 SetEndTimeAndStartTime(name, p);
                 Subtitle.Paragraphs.Add(p);
             }
+            Subtitle.Sort(SubtitleSortCriteria.StartTime);
             DialogResult = DialogResult.OK;
         }
 
@@ -136,7 +142,9 @@ namespace Nikse.SubtitleEdit.Forms
         private void listViewInputFiles_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+            {
                 e.Effect = DragDropEffects.All;
+            }
         }
 
         private void listViewInputFiles_DragDrop(object sender, DragEventArgs e)
@@ -163,15 +171,22 @@ namespace Nikse.SubtitleEdit.Forms
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (listViewInputFiles.Items.Count == 0)
+            {
                 e.Cancel = true;
+            }
             else
+            {
                 removeToolStripMenuItem.Visible = listViewInputFiles.SelectedItems.Count > 0;
+            }
         }
 
         private void RemoveSelection(bool removeAll = false)
         {
             if (listViewInputFiles.Items.Count == 0)
+            {
                 return;
+            }
+
             if (removeAll)
             {
                 foreach (ListViewItem item in listViewInputFiles.Items)
@@ -199,6 +214,5 @@ namespace Nikse.SubtitleEdit.Forms
         {
             RemoveSelection(true);
         }
-
     }
 }

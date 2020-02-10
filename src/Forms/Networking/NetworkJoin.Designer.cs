@@ -1,6 +1,6 @@
-﻿namespace Nikse.SubtitleEdit.Forms
+﻿namespace Nikse.SubtitleEdit.Forms.Networking
 {
-    partial class NetworkJoin
+    sealed partial class NetworkJoin
     {
         /// <summary>
         /// Required designer variable.
@@ -72,8 +72,8 @@
             // 
             this.comboBoxWebServiceUrl.FormattingEnabled = true;
             this.comboBoxWebServiceUrl.Items.AddRange(new object[] {
-            "http://www.nikse.dk/se/SeService.asmx",
-            "http://se-net.azurewebsites.net/SeService.asmx"});
+            "https://www.nikse.dk/se/SeService.asmx",
+            "https://se-net.azurewebsites.net/SeService.asmx"});
             this.comboBoxWebServiceUrl.Location = new System.Drawing.Point(125, 109);
             this.comboBoxWebServiceUrl.Name = "comboBoxWebServiceUrl";
             this.comboBoxWebServiceUrl.Size = new System.Drawing.Size(261, 21);
@@ -84,7 +84,7 @@
             this.buttonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonCancel.Location = new System.Drawing.Point(312, 147);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 4;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -102,7 +102,7 @@
             this.buttonJoin.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonJoin.Location = new System.Drawing.Point(231, 147);
             this.buttonJoin.Name = "buttonJoin";
-            this.buttonJoin.Size = new System.Drawing.Size(75, 21);
+            this.buttonJoin.Size = new System.Drawing.Size(75, 23);
             this.buttonJoin.TabIndex = 3;
             this.buttonJoin.Text = "&Join";
             this.buttonJoin.UseVisualStyleBackColor = true;

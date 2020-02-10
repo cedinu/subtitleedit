@@ -1,6 +1,6 @@
 ﻿namespace Nikse.SubtitleEdit.Forms
 {
-    partial class DialogDoNotShowAgain
+    sealed partial class DialogDoNotShowAgain
     {
         /// <summary>
         /// Required designer variable.
@@ -48,9 +48,9 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonOK.Location = new System.Drawing.Point(497, 279);
+            this.buttonOK.Location = new System.Drawing.Point(497, 277);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 3;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -59,10 +59,11 @@
             // labelText
             // 
             this.labelText.AutoSize = true;
+            this.labelText.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelText.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.labelText.Location = new System.Drawing.Point(12, 24);
             this.labelText.Name = "labelText";
-            this.labelText.Size = new System.Drawing.Size(33, 13);
+            this.labelText.Size = new System.Drawing.Size(35, 15);
             this.labelText.TabIndex = 2;
             this.labelText.Text = "text...";
             // 

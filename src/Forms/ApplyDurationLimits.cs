@@ -15,6 +15,7 @@ namespace Nikse.SubtitleEdit.Forms
         private bool _onlyListFixes = true;
         private readonly Timer _refreshTimer = new Timer();
         private readonly Color _warningColor = Color.FromArgb(255, 253, 145);
+        private Subtitle _unfixables = new Subtitle();
 
         public ApplyDurationLimits()
         {
@@ -22,8 +23,10 @@ namespace Nikse.SubtitleEdit.Forms
             InitializeComponent();
             UiUtil.FixFonts(this);
             Text = Configuration.Settings.Language.ApplyDurationLimits.Title;
-            labelMinDuration.Text = Configuration.Settings.Language.Settings.DurationMinimumMilliseconds;
-            labelMaxDuration.Text = Configuration.Settings.Language.Settings.DurationMaximumMilliseconds;
+            checkBoxMinDuration.Text = Configuration.Settings.Language.Settings.DurationMinimumMilliseconds;
+            checkBoxMaxDuration.Text = Configuration.Settings.Language.Settings.DurationMaximumMilliseconds;
+            checkBoxMinDuration.Checked = Configuration.Settings.Tools.ApplyMinimumDurationLimit;
+            checkBoxMaxDuration.Checked = Configuration.Settings.Tools.ApplyMaximumDurationLimit;
             labelNote.Text = Configuration.Settings.Language.AdjustDisplayDuration.Note;
             numericUpDownDurationMin.Value = Configuration.Settings.General.SubtitleMinimumDisplayMilliseconds;
             numericUpDownDurationMax.Value = Configuration.Settings.General.SubtitleMaximumDisplayMilliseconds;
@@ -36,6 +39,13 @@ namespace Nikse.SubtitleEdit.Forms
             listViewFixes.Columns[1].Text = Configuration.Settings.Language.General.LineNumber;
             listViewFixes.Columns[2].Text = Configuration.Settings.Language.General.Before;
             listViewFixes.Columns[3].Text = Configuration.Settings.Language.General.After;
+            numericUpDownDurationMin.Left = checkBoxMinDuration.Left + checkBoxMinDuration.Width + 6;
+            numericUpDownDurationMax.Left = checkBoxMaxDuration.Left + checkBoxMaxDuration.Width + 6;
+            if (Math.Abs(numericUpDownDurationMin.Left - numericUpDownDurationMax.Left) < 10)
+            {
+                numericUpDownDurationMin.Left = Math.Max(numericUpDownDurationMin.Left, numericUpDownDurationMax.Left);
+                numericUpDownDurationMax.Left = Math.Max(numericUpDownDurationMin.Left, numericUpDownDurationMax.Left);
+            }
             FixLargeFonts();
             _refreshTimer.Interval = 400;
             _refreshTimer.Tick += RefreshTimerTick;
@@ -51,7 +61,10 @@ namespace Nikse.SubtitleEdit.Forms
         private void FixLargeFonts()
         {
             if (labelNote.Right + 5 > Width)
+            {
                 Width = labelNote.Right + 5;
+            }
+
             UiUtil.FixLargeFonts(this, buttonOK);
         }
 
@@ -79,8 +92,14 @@ namespace Nikse.SubtitleEdit.Forms
             _working = new Subtitle(_subtitle);
             listViewFixes.BeginUpdate();
             listViewFixes.Items.Clear();
-            FixShortDisplayTimes();
-            FixLongDisplayTimes();
+            if (checkBoxMinDuration.Checked)
+            {
+                FixShortDisplayTimes();
+            }
+            if (checkBoxMaxDuration.Checked)
+            {
+                FixLongDisplayTimes();
+            }
             listViewFixes.EndUpdate();
 
             groupBoxFixesAvailable.Text = string.Format(Configuration.Settings.Language.ApplyDurationLimits.FixesAvailable, _totalFixes);
@@ -102,20 +121,24 @@ namespace Nikse.SubtitleEdit.Forms
         public bool AllowFix(Paragraph p)
         {
             if (_onlyListFixes)
+            {
                 return true;
+            }
 
             string ln = p.Number.ToString();
             foreach (ListViewItem item in listViewFixes.Items)
             {
                 if (item.SubItems[1].Text == ln)
+                {
                     return item.Checked;
+                }
             }
             return false;
         }
 
         private void FixShortDisplayTimes()
         {
-            var unfixables = new Subtitle();
+            _unfixables = new Subtitle();
             double minDisplayTime = (double)numericUpDownDurationMin.Value;
             for (int i = 0; i < _working.Paragraphs.Count; i++)
             {
@@ -123,9 +146,9 @@ namespace Nikse.SubtitleEdit.Forms
                 double displayTime = p.Duration.TotalMilliseconds;
                 if (displayTime < minDisplayTime)
                 {
-                    Paragraph next = _working.GetParagraphOrDefault(i + 1);
+                    var next = _working.GetParagraphOrDefault(i + 1);
                     var wantedEndMs = p.StartTime.TotalMilliseconds + minDisplayTime;
-                    if (next == null || (wantedEndMs < next.StartTime.TotalMilliseconds - Configuration.Settings.General.MinimumMillisecondsBetweenLines) && AllowFix(p))
+                    if (next == null || wantedEndMs < next.StartTime.TotalMilliseconds - Configuration.Settings.General.MinimumMillisecondsBetweenLines && AllowFix(p))
                     {
                         AddFix(p, wantedEndMs, DefaultBackColor);
                     }
@@ -135,20 +158,20 @@ namespace Nikse.SubtitleEdit.Forms
                         if (nextBestEndMs > p.EndTime.TotalMilliseconds)
                         {
                             AddFix(p, nextBestEndMs, _warningColor);
-                            unfixables.Paragraphs.Add(new Paragraph(p) { Extra = "Warning" });
+                            _unfixables.Paragraphs.Add(new Paragraph(p) { Extra = "Warning" });
                         }
                         else
                         {
-                            unfixables.Paragraphs.Add(new Paragraph(p));
+                            _unfixables.Paragraphs.Add(new Paragraph(p));
                         }
                         _totalErrors++;
                     }
                 }
             }
-            subtitleListView1.Fill(unfixables);
-            for (int index = 0; index < unfixables.Paragraphs.Count; index++)
+            subtitleListView1.Fill(_unfixables);
+            for (int index = 0; index < _unfixables.Paragraphs.Count; index++)
             {
-                var p = unfixables.Paragraphs[index];
+                var p = _unfixables.Paragraphs[index];
                 subtitleListView1.SetBackgroundColor(index, p.Extra == "Warning" ? _warningColor : Configuration.Settings.Tools.ListViewSyntaxErrorColor);
             }
         }
@@ -179,7 +202,9 @@ namespace Nikse.SubtitleEdit.Forms
         private void ApplyDurationLimits_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void numericUpDownDurationMin_ValueChanged(object sender, EventArgs e)
@@ -194,10 +219,19 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            Configuration.Settings.Tools.ApplyMinimumDurationLimit = checkBoxMinDuration.Checked;
+            Configuration.Settings.Tools.ApplyMaximumDurationLimit = checkBoxMaxDuration.Checked;
+
             _onlyListFixes = false;
             _working = new Subtitle(_subtitle);
-            FixShortDisplayTimes();
-            FixLongDisplayTimes();
+            if (checkBoxMinDuration.Checked)
+            {
+                FixShortDisplayTimes();
+            }
+            if (checkBoxMaxDuration.Checked)
+            {
+                FixLongDisplayTimes();
+            }
             DialogResult = DialogResult.OK;
         }
 
@@ -228,5 +262,36 @@ namespace Nikse.SubtitleEdit.Forms
             listViewFixes.Focus();
         }
 
+        private void checkBoxMinDuration_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownDurationMin.Enabled = checkBoxMinDuration.Checked;
+            GeneratePreview();
+
+        }
+
+        private void checkBoxMaxDuration_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownDurationMax.Enabled = checkBoxMaxDuration.Checked;
+            GeneratePreview();
+        }
+
+        private void listViewFixes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listViewFixes.SelectedIndices.Count > 0)
+            {
+                int index = listViewFixes.SelectedIndices[0];
+                ListViewItem item = listViewFixes.Items[index];
+                var number = int.Parse(item.SubItems[1].Text);
+                foreach (var p in _unfixables.Paragraphs)
+                {
+                    if (p.Number == number)
+                    {
+                        index = _unfixables.GetIndex(p);
+                        subtitleListView1.SelectIndexAndEnsureVisible(index);
+                        return;
+                    }
+                }
+            }
+        }
     }
 }

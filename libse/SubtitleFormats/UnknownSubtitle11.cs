@@ -26,9 +26,13 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     string s = RemoveIllegalSpacesAndFixEmptyCodes(line);
                     if (RegexMicroDvdLine.IsMatch(s))
+                    {
                         trimmedLines.Add(s);
+                    }
                     else
+                    {
                         errors++;
+                    }
                 }
                 else
                 {
@@ -92,7 +96,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 foreach (string line in parts)
                 {
                     if (count > 0)
+                    {
                         lineSb.Append('|');
+                    }
 
                     if (line.StartsWith("<i>") || italicOn)
                     {
@@ -117,13 +123,19 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     }
 
                     if (line.Contains("</i>"))
+                    {
                         italicOn = false;
+                    }
 
                     if (line.Contains("</b>"))
+                    {
                         boldOn = false;
+                    }
 
                     if (line.Contains("</u>"))
+                    {
                         underlineOn = false;
+                    }
 
                     lineSb.Append(HtmlUtil.RemoveHtmlTags(line));
                     count++;
@@ -131,11 +143,18 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 string text = lineSb.ToString();
                 int noOfLines = Utilities.CountTagInText(text, '|') + 1;
                 if (noOfLines > 1 && Utilities.CountTagInText(text, "{y:i}") == noOfLines)
+                {
                     text = "{Y:i}" + text.Replace("{y:i}", string.Empty);
+                }
                 else if (noOfLines > 1 && Utilities.CountTagInText(text, "{y:b}") == noOfLines)
+                {
                     text = "{Y:b}" + text.Replace("{y:b}", string.Empty);
+                }
                 else if (noOfLines > 1 && Utilities.CountTagInText(text, "{y:u}") == noOfLines)
+                {
                     text = "{Y:u}" + text.Replace("{y:u}", string.Empty);
+                }
+
                 sb.AppendLine(HtmlUtil.RemoveHtmlTags(text));
             }
             return sb.ToString().Trim();
@@ -175,7 +194,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             foreach (string s2 in parts)
                             {
                                 if (count > 0)
+                                {
                                     lineSb.AppendLine();
+                                }
 
                                 s = s2.Trim();
                                 if (s.StartsWith("{Y:i}"))
@@ -230,13 +251,13 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             foreach (Paragraph p in subtitle.Paragraphs)
             {
                 Paragraph previous = subtitle.GetParagraphOrDefault(i - 1);
-                if (p.StartFrame == 0 && previous != null)
+                if (p.StartTime.TotalMilliseconds == 0 && previous != null)
                 {
-                    p.StartFrame = previous.EndFrame + 1;
+                    p.StartTime.TotalMilliseconds = previous.EndTime.TotalMilliseconds + 1;
                 }
-                if (p.EndFrame == 0)
+                if (p.EndTime.TotalMilliseconds == 0)
                 {
-                    p.EndFrame = p.StartFrame;
+                    p.EndTime.TotalMilliseconds = p.StartTime.TotalMilliseconds;
                 }
                 i++;
             }
@@ -251,8 +272,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             while (i < line.Length && tagCount < 4)
             {
                 if (line[i] == '{' || line[i] == '}')
+                {
                     tagCount++;
-
+                }
                 i++;
             }
             return i;

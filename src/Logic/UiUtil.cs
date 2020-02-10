@@ -20,21 +20,29 @@ namespace Nikse.SubtitleEdit.Logic
 
         public static VideoInfo GetVideoInfo(string fileName)
         {
-            VideoInfo info = FileUtil.TryReadVideoInfoViaAviHeader(fileName);
+            var info = FileUtil.TryReadVideoInfoViaAviHeader(fileName);
             if (info.Success)
+            {
                 return info;
+            }
 
             info = FileUtil.TryReadVideoInfoViaMatroskaHeader(fileName);
             if (info.Success)
+            {
                 return info;
+            }
 
             info = FileUtil.TryReadVideoInfoViaMp4(fileName);
             if (info.Success)
+            {
                 return info;
+            }
 
             info = TryReadVideoInfoViaDirectShow(fileName);
             if (info.Success)
+            {
                 return info;
+            }
 
             return new VideoInfo { VideoCodec = "Unknown" };
         }
@@ -44,66 +52,103 @@ namespace Nikse.SubtitleEdit.Logic
             return QuartsPlayer.GetVideoInfo(fileName);
         }
 
+        private static long _lastShowSubTicks = DateTime.UtcNow.Ticks;
+        private static int _lastShowSubHash;
+
         public static int ShowSubtitle(Subtitle subtitle, VideoPlayerContainer videoPlayerContainer)
         {
-            if (videoPlayerContainer.VideoPlayer != null)
+            if (videoPlayerContainer.VideoPlayer == null)
             {
-                double positionInMilliseconds = (videoPlayerContainer.CurrentPosition * TimeCode.BaseUnit) + 5;
-                for (int i = 0; i < subtitle.Paragraphs.Count; i++)
+                return -1;
+            }
+
+            double positionInMilliseconds = videoPlayerContainer.CurrentPosition * TimeCode.BaseUnit;
+            var max = subtitle.Paragraphs.Count;
+            for (int i = 0; i < max; i++)
+            {
+                var p = subtitle.Paragraphs[i];
+                if (p.StartTime.TotalMilliseconds <= positionInMilliseconds + 0.01 && p.EndTime.TotalMilliseconds >= positionInMilliseconds - 0.01)
                 {
-                    var p = subtitle.Paragraphs[i];
-                    if (p.StartTime.TotalMilliseconds <= positionInMilliseconds &&
-                        p.EndTime.TotalMilliseconds > positionInMilliseconds)
+                    string text = p.Text.Replace("|", Environment.NewLine);
+                    bool isInfo = p == subtitle.Paragraphs[0] && (Math.Abs(p.StartTime.TotalMilliseconds) < 0.01 && Math.Abs(p.Duration.TotalMilliseconds) < 0.01 || Math.Abs(p.StartTime.TotalMilliseconds - Pac.PacNullTime.TotalMilliseconds) < 0.01);
+                    if (!isInfo)
                     {
-                        string text = p.Text.Replace("|", Environment.NewLine);
-                        bool isInfo = p == subtitle.Paragraphs[0] && (Math.Abs(p.StartTime.TotalMilliseconds) < 0.01 && Math.Abs(p.Duration.TotalMilliseconds) < 0.01 || Math.Abs(p.StartTime.TotalMilliseconds - Pac.PacNullTime.TotalMilliseconds) < 0.01);
-                        if (!isInfo)
+                        if (videoPlayerContainer.LastParagraph != p)
                         {
-                            if (videoPlayerContainer.LastParagraph != p)
-                                videoPlayerContainer.SetSubtitleText(text, p, subtitle);
-                            else if (videoPlayerContainer.SubtitleText != text)
-                                videoPlayerContainer.SetSubtitleText(text, p, subtitle);
-                            return i;
+                            videoPlayerContainer.SetSubtitleText(text, p, subtitle);
                         }
+                        else if (videoPlayerContainer.SubtitleText != text)
+                        {
+                            videoPlayerContainer.SetSubtitleText(text, p, subtitle);
+                        }
+                        TimeOutRefresh(subtitle, videoPlayerContainer, p);
+                        return i;
                     }
                 }
-                if (!string.IsNullOrEmpty(videoPlayerContainer.SubtitleText))
-                    videoPlayerContainer.SetSubtitleText(string.Empty, null, subtitle);
+            }
+
+            if (!string.IsNullOrEmpty(videoPlayerContainer.SubtitleText))
+            {
+                videoPlayerContainer.SetSubtitleText(string.Empty, null, subtitle);
+            }
+            else
+            {
+                TimeOutRefresh(subtitle, videoPlayerContainer);
             }
             return -1;
         }
 
+        private static void TimeOutRefresh(Subtitle subtitle, VideoPlayerContainer videoPlayerContainer, Paragraph p = null)
+        {
+            if (DateTime.UtcNow.Ticks - _lastShowSubTicks > 10000 * 1000) // more than 1+ seconds ago
+            {
+                var newHash = subtitle.GetFastHashCode(string.Empty);
+                if (newHash != _lastShowSubHash)
+                {
+                    videoPlayerContainer.SetSubtitleText(p == null ? string.Empty : p.Text, p, subtitle);
+                    _lastShowSubHash = newHash;
+                }
+
+                _lastShowSubTicks = DateTime.UtcNow.Ticks;
+            }
+        }
+
         public static int ShowSubtitle(Subtitle subtitle, Subtitle original, VideoPlayerContainer videoPlayerContainer)
         {
-            if (videoPlayerContainer.VideoPlayer != null)
+            if (videoPlayerContainer.VideoPlayer == null)
             {
-                double positionInMilliseconds = (videoPlayerContainer.VideoPlayer.CurrentPosition * TimeCode.BaseUnit) + 15;
-                for (int i = 0; i < subtitle.Paragraphs.Count; i++)
+                return -1;
+            }
+
+            double positionInMilliseconds = (videoPlayerContainer.VideoPlayer.CurrentPosition * TimeCode.BaseUnit) + 15;
+            var max = subtitle.Paragraphs.Count;
+            for (int i = 0; i < max; i++)
+            {
+                var p = subtitle.Paragraphs[i];
+                if (p.StartTime.TotalMilliseconds <= positionInMilliseconds && p.EndTime.TotalMilliseconds > positionInMilliseconds)
                 {
-                    var p = subtitle.Paragraphs[i];
-                    if (p.StartTime.TotalMilliseconds <= positionInMilliseconds &&
-                        p.EndTime.TotalMilliseconds > positionInMilliseconds)
+                    var op = Utilities.GetOriginalParagraph(0, p, original.Paragraphs);
+                    string text = p.Text.Replace("|", Environment.NewLine);
+                    if (op != null)
                     {
-                        var op = Utilities.GetOriginalParagraph(0, p, original.Paragraphs);
+                        text = text + Environment.NewLine + Environment.NewLine + op.Text.Replace("|", Environment.NewLine);
+                    }
 
-                        string text = p.Text.Replace("|", Environment.NewLine);
-                        if (op != null)
-                            text = text + Environment.NewLine + Environment.NewLine + op.Text.Replace("|", Environment.NewLine);
-
-                        bool isInfo = p == subtitle.Paragraphs[0] && Math.Abs(p.StartTime.TotalMilliseconds) < 0.01 && positionInMilliseconds > 3000;
-                        if (!isInfo)
+                    bool isInfo = p == subtitle.Paragraphs[0] && Math.Abs(p.StartTime.TotalMilliseconds) < 0.01 && positionInMilliseconds > 3000;
+                    if (!isInfo)
+                    {
+                        if (videoPlayerContainer.LastParagraph != p || videoPlayerContainer.SubtitleText != text)
                         {
-                            if (videoPlayerContainer.LastParagraph != p)
-                                videoPlayerContainer.SetSubtitleText(text, p, subtitle);
-                            else if (videoPlayerContainer.SubtitleText != text)
-                                videoPlayerContainer.SetSubtitleText(text, p, subtitle);
-                            return i;
+                            videoPlayerContainer.SetSubtitleText(text, p, subtitle);
                         }
+                        return i;
                     }
                 }
             }
             if (!string.IsNullOrEmpty(videoPlayerContainer.SubtitleText))
+            {
                 videoPlayerContainer.SetSubtitleText(string.Empty, null, subtitle);
+            }
             return -1;
         }
 
@@ -112,21 +157,12 @@ namespace Nikse.SubtitleEdit.Logic
             get
             {
                 if (Utilities.IsRunningOnMono())
+                {
                     return false;
+                }
 
                 string quartzFileName = Environment.GetFolderPath(Environment.SpecialFolder.System).TrimEnd('\\') + @"\quartz.dll";
                 return File.Exists(quartzFileName);
-            }
-        }
-
-        public static bool IsMPlayerAvailable
-        {
-            get
-            {
-                if (Configuration.IsRunningOnLinux() || Utilities.IsRunningOnMono())
-                    return File.Exists(Path.Combine(Configuration.BaseDirectory, "mplayer"));
-
-                return MPlayer.GetMPlayerFileName != null;
             }
         }
 
@@ -135,7 +171,9 @@ namespace Nikse.SubtitleEdit.Logic
             get
             {
                 if (Utilities.IsRunningOnMono())
+                {
                     return false;
+                }
 
                 try
                 {
@@ -150,48 +188,50 @@ namespace Nikse.SubtitleEdit.Logic
 
         public static VideoPlayer GetVideoPlayer()
         {
-            int RTLD_NOW = 0x0001;
-            int RTLD_GLOBAL = 0x0100;
-            GeneralSettings gs = Configuration.Settings.General;
+            var gs = Configuration.Settings.General;
 
-            if (Configuration.IsRunningOnLinux())
+            if (Configuration.IsRunningOnLinux)
             {
-                var handle = NativeMethods.dlopen("libmpv.so", RTLD_NOW | RTLD_GLOBAL);
-                if (handle != IntPtr.Zero)
+                if (gs.VideoPlayer == "VLC" && LibVlcDynamic.IsInstalled)
                 {
-                    NativeMethods.dlclose(handle);
-                    return new LibMpvMono();
+                    return new LibVlcDynamic();
                 }
-                return new MPlayer();
+                if (LibMpvDynamic.IsInstalled)
+                {
+                    return new LibMpvDynamic();
+                }
+                throw new NotSupportedException("You need 'libmpv-dev' or 'libvlc-dev' (on Ubuntu) and X11 to use the video player on Linux!");
             }
             // Mono on OS X is 32 bit and thus requires 32 bit VLC. Place VLC in the same
             // folder as Subtitle Edit and add this to the app.config inside the
             // "configuration" element:
             // <dllmap dll="libvlc" target="VLC.app/Contents/MacOS/lib/libvlc.dylib" />
-            if (Configuration.IsRunningOnMac())
+            if (Configuration.IsRunningOnMac)
+            {
                 return new LibVlcMono();
+            }
 
             if (gs.VideoPlayer == "VLC" && LibVlcDynamic.IsInstalled)
+            {
                 return new LibVlcDynamic();
+            }
 
             if (gs.VideoPlayer == "MPV" && LibMpvDynamic.IsInstalled)
+            {
                 return new LibMpvDynamic();
-
-            //if (gs.VideoPlayer == "WindowsMediaPlayer" && IsWmpAvailable)
-            //    return new WmpPlayer();
-
-            //            if (gs.VideoPlayer == "MPlayer" && MPlayer.IsInstalled)
-            //                return new MPlayer();
+            }
 
             if (gs.VideoPlayer == "MPC-HC" && VideoPlayers.MpcHC.MpcHc.IsInstalled)
+            {
                 return new VideoPlayers.MpcHC.MpcHc();
+            }
 
             if (IsQuartsDllInstalled)
+            {
                 return new QuartsPlayer();
-            //if (IsWmpAvailable)
-            //    return new WmpPlayer();
+            }
 
-            throw new NotSupportedException("You need DirectX, VLC media player 1.1.x, or MPlayer2 installed as well as Subtitle Edit dll files in order to use the video player!");
+            throw new NotSupportedException("You need DirectX, or mpv media player, or VLC media player installed as well as Subtitle Edit dll files in order to use the video player!");
         }
 
         public static void InitializeVideoPlayerAndContainer(string fileName, VideoInfo videoInfo, VideoPlayerContainer videoPlayerContainer, EventHandler onVideoLoaded, EventHandler onVideoEnded)
@@ -205,7 +245,7 @@ namespace Nikse.SubtitleEdit.Logic
                 videoPlayerContainer.ShowMuteButton = Configuration.Settings.General.VideoPlayerShowMuteButton;
                 videoPlayerContainer.Volume = Configuration.Settings.General.VideoPlayerDefaultVolume;
                 videoPlayerContainer.EnableMouseWheelStep();
-                if (fileName != null && (fileName.StartsWith("https://") || fileName.StartsWith("http://")))
+                if (fileName != null && (fileName.StartsWith("https://", StringComparison.OrdinalIgnoreCase) || fileName.StartsWith("http://", StringComparison.OrdinalIgnoreCase)))
                 {
                     // we don't have videoInfo for streams...
                 }
@@ -230,7 +270,9 @@ namespace Nikse.SubtitleEdit.Logic
         {
             // Do not autobreak lines more than 1 line.
             if (numberOfNewLines != 1 || !Configuration.Settings.General.AutoWrapLineWhileTyping)
+            {
                 return;
+            }
 
             int length = HtmlUtil.RemoveHtmlTags(textBox.Text, true).Length;
             if (e.Modifiers == Keys.None && e.KeyCode != Keys.Enter && length > Configuration.Settings.General.SubtitleLineMaximumLength)
@@ -244,9 +286,13 @@ namespace Nikse.SubtitleEdit.Logic
                 {
                     int lastSpace = textBox.Text.LastIndexOf(' ');
                     if (lastSpace > 0)
+                    {
                         newText = textBox.Text.Remove(lastSpace, 1).Insert(lastSpace, Environment.NewLine);
+                    }
                     else
+                    {
                         newText = textBox.Text;
+                    }
                 }
 
                 int autobreakIndex = newText.IndexOf(Environment.NewLine, StringComparison.Ordinal);
@@ -255,9 +301,13 @@ namespace Nikse.SubtitleEdit.Logic
                     int selectionStart = textBox.SelectionStart;
                     textBox.Text = newText;
                     if (selectionStart > autobreakIndex)
+                    {
                         selectionStart += Environment.NewLine.Length - 1;
+                    }
                     if (selectionStart >= 0)
+                    {
                         textBox.SelectionStart = selectionStart;
+                    }
                 }
             }
         }
@@ -268,30 +318,44 @@ namespace Nikse.SubtitleEdit.Logic
         public static Keys GetKeys(string keysInString)
         {
             if (string.IsNullOrEmpty(keysInString))
+            {
                 return Keys.None;
+            }
 
             if (AllKeys.Count == 0)
             {
                 foreach (Keys val in Enum.GetValues(typeof(Keys)))
                 {
-                    string k = val.ToString().ToLower();
+                    string k = val.ToString().ToLowerInvariant();
                     if (!AllKeys.ContainsKey(k))
+                    {
                         AllKeys.Add(k, val);
+                    }
                 }
                 if (!AllKeys.ContainsKey("pagedown"))
+                {
                     AllKeys.Add("pagedown", Keys.RButton | Keys.Space);
+                }
+
                 if (!AllKeys.ContainsKey("home"))
+                {
                     AllKeys.Add("home", Keys.MButton | Keys.Space);
+                }
+
                 if (!AllKeys.ContainsKey("capslock"))
+                {
                     AllKeys.Add("capslock", Keys.CapsLock);
+                }
             }
 
-            string[] parts = keysInString.ToLower().Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = keysInString.ToLowerInvariant().Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
             var resultKeys = Keys.None;
             foreach (string k in parts)
             {
                 if (AllKeys.ContainsKey(k))
+                {
                     resultKeys = resultKeys | AllKeys[k];
+                }
             }
             return resultKeys;
         }
@@ -301,29 +365,39 @@ namespace Nikse.SubtitleEdit.Logic
             get
             {
                 if (_helpKeys == Keys.None)
+                {
                     _helpKeys = GetKeys(Configuration.Settings.Shortcuts.GeneralHelp);
+                }
                 return _helpKeys;
             }
-            set { _helpKeys = value; }
+            set => _helpKeys = value;
         }
 
         public static void SetButtonHeight(Control control, int newHeight, int level)
         {
             if (level > 6)
+            {
                 return;
+            }
 
             if (control.HasChildren)
             {
                 foreach (Control subControl in control.Controls)
                 {
                     if (subControl.HasChildren)
+                    {
                         SetButtonHeight(subControl, newHeight, level + 1);
+                    }
                     else if (subControl is Button)
+                    {
                         subControl.Height = newHeight;
+                    }
                 }
             }
             else if (control is Button)
+            {
                 control.Height = newHeight;
+            }
         }
 
         public static void InitializeSubtitleFont(Control control)
@@ -331,23 +405,33 @@ namespace Nikse.SubtitleEdit.Logic
             var gs = Configuration.Settings.General;
 
             if (string.IsNullOrEmpty(gs.SubtitleFontName))
-                gs.SubtitleFontName = SystemFonts.MessageBoxFont.Name;
+            {
+                gs.SubtitleFontName = DefaultSystemFont.Name;
+            }
 
             try
             {
                 if (control is ListView)
                 {
                     if (gs.SubtitleListViewFontBold)
+                    {
                         control.Font = new Font(gs.SubtitleFontName, gs.SubtitleListViewFontSize, FontStyle.Bold);
+                    }
                     else
+                    {
                         control.Font = new Font(gs.SubtitleFontName, gs.SubtitleListViewFontSize);
+                    }
                 }
                 else
                 {
                     if (gs.SubtitleFontBold)
+                    {
                         control.Font = new Font(gs.SubtitleFontName, gs.SubtitleFontSize, FontStyle.Bold);
+                    }
                     else
+                    {
                         control.Font = new Font(gs.SubtitleFontName, gs.SubtitleFontSize);
+                    }
                 }
 
                 control.BackColor = gs.SubtitleBackgroundColor;
@@ -359,12 +443,57 @@ namespace Nikse.SubtitleEdit.Logic
             }
         }
 
-        private static Font GetDefaultFont()
+
+        private static Font _defaultSystemFont;
+        private static Font DefaultSystemFont
+        {
+            get
+            {
+                if (_defaultSystemFont != null)
+                {
+                    return _defaultSystemFont;
+                }
+
+                var font = SystemFonts.MessageBoxFont;
+
+                if (Configuration.IsRunningOnLinux)
+                {
+                    font = new Font(Configuration.DefaultLinuxFontName, 8F);
+                }
+
+                try
+                {
+                    // Bold + italic + regular must be present
+                    font = new Font(font.Name, 9, FontStyle.Bold);
+                    font = new Font(font.Name, 9, FontStyle.Italic);
+                    font = new Font(font.Name, 9, FontStyle.Regular);
+                }
+                catch
+                {
+                    try
+                    {
+                        font = SystemFonts.DefaultFont;
+                        font = new Font(font.Name, 9, FontStyle.Bold);
+                        font = new Font(font.Name, 9, FontStyle.Italic);
+                        font = new Font(font.Name, 9, FontStyle.Regular);
+                    }
+                    catch
+                    {
+                        font = new Font("Microsoft Sans Serif", 9F);
+                    }
+                }
+
+                _defaultSystemFont = font;
+                return font;
+            }
+        }
+
+        public static Font GetDefaultFont()
         {
             var gs = Configuration.Settings.General;
             if (string.IsNullOrEmpty(gs.SystemSubtitleFontNameOverride) || gs.SystemSubtitleFontSizeOverride < 5)
             {
-                return SystemFonts.MessageBoxFont;
+                return DefaultSystemFont;
             }
 
             try
@@ -373,7 +502,7 @@ namespace Nikse.SubtitleEdit.Logic
             }
             catch
             {
-                return SystemFonts.MessageBoxFont;
+                return DefaultSystemFont;
             }
         }
 
@@ -387,34 +516,73 @@ namespace Nikse.SubtitleEdit.Logic
         {
             FixFontsInner(form, iterations);
             if (Configuration.Settings.General.UseDarkTheme)
+            {
                 DarkTheme.SetDarkTheme(form, 1500);
-        }
-
-        public static void FixFonts(ToolStripMenuItem item)
-        {
-            item.Font = GetDefaultFont();
-            if (Configuration.Settings.General.UseDarkTheme)
-                DarkTheme.SetDarkTheme(item);
-        }
-
-        public static void FixFonts(ToolStripSeparator item)
-        {
-            item.Font = GetDefaultFont();
-            if (Configuration.Settings.General.UseDarkTheme)
-                DarkTheme.SetDarkTheme(item);
+            }
         }
 
         internal static void FixFonts(ToolStripItem item)
         {
             item.Font = GetDefaultFont();
             if (Configuration.Settings.General.UseDarkTheme)
+            {
                 DarkTheme.SetDarkTheme(item);
+            }
+        }
+
+        internal static void FixFonts(ToolStripComboBox item)
+        {
+            item.Font = GetDefaultFont();
+            if (Configuration.Settings.General.UseDarkTheme)
+            {
+                DarkTheme.SetDarkTheme(item);
+            }
         }
 
         private static void FixFontsInner(Control form, int iterations = 5)
         {
             if (iterations < 1)
+            {
                 return;
+            }
+
+            if (form is ContextMenuStrip cms)
+            {
+                foreach (var item in cms.Items)
+                {
+                    if (item is ToolStripMenuItem tsmi)
+                    {
+                        tsmi.Font = GetDefaultFont();
+                        if (tsmi.HasDropDownItems)
+                        {
+                            foreach (var innerItem in tsmi.DropDownItems)
+                            {
+                                if (innerItem is ToolStripMenuItem innerTsmi)
+                                {
+                                    innerTsmi.Font = GetDefaultFont();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (form is TimeUpDown timeUpDown)
+            {
+                using (var g = Graphics.FromHwnd(IntPtr.Zero))
+                {
+                    var width = g.MeasureString("00:00:00.000", form.Font).Width;
+                    if (timeUpDown.MaskedTextBox.Width < width - 3)
+                    {
+                        timeUpDown.MaskedTextBox.Font = new Font(timeUpDown.MaskedTextBox.Font.FontFamily, timeUpDown.MaskedTextBox.Font.Size - 1);
+                    }
+                    width = g.MeasureString("00:00:00.000", form.Font).Width;
+                    if (timeUpDown.MaskedTextBox.Width < width - 3)
+                    {
+                        timeUpDown.MaskedTextBox.Font = new Font(timeUpDown.MaskedTextBox.Font.FontFamily, timeUpDown.MaskedTextBox.Font.Size - 1);
+                    }
+                }
+            }
 
             foreach (Control c in form.Controls)
             {
@@ -422,6 +590,10 @@ namespace Nikse.SubtitleEdit.Logic
                 {
                     c.Font = GetDefaultFont();
                 }
+
+
+
+
                 foreach (Control inner in c.Controls)
                 {
                     FixFontsInner(inner, iterations - 1);
@@ -449,7 +621,9 @@ namespace Nikse.SubtitleEdit.Logic
             {
                 sb.Append(format.Name + "|*" + format.Extension + "|");
                 if (currentFormat.Name == format.Name)
+                {
                     saveFileDialog.FilterIndex = index + 1;
+                }
                 index++;
             }
             saveFileDialog.Filter = sb.ToString().TrimEnd('|');
@@ -457,11 +631,9 @@ namespace Nikse.SubtitleEdit.Logic
 
         public static void GetLineLengths(Label label, string text)
         {
-            label.ForeColor = Color.Black;
+            label.ForeColor = ForeColor;
             var lines = text.SplitToLines();
-
             const int max = 3;
-
             var sb = new StringBuilder();
             for (int i = 0; i < lines.Count; i++)
             {
@@ -481,7 +653,9 @@ namespace Nikse.SubtitleEdit.Logic
 
                 sb.Append(line.Length);
                 if (line.Length > Configuration.Settings.General.SubtitleLineMaximumLength)
+                {
                     label.ForeColor = Color.Red;
+                }
             }
             label.Text = sb.ToString();
         }
@@ -521,10 +695,14 @@ namespace Nikse.SubtitleEdit.Logic
                 {
                     var index = comboBox.Items.Add(name);
                     if (name.Equals(selectedName, StringComparison.OrdinalIgnoreCase))
+                    {
                         selectedIndex = index;
+                    }
                     var width = graphics.MeasureString(name, comboBox.Font).Width;
                     if (width > maxWidth)
+                    {
                         maxWidth = width;
+                    }
                 }
                 comboBox.DropDownWidth = (int)Math.Round(maxWidth + 7.5);
             }
@@ -535,7 +713,7 @@ namespace Nikse.SubtitleEdit.Logic
         public static void InitializeTextEncodingComboBox(ComboBox comboBox)
         {
             var defaultEncoding = Configuration.Settings.General.DefaultEncoding;
-            var selectedItem = (TextEncodingListItem)null;
+            var selectedItem = (TextEncoding)null;
             comboBox.BeginUpdate();
             comboBox.Items.Clear();
             using (var graphics = comboBox.CreateGraphics())
@@ -545,38 +723,97 @@ namespace Nikse.SubtitleEdit.Logic
                 {
                     if (encoding.CodePage >= 949 && !encoding.IsEbcdic())
                     {
-                        var item = new TextEncodingListItem(encoding);
+                        var item = new TextEncoding(encoding, null);
                         if (selectedItem == null && item.Equals(defaultEncoding))
+                        {
                             selectedItem = item;
+                        }
                         var width = graphics.MeasureString(item.DisplayName, comboBox.Font).Width;
                         if (width > maxWidth)
+                        {
                             maxWidth = width;
+                        }
                         if (encoding.CodePage.Equals(Encoding.UTF8.CodePage))
-                            comboBox.Items.Insert(0, item);
+                        {
+                            item = new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithBom);
+                            comboBox.Items.Insert(TextEncoding.Utf8WithBomIndex, item);
+                            if (item.Equals(defaultEncoding))
+                            {
+                                selectedItem = item;
+                            }
+
+                            item = new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithoutBom);
+                            comboBox.Items.Insert(TextEncoding.Utf8WithoutBomIndex, item);
+                            if (item.Equals(defaultEncoding))
+                            {
+                                selectedItem = item;
+                            }
+                        }
                         else
+                        {
                             comboBox.Items.Add(item);
+                        }
                     }
                 }
                 comboBox.DropDownWidth = (int)Math.Round(maxWidth + 7.5);
             }
             if (selectedItem == null)
-                comboBox.SelectedIndex = 0; // UTF-8 if DefaultEncoding is not found
+            {
+                comboBox.SelectedIndex = TextEncoding.Utf8WithBomIndex; // UTF-8 if DefaultEncoding is not found
+            }
+            else if (selectedItem.DisplayName == TextEncoding.Utf8WithoutBom)
+            {
+                comboBox.SelectedIndex = TextEncoding.Utf8WithoutBomIndex;
+            }
             else
+            {
                 comboBox.SelectedItem = selectedItem;
+            }
             comboBox.EndUpdate();
-            Configuration.Settings.General.DefaultEncoding = (comboBox.SelectedItem as TextEncodingListItem).Encoding.WebName;
+            if (comboBox.SelectedItem is TextEncoding textEncodingListItem)
+            {
+                Configuration.Settings.General.DefaultEncoding = textEncodingListItem.DisplayName;
+            }
             comboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
             comboBox.AutoCompleteMode = AutoCompleteMode.Append;
         }
 
-        public static Encoding GetTextEncodingComboBoxCurrentEncoding(ComboBox comboBox)
+        public static TextEncoding GetTextEncodingComboBoxCurrentEncoding(ComboBox comboBox)
         {
-            if (comboBox.SelectedIndex > 0)
+            if (comboBox.SelectedIndex > 0 && comboBox.SelectedItem is TextEncoding textEncodingListItem)
             {
-                return (comboBox.SelectedItem as TextEncodingListItem).Encoding;
+                return textEncodingListItem;
             }
-            return Encoding.UTF8;
+            return new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithBom);
         }
+
+        public static void SetTextEncoding(ToolStripComboBox comboBoxEncoding, string encodingName)
+        {
+            if (encodingName == TextEncoding.Utf8WithBom)
+            {
+                comboBoxEncoding.SelectedIndex = TextEncoding.Utf8WithBomIndex;
+                return;
+            }
+
+            if (encodingName == TextEncoding.Utf8WithoutBom)
+            {
+                comboBoxEncoding.SelectedIndex = TextEncoding.Utf8WithoutBomIndex;
+                return;
+            }
+
+            foreach (TextEncoding item in comboBoxEncoding.Items)
+            {
+                if (item.Equals(encodingName))
+                {
+                    comboBoxEncoding.SelectedItem = item;
+                    return;
+                }
+            }
+
+            comboBoxEncoding.SelectedIndex = TextEncoding.Utf8WithBomIndex; // UTF-8 with BOM
+        }
+
+
 
         private const string BreakChars = "\",:;.¡!¿?()[]{}<>♪♫-–—/#*|";
 
@@ -598,7 +835,9 @@ namespace Nikse.SubtitleEdit.Logic
                         index--;
                         textIndex = textElementIndices[index];
                         if (!IsSpaceCategory(CharUnicodeInfo.GetUnicodeCategory(text, textIndex)))
+                        {
                             break;
+                        }
                     }
                     if (index > 0) // HTML tag?
                     {
@@ -606,7 +845,9 @@ namespace Nikse.SubtitleEdit.Logic
                         {
                             var openingBracketIndex = text.LastIndexOf('<', textIndex - 1);
                             if (openingBracketIndex >= 0 && text.IndexOf('>', openingBracketIndex + 1) == textIndex)
+                            {
                                 deleteFrom = openingBracketIndex; // delete whole tag
+                            }
                         }
                         else if (text[textIndex] == '}')
                         {
@@ -620,7 +861,10 @@ namespace Nikse.SubtitleEdit.Logic
                     if (deleteFrom < 0)
                     {
                         if (BreakChars.Contains(text[textIndex]))
+                        {
                             deleteFrom = -2;
+                        }
+
                         while (index > 0)
                         {
                             index--;
@@ -630,19 +874,25 @@ namespace Nikse.SubtitleEdit.Logic
                                 if (deleteFrom > -2)
                                 {
                                     if (deleteFrom < 0)
+                                    {
                                         deleteFrom = textElementIndices[index + 1];
+                                    }
                                     break;
                                 }
                                 deleteFrom = textElementIndices[index + 1];
                                 if (!":!?".Contains(text[deleteFrom]))
+                                {
                                     break;
+                                }
                             }
                             else if (BreakChars.Contains(text[textIndex]))
                             {
                                 if (deleteFrom > -2)
                                 {
                                     if (deleteFrom < 0)
+                                    {
                                         deleteFrom = textElementIndices[index + 1];
+                                    }
                                     break;
                                 }
                             }
@@ -655,7 +905,9 @@ namespace Nikse.SubtitleEdit.Logic
                     if (deleteFrom < deleteUpTo)
                     {
                         if (deleteFrom < 0)
+                        {
                             deleteFrom = 0;
+                        }
                         textBox.Select(deleteFrom, deleteUpTo - deleteFrom);
                         textBox.Paste(string.Empty);
                     }
@@ -705,11 +957,14 @@ namespace Nikse.SubtitleEdit.Logic
             {
                 AddExtension(sb, s.Extension);
                 foreach (string ext in s.AlternateExtensions)
+                {
                     AddExtension(sb, ext);
+                }
             }
             AddExtension(sb, new Pac().Extension);
             AddExtension(sb, new Cavena890().Extension);
             AddExtension(sb, new Spt().Extension);
+            AddExtension(sb, new Sptx().Extension);
             AddExtension(sb, new Wsb().Extension);
             AddExtension(sb, new CheetahCaption().Extension);
             AddExtension(sb, ".chk");
@@ -734,10 +989,13 @@ namespace Nikse.SubtitleEdit.Logic
                 foreach (string ext in extraExtensions)
                 {
                     if (ext.StartsWith("*.", StringComparison.Ordinal) && !sb.ToString().Contains(ext, StringComparison.OrdinalIgnoreCase))
+                    {
                         AddExtension(sb, ext);
+                    }
                 }
             }
             AddExtension(sb, ".son");
+            AddExtension(sb, ".m2ts");
 
             sb.Append('|');
             sb.Append(Configuration.Settings.Language.General.AllFiles);
@@ -753,7 +1011,9 @@ namespace Nikse.SubtitleEdit.Logic
         {
             lv.BeginUpdate();
             foreach (ListViewItem item in lv.Items)
+            {
                 item.Selected = true;
+            }
             lv.EndUpdate();
         }
 
@@ -786,8 +1046,66 @@ namespace Nikse.SubtitleEdit.Logic
         {
             lv.BeginUpdate();
             foreach (ListViewItem item in lv.Items)
+            {
                 item.Selected = !item.Selected;
+            }
             lv.EndUpdate();
+        }
+
+        internal static void CleanUpMenuItemPlugin(ToolStripMenuItem tsmi)
+        {
+            if (tsmi == null)
+            {
+                return;
+            }
+            for (int k = tsmi.DropDownItems.Count - 1; k > 0; k--)
+            {
+                ToolStripItem x = tsmi.DropDownItems[k];
+                if (x.Name.StartsWith("Plugin", StringComparison.OrdinalIgnoreCase))
+                {
+                    tsmi.DropDownItems.Remove(x);
+                }
+            }
+        }
+
+        public static Color BackColor => Configuration.Settings.General.UseDarkTheme ? DarkTheme.BackColor : Control.DefaultBackColor;
+
+        public static Color ForeColor => Configuration.Settings.General.UseDarkTheme ? DarkTheme.ForeColor : Control.DefaultForeColor;
+
+        public static void OpenFolder(string folder)
+        {
+            OpenItem(folder, "folder");
+        }
+        public static void OpenURL(string url)
+        {
+            OpenItem(url, "url");
+        }
+        public static void OpenFile(string file)
+        {
+            OpenItem(file, "file");
+        }
+
+        public static void OpenItem(string item, string type)
+        {
+            try
+            {
+                if (Configuration.IsRunningOnWindows || Configuration.IsRunningOnMac)
+                {
+                    System.Diagnostics.Process.Start(item);
+                }
+                else if (Configuration.IsRunningOnLinux)
+                {
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    process.EnableRaisingEvents = false;
+                    process.StartInfo.FileName = "xdg-open";
+                    process.StartInfo.Arguments = item;
+                    process.Start();
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"Cannot open {type}: {item}{Environment.NewLine}{Environment.NewLine}{exception.Source}: {exception.Message}", "Error opening URL", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
     }

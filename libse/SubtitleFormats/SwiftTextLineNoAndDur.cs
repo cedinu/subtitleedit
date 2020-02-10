@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -25,7 +26,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         public override bool IsMine(List<string> lines, string fileName)
         {
             if (lines != null && lines.Count > 2 && !string.IsNullOrEmpty(lines[0]) && lines[0].Contains("{QTtext}"))
+            {
                 return false;
+            }
 
             return base.IsMine(lines, fileName);
         }
@@ -77,7 +80,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             {
                 ReadLine(subtitle, line);
                 if (_text.Length > 1000)
+                {
                     return;
+                }
             }
             if (_text != null && _text.ToString().TrimStart().Length > 0)
             {
@@ -127,7 +132,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         private static bool TryReadTimeCodesLine(string line, Paragraph paragraph)
         {
             line = line.Trim();
-            if (RegexTimeCodes.IsMatch(line))
+            if (line.Length > 20 && line.StartsWith("SUBTITLE:", StringComparison.Ordinal) && RegexTimeCodes.IsMatch(line))
             {
                 //SUBTITLE: 1   TIMEIN: 00:00:07:01 DURATION: 03:11 TIMEOUT: 00:00:10:12
                 string s = line.Replace("SUBTITLE:", string.Empty).Replace("TIMEIN", string.Empty).Replace("DURATION", string.Empty).Replace("TIMEOUT", string.Empty).RemoveChar(' ').Replace("\t", string.Empty);
@@ -141,16 +146,27 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
                     int endHours = 0;
                     if (parts[5 + 2] != "--")
+                    {
                         endHours = int.Parse(parts[5 + 2]);
+                    }
+
                     int endMinutes = 0;
                     if (parts[6 + 2] != "--")
+                    {
                         endMinutes = int.Parse(parts[6 + 2]);
+                    }
+
                     int endSeconds = 0;
                     if (parts[7 + 2] != "--")
+                    {
                         endSeconds = int.Parse(parts[7 + 2]);
+                    }
+
                     int endMilliseconds = 0;
                     if (parts[8 + 2] != "--")
+                    {
                         endMilliseconds = FramesToMillisecondsMax999(int.Parse(parts[8 + 2]));
+                    }
 
                     paragraph.StartTime = new TimeCode(startHours, startMinutes, startSeconds, startMilliseconds);
                     paragraph.EndTime = new TimeCode(endHours, endMinutes, endSeconds, endMilliseconds);

@@ -17,8 +17,6 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public override string Name => "Unknown 65";
 
-        public override bool IsTimeBased => true;
-
         public override string ToText(Subtitle subtitle, string title)
         {
             const string paragraphWriteFormat = "{0:00}:{1:00}:{2:00},{3:00}:{4:00}:{5:00}{6}{7}";
@@ -67,7 +65,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             subtitle.Paragraphs.Clear();
             foreach (string line in lines)
             {
-                if (regexTimeCodes.IsMatch(line))
+                if (line.Length == 17 && regexTimeCodes.IsMatch(line))
                 {
                     string[] parts = line.Split(new[] { ':', ',', '.', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length == 6)

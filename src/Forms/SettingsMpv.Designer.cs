@@ -40,7 +40,6 @@
             // 
             // buttonDownload
             // 
-           
             this.buttonDownload.Location = new System.Drawing.Point(12, 24);
             this.buttonDownload.Name = "buttonDownload";
             this.buttonDownload.Size = new System.Drawing.Size(186, 23);
@@ -48,8 +47,6 @@
             this.buttonDownload.Text = "Download mpv dll";
             this.buttonDownload.UseVisualStyleBackColor = true;
             this.buttonDownload.Click += new System.EventHandler(this.ButtonDownloadClick);
-            
-            
             // 
             // comboBoxVideoOutput
             // 
@@ -60,7 +57,6 @@
             "sdl",
             "vaapi",
             "vdpau"});
-            
             this.comboBoxVideoOutput.Location = new System.Drawing.Point(12, 109);
             this.comboBoxVideoOutput.Name = "comboBoxVideoOutput";
             this.comboBoxVideoOutput.Size = new System.Drawing.Size(186, 21);
@@ -79,9 +75,9 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonOK.Location = new System.Drawing.Point(126, 165);
+            this.buttonOK.Location = new System.Drawing.Point(129, 163);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 4;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -92,9 +88,9 @@
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonCancel.Location = new System.Drawing.Point(210, 165);
+            this.buttonCancel.Location = new System.Drawing.Point(210, 163);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 5;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -129,6 +125,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings for mpv";
+            this.Load += new System.EventHandler(this.SettingsMpv_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

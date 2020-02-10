@@ -46,9 +46,11 @@ SRPSKI
                     lines = Utilities.AutoBreakLine(p.Text).SplitToLines();
                 }
                 firstLine = lines[0];
-                
+
                 if (lines.Count > 1)
+                {
                     secondLine = lines[1];
+                }
 
                 sb.AppendLine(string.Format(" {0}          {1} " + Environment.NewLine +
                                             "1    0    0    0    0    0" + Environment.NewLine +
@@ -68,10 +70,12 @@ SRPSKI
             foreach (string line in lines)
             {
                 string s = line.Trim();
-                if (RegexTimeCodes.IsMatch(s))
+                if (s.Length > 2 && char.IsDigit(s[0]) && RegexTimeCodes.IsMatch(s))
                 {
                     if (!string.IsNullOrEmpty(paragraph.Text))
+                    {
                         subtitle.Paragraphs.Add(paragraph);
+                    }
 
                     paragraph = new Paragraph();
                     string[] parts = s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -89,7 +93,7 @@ SRPSKI
                         }
                     }
                 }
-                else if (RegexBeforeText.IsMatch(s))
+                else if (s.Length > 2 && char.IsDigit(s[0]) && RegexBeforeText.IsMatch(s))
                 {
                     expecting = ExpectingLine.Text;
                 }
@@ -100,15 +104,22 @@ SRPSKI
                         if (s.Length > 0)
                         {
                             if (!string.IsNullOrEmpty(paragraph.Text))
+                            {
                                 paragraph.Text += Environment.NewLine + s;
+                            }
                             else
+                            {
                                 paragraph.Text = s;
+                            }
                         }
                     }
                 }
             }
             if (!string.IsNullOrEmpty(paragraph.Text))
+            {
                 subtitle.Paragraphs.Add(paragraph);
+            }
+
             subtitle.Renumber();
         }
     }

@@ -10,12 +10,11 @@ namespace Nikse.SubtitleEdit.Core
     /// </summary>
     public static class HtmlUtil
     {
-        public const string TagItalic = "i";
-        public const string TagBold = "b";
-        public const string TagUnderline = "u";
-        public const string TagParagraph = "p";
-        public const string TagFont = "font";
-        public const string TagCyrillicI = "\u0456"; // Cyrillic Small Letter Byelorussian-Ukrainian i (http://graphemica.com/%D1%96)
+        public static string TagItalic => "i";
+        public static string TagBold => "b";
+        public static string TagUnderline => "u";
+        public static string TagFont => "font";
+        public static string TagCyrillicI => "\u0456"; // Cyrillic Small Letter Byelorussian-Ukrainian i (http://graphemica.com/%D1%96)
 
         private static readonly Regex TagOpenRegex = new Regex(@"<\s*(?:/\s*)?(\w+)[^>]*>", RegexOptions.Compiled);
 
@@ -28,7 +27,9 @@ namespace Nikse.SubtitleEdit.Core
         public static string RemoveOpenCloseTags(string source, params string[] tags)
         {
             if (string.IsNullOrEmpty(source) || source.IndexOf('<') < 0)
+            {
                 return source;
+            }
 
             // This pattern matches these tag formats:
             // <tag*>
@@ -37,9 +38,7 @@ namespace Nikse.SubtitleEdit.Core
             // < /tag*>
             // </ tag*>
             // < / tag*>
-            return TagOpenRegex.Replace(
-                source,
-                m => tags.Contains(m.Groups[1].Value, StringComparer.OrdinalIgnoreCase) ? string.Empty : m.Value);
+            return TagOpenRegex.Replace(source, m => tags.Contains(m.Groups[1].Value, StringComparer.OrdinalIgnoreCase) ? string.Empty : m.Value);
         }
 
         /// <summary>
@@ -50,7 +49,9 @@ namespace Nikse.SubtitleEdit.Core
         public static string EncodeNamed(string source)
         {
             if (string.IsNullOrEmpty(source))
+            {
                 return string.Empty;
+            }
 
             var encoded = new StringBuilder(source.Length);
             foreach (var ch in source)
@@ -314,9 +315,13 @@ namespace Nikse.SubtitleEdit.Core
                         break;
                     default:
                         if (ch > 127)
+                        {
                             encoded.Append("&#" + (int)ch + ";");
+                        }
                         else
+                        {
                             encoded.Append(ch);
+                        }
                         break;
                 }
             }
@@ -331,7 +336,9 @@ namespace Nikse.SubtitleEdit.Core
         public static string EncodeNumeric(string source)
         {
             if (string.IsNullOrEmpty(source))
+            {
                 return string.Empty;
+            }
 
             var encoded = new StringBuilder(source.Length);
             foreach (var ch in source)
@@ -356,19 +363,33 @@ namespace Nikse.SubtitleEdit.Core
             return encoded.ToString();
         }
 
-        public static string RemoveHtmlTags(string s, bool alsoSsaTags = false)
+        public static string RemoveHtmlTags(string input, bool alsoSsaTags = false)
         {
-            if (s == null || s.Length < 3)
-                return s;
+            if (input == null || input.Length < 3)
+            {
+                return input;
+            }
 
+            var s = input;
             if (alsoSsaTags)
+            {
                 s = Utilities.RemoveSsaTags(s);
+            }
 
             if (!s.Contains('<'))
+            {
                 return s;
+            }
 
             if (s.Contains("< "))
+            {
                 s = FixInvalidItalicTags(s);
+            }
+
+            if (s.IndexOf('x') > 0)
+            {
+                s = s.Replace("<box>", string.Empty).Replace("</box>", string.Empty);
+            }
 
             return RemoveCommonHtmlTags(s);
         }
@@ -393,8 +414,11 @@ namespace Nikse.SubtitleEdit.Core
                     var nextNext = s[i + 2];
                     if (nextNext == '>' &&
                         (next == 'i' || // <i>
+                         next == 'I' || // <I>
                          next == 'b' || // <b>
-                         next == 'u')) // <u>
+                         next == 'B' || // <B>
+                         next == 'u' || // <u>
+                         next == 'U'))  // <U>
                     {
                         inside = true;
                         continue;
@@ -404,8 +428,11 @@ namespace Nikse.SubtitleEdit.Core
                         var nextNextNext = s[i + 3];
                         if (nextNextNext == '>' &&
                             (nextNext == 'i' || // </i>
+                             nextNext == 'I' || // </I>
                              nextNext == 'b' || // </b>
-                             nextNext == 'u')) // </u>
+                             nextNext == 'B' || // </B>
+                             nextNext == 'u' || // </u>
+                             nextNext == 'U'))  // </U>
                         {
                             inside = true;
                             continue;
@@ -416,15 +443,18 @@ namespace Nikse.SubtitleEdit.Core
                         var nextNextNext = s[i + 3];
                         if (nextNextNext == '>' &&
                             (next == 'i' || // <i/>
+                             next == 'I' || // <I/>
                              next == 'b' || // <b/>
-                             next == 'u')) // <u/>
+                             next == 'B' || // <B/>
+                             next == 'u' || // <u/>
+                             next == 'U'))  // <U/>
                         {
                             inside = true;
                             continue;
                         }
                     }
-                    if (next == 'f' && s.Substring(i).StartsWith("<font", StringComparison.OrdinalIgnoreCase) || // <font
-                        next == '/' && nextNext == 'f' && s.Substring(i).StartsWith("</font>", StringComparison.OrdinalIgnoreCase))  // </font>
+                    if ((next == 'f' || next == 'F') && s.Substring(i).StartsWith("<font", StringComparison.OrdinalIgnoreCase) || // <font
+                        next == '/' && (nextNext == 'f' || nextNext == 'F') && s.Substring(i).StartsWith("</font>", StringComparison.OrdinalIgnoreCase))  // </font>
                     {
                         inside = true;
                         continue;
@@ -447,16 +477,22 @@ namespace Nikse.SubtitleEdit.Core
         public static bool IsUrl(string text)
         {
             if (string.IsNullOrWhiteSpace(text) || text.Length < 6 || !text.Contains('.') || text.Contains(' '))
+            {
                 return false;
+            }
 
-            var allLower = text.ToLower();
+            var allLower = text.ToLowerInvariant();
             if (allLower.StartsWith("http://", StringComparison.Ordinal) || allLower.StartsWith("https://", StringComparison.Ordinal) ||
                 allLower.StartsWith("www.", StringComparison.Ordinal) || allLower.EndsWith(".org", StringComparison.Ordinal) ||
                 allLower.EndsWith(".com", StringComparison.Ordinal) || allLower.EndsWith(".net", StringComparison.Ordinal))
+            {
                 return true;
+            }
 
             if (allLower.Contains(".org/") || allLower.Contains(".com/") || allLower.Contains(".net/"))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -464,27 +500,38 @@ namespace Nikse.SubtitleEdit.Core
         public static bool StartsWithUrl(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return false;
+            }
 
             var arr = text.Trim().TrimEnd('.').TrimEnd().Split();
             if (arr.Length == 0)
+            {
                 return false;
+            }
 
             return IsUrl(arr[0]);
         }
 
         private static readonly string[] UppercaseTags = { "<I>", "<U>", "<B>", "<FONT", "</I>", "</U>", "</B>", "</FONT>" };
 
-        public static string FixUpperTags(string text)
+        public static string FixUpperTags(string input)
         {
-            if (string.IsNullOrEmpty(text) || !text.Contains('<'))
-                return text;
+            if (string.IsNullOrEmpty(input) || !input.Contains('<'))
+            {
+                return input;
+            }
+
+            var text = input;
             var idx = text.IndexOfAny(UppercaseTags, StringComparison.Ordinal);
             while (idx >= 0)
             {
                 var endIdx = text.IndexOf('>', idx + 2);
                 if (endIdx < idx)
+                {
                     break;
+                }
+
                 var tag = text.Substring(idx, endIdx - idx).ToLowerInvariant();
                 text = text.Remove(idx, endIdx - idx).Insert(idx, tag);
                 idx = text.IndexOfAny(UppercaseTags, StringComparison.Ordinal);
@@ -492,15 +539,16 @@ namespace Nikse.SubtitleEdit.Core
             return text;
         }
 
-        public static string FixInvalidItalicTags(string text)
+        public static string FixInvalidItalicTags(string input)
         {
+            var text = input;
+
             const string beginTag = "<i>";
             const string endTag = "</i>";
 
             text = text.Replace("< i >", beginTag);
             text = text.Replace("< i>", beginTag);
             text = text.Replace("<i >", beginTag);
-            text = text.Replace("<I>", beginTag);
             text = text.Replace("< I >", beginTag);
             text = text.Replace("< I>", beginTag);
             text = text.Replace("<I >", beginTag);
@@ -520,6 +568,9 @@ namespace Nikse.SubtitleEdit.Core
             text = text.Replace("</I >", endTag);
             text = text.Replace("</ I >", endTag);
             text = text.Replace("< / I>", endTag);
+
+            text = text.Replace("<I>", beginTag);
+            text = text.Replace("</I>", endTag);
 
             text = text.Replace("</i> <i>", "_@_");
             text = text.Replace(" _@_", "_@_");
@@ -559,9 +610,13 @@ namespace Nikse.SubtitleEdit.Core
                     int lastIndex = text.LastIndexOf(beginTag, StringComparison.Ordinal);
                     int lastIndexWithNewLine = text.LastIndexOf(Environment.NewLine + beginTag, StringComparison.Ordinal) + Environment.NewLine.Length;
                     if (noOfLines == 2 && lastIndex == lastIndexWithNewLine && firstIndex < 2)
+                    {
                         text = text.Replace(Environment.NewLine, endTag + Environment.NewLine) + endTag;
+                    }
                     else
+                    {
                         text = text.Remove(lastIndex, beginTag.Length).Insert(lastIndex, endTag);
+                    }
                 }
 
                 if (italicBeginTagCount == 1 && italicEndTagCount == 2)
@@ -571,11 +626,17 @@ namespace Nikse.SubtitleEdit.Core
                         text.StartsWith("</i>- <i>-", StringComparison.Ordinal) ||
                         text.StartsWith("</i>- <i> -", StringComparison.Ordinal) ||
                         text.StartsWith("</i>-<i> -", StringComparison.Ordinal))
+                    {
                         text = text.Remove(0, 5);
+                    }
                     else if (firstIndex == 0)
+                    {
                         text = text.Remove(0, 4);
+                    }
                     else
+                    {
                         text = text.Substring(0, firstIndex) + text.Substring(firstIndex + endTag.Length);
+                    }
                 }
 
                 if (italicBeginTagCount == 2 && italicEndTagCount == 1)
@@ -590,9 +651,13 @@ namespace Nikse.SubtitleEdit.Core
                     {
                         int lastIndex = text.LastIndexOf(beginTag, StringComparison.Ordinal);
                         if (text.Length > lastIndex + endTag.Length)
+                        {
                             text = text.Substring(0, lastIndex) + text.Substring(lastIndex - 1 + endTag.Length);
+                        }
                         else
+                        {
                             text = text.Substring(0, lastIndex - 1) + endTag;
+                        }
                     }
                     if (text.StartsWith(beginTag, StringComparison.Ordinal) && text.EndsWith(endTag, StringComparison.Ordinal) && text.Contains(endTag + Environment.NewLine + beginTag))
                     {
@@ -606,11 +671,17 @@ namespace Nikse.SubtitleEdit.Core
                     int lastIndex = text.LastIndexOf(beginTag, StringComparison.Ordinal);
 
                     if (text.StartsWith(beginTag, StringComparison.Ordinal))
+                    {
                         text += endTag;
+                    }
                     else if (noOfLines == 2 && lastIndex == lastIndexWithNewLine)
+                    {
                         text += endTag;
+                    }
                     else
+                    {
                         text = text.Replace(beginTag, string.Empty);
+                    }
                 }
 
                 if (italicBeginTagCount == 0 && italicEndTagCount == 1)
@@ -648,7 +719,9 @@ namespace Nikse.SubtitleEdit.Core
                         }
                     }
                     if (!isFixed)
+                    {
                         text = text.Replace(endTag, string.Empty);
+                    }
                 }
 
                 // - foo.</i>
@@ -716,7 +789,10 @@ namespace Nikse.SubtitleEdit.Core
                                 text = text.Remove(0, idx + 1);
                                 text = FixInvalidItalicTags(text).Trim();
                                 if (text.StartsWith("<i> ", StringComparison.OrdinalIgnoreCase))
+                                {
                                     text = Utilities.RemoveSpaceBeforeAfterTag(text, beginTag);
+                                }
+
                                 text = pre + " " + text;
                             }
                         }
@@ -750,9 +826,14 @@ namespace Nikse.SubtitleEdit.Core
                         foreach (var line in lines)
                         {
                             if (line.StartsWith(beginTag, StringComparison.Ordinal))
+                            {
                                 numberOfItalics++;
+                            }
+
                             if (line.EndsWith(endTag, StringComparison.Ordinal))
+                            {
                                 numberOfItalics++;
+                            }
                         }
                         if (numberOfItalics == 5)
                         { // fix missing tag
@@ -768,15 +849,16 @@ namespace Nikse.SubtitleEdit.Core
             return text;
         }
 
-        public static string ToggleTag(string text, string tag)
+        public static string ToggleTag(string input, string tag)
         {
+            var text = input;
             if (text.IndexOf("<" + tag + ">", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 text.IndexOf("</" + tag + ">", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 text = text.Replace("<" + tag + ">", string.Empty);
                 text = text.Replace("</" + tag + ">", string.Empty);
-                text = text.Replace("<" + tag.ToUpper() + ">", string.Empty);
-                text = text.Replace("</" + tag.ToUpper() + ">", string.Empty);
+                text = text.Replace("<" + tag.ToUpperInvariant() + ">", string.Empty);
+                text = text.Replace("</" + tag.ToUpperInvariant() + ">", string.Empty);
             }
             else
             {

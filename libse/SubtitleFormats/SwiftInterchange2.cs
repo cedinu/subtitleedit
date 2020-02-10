@@ -17,13 +17,15 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         public override bool IsMine(List<string> lines, string fileName)
         {
             if (lines.Count > 0 && lines[0] != null && lines[0].StartsWith("{\\rtf1"))
+            {
                 return false;
+            }
 
             _fileName = fileName;
             return base.IsMine(lines, fileName);
         }
 
-        private string GetOriginatingSwift(Subtitle subtitle)
+        private static string GetOriginatingSwift(Subtitle subtitle)
         {
             string lang = "English (USA)";
             string languageCode = LanguageAutoDetect.AutoDetectGoogleLanguage(subtitle);
@@ -70,7 +72,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public override string ToText(Subtitle subtitle, string title)
         {
-            string date = string.Format("{0:00}/{1:00}/{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            string date = $"{DateTime.Now.Day:00}/{DateTime.Now.Month:00}/{DateTime.Now.Year}";
             const string header = @"# SWIFT INTERCHANGE FILE V2
 # DO NOT EDIT LINES BEGINNING WITH '#' SIGN
 # Originating Swift: [ORIGINATING_SWIFT]
@@ -95,13 +97,13 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 # DURATION {1} AUTO
 # TIMEOUT {2}
 # START ROW BOTTOM
-# ALIGN CENTRE JUSTIFY LEFT";
+# ALIGN CENTRE JUSTIFY CENTER";
             int count = 1;
             foreach (Paragraph p in subtitle.Paragraphs)
             {
-                string startTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", p.StartTime.Hours, p.StartTime.Minutes, p.StartTime.Seconds, MillisecondsToFramesMaxFrameRate(p.StartTime.Milliseconds));
-                string endTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, MillisecondsToFramesMaxFrameRate(p.EndTime.Milliseconds));
-                string duration = string.Format("{0:00}:{1:00}", p.Duration.Seconds, MillisecondsToFramesMaxFrameRate(p.Duration.Milliseconds));
+                string startTime = $"{p.StartTime.Hours:00}:{p.StartTime.Minutes:00}:{p.StartTime.Seconds:00}:{MillisecondsToFramesMaxFrameRate(p.StartTime.Milliseconds):00}";
+                string endTime = $"{p.EndTime.Hours:00}:{p.EndTime.Minutes:00}:{p.EndTime.Seconds:00}:{MillisecondsToFramesMaxFrameRate(p.EndTime.Milliseconds):00}";
+                string duration = $"{p.Duration.Seconds:00}:{MillisecondsToFramesMaxFrameRate(p.Duration.Milliseconds):00}";
                 sb.AppendLine(string.Format(paragraphWriteFormat, startTime, duration, endTime, count));
                 string text = HtmlUtil.RemoveHtmlTags(p.Text);
                 if (p.Text.StartsWith("<i>", StringComparison.Ordinal) && p.Text.EndsWith("</i>", StringComparison.Ordinal))
@@ -136,27 +138,30 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 if (line.StartsWith("# SUBTITLE", StringComparison.Ordinal))
                 {
                     if (p != null)
+                    {
                         subtitle.Paragraphs.Add(p);
+                    }
+
                     p = new Paragraph();
                 }
                 else if (p != null && line.StartsWith("# TIMEIN", StringComparison.Ordinal))
                 {
                     string timeCode = line.Remove(0, 8).Trim();
                     if (timeCode != "--:--:--:--" && !GetTimeCode(p.StartTime, timeCode))
+                    {
                         _errorCount++;
+                    }
                 }
                 else if (p != null && line.StartsWith("# DURATION", StringComparison.Ordinal))
                 {
                     // # DURATION 01:17 AUTO
-                    string timecode = line.Remove(0, 10).Replace("AUTO", string.Empty).Trim();
-                    if (timecode != "--:--")
+                    string timeCode = line.Remove(0, 10).Replace("AUTO", string.Empty).Trim();
+                    if (timeCode != "--:--")
                     {
-                        var arr = timecode.Split(new[] { ':', ' ' });
+                        var arr = timeCode.Split(':', ' ');
                         if (arr.Length > 1)
                         {
-                            int sec;
-                            int frame;
-                            if (int.TryParse(arr[0], out sec) && int.TryParse(arr[1], out frame))
+                            if (int.TryParse(arr[0], out var sec) && int.TryParse(arr[1], out var frame))
                             {
                                 p.EndTime.TotalMilliseconds = p.StartTime.TotalMilliseconds + FramesToMillisecondsMax999(frame);
                                 p.EndTime.TotalSeconds += sec;
@@ -168,7 +173,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     string timeCode = line.Remove(0, 9).Trim();
                     if (timeCode != "--:--:--:--" && !GetTimeCode(p.EndTime, timeCode))
+                    {
                         _errorCount++;
+                    }
                 }
                 else if (p != null && !line.StartsWith('#'))
                 {
@@ -181,7 +188,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
             }
             if (p != null)
+            {
                 subtitle.Paragraphs.Add(p);
+            }
+
             subtitle.RemoveEmptyLines();
             subtitle.Renumber();
 

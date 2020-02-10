@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -38,22 +37,30 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         {
             subtitle.Paragraphs.Clear();
             _errorCount = 0;
-            var paragraph = new Paragraph();
             for (int i = 0; i < lines.Count; i++)
             {
                 string line = lines[i].Trim();
-                Match match = null;
-                if (line.Length >= 4)
+
+                // too short line
+                if (line.Length < 4)
                 {
-                    match = RegexTimeCodes.Match(line);
+                    _errorCount++;
+                    continue;
                 }
-                if (match?.Success == true)
+
+                var match = RegexTimeCodes.Match(line);
+                if (match.Success)
                 {
                     try
                     {
-                        // Read frames.
-                        paragraph.StartFrame = int.Parse(match.Groups[1].Value);
-                        paragraph.EndFrame = int.Parse(match.Groups[2].Value);
+                        var startMs = (double)FramesToMilliseconds(int.Parse(match.Groups[1].Value));
+                        var endMs = (double)FramesToMilliseconds(int.Parse(match.Groups[2].Value));
+                        var paragraph = new Paragraph
+                        {
+                            Number = subtitle.Paragraphs.Count + 1,
+                            StartTime = new TimeCode(startMs),
+                            EndTime = new TimeCode(endMs)
+                        };
 
                         // Decode text.
                         line = line.Substring(match.Value.Length).Trim();
@@ -67,10 +74,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             line = line.Trim(TrimChars);
                         }
 
-                        paragraph.Number = i + 1;
                         paragraph.Text = string.Join(Environment.NewLine, line.Split('|'));
                         subtitle.Paragraphs.Add(paragraph);
-                        paragraph = new Paragraph();
                     }
                     catch
                     {
@@ -93,8 +98,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 string text = HtmlUtil.RemoveHtmlTags(p.Text, true);
                 // Pipe character for forced line breaks.
                 text = text.Replace(Environment.NewLine, "|");
-                sb.AppendFormat(writeFormat, MillisecondsToFrames(p.StartTime.TotalMilliseconds),
-                    MillisecondsToFrames(p.EndTime.TotalMilliseconds), text, Environment.NewLine);
+                sb.AppendFormat(writeFormat, MillisecondsToFrames(p.StartTime.TotalMilliseconds), MillisecondsToFrames(p.EndTime.TotalMilliseconds), text, Environment.NewLine);
             }
             return sb.ToString();
         }

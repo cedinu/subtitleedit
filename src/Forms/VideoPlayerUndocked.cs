@@ -63,7 +63,7 @@ namespace Nikse.SubtitleEdit.Forms
             }
             else if (e.Modifiers == Keys.Alt && e.KeyCode == Keys.Enter)
             {
-                if (WindowState == FormWindowState.Maximized)
+                if (IsFullscreen)
                 {
                     e.SuppressKeyPress = true;
                     NoFullscreen();
@@ -74,7 +74,7 @@ namespace Nikse.SubtitleEdit.Forms
                 }
                 e.SuppressKeyPress = true;
             }
-            else if (e.Modifiers == Keys.None && e.KeyCode == Keys.Escape && WindowState == FormWindowState.Maximized)
+            else if (e.Modifiers == Keys.None && e.KeyCode == Keys.Escape && IsFullscreen)
             {
                 e.SuppressKeyPress = true;
                 NoFullscreen();
@@ -90,12 +90,12 @@ namespace Nikse.SubtitleEdit.Forms
                     e.SuppressKeyPress = true;
                 }
             }
-            else if (e.KeyCode == Keys.Up && e.Modifiers == Keys.Alt && WindowState == FormWindowState.Maximized)
+            else if (e.KeyCode == Keys.Up && e.Modifiers == Keys.Alt && IsFullscreen)
             {
                 _mainForm.GotoPrevSubPosFromvideoPos();
                 e.Handled = true;
             }
-            else if (e.Modifiers == Keys.Alt && e.KeyCode == Keys.Down && WindowState == FormWindowState.Maximized)
+            else if (e.Modifiers == Keys.Alt && e.KeyCode == Keys.Down && IsFullscreen)
             {
                 _mainForm.GotoNextSubPosFromVideoPos();
                 e.Handled = true;
@@ -114,7 +114,10 @@ namespace Nikse.SubtitleEdit.Forms
         private void VideoPlayerUndocked_MouseMove(object sender, MouseEventArgs e)
         {
             if (timer1.Enabled)
+            {
                 timer1.Stop();
+            }
+
             _videoPlayerContainer.ShowControls();
             timer1.Start();
         }
@@ -122,14 +125,17 @@ namespace Nikse.SubtitleEdit.Forms
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
-            if (WindowState == FormWindowState.Maximized)
+            if (IsFullscreen)
             {
-                _videoPlayerContainer.HideControls();
+                var videoScreen = Screen.FromControl(_videoPlayerContainer);
+                var mainScreen = Screen.FromControl(_mainForm);
+                _videoPlayerContainer.HideControls(videoScreen.DeviceName == mainScreen.DeviceName);
             }
         }
 
         internal void GoFullscreen()
         {
+            IsFullscreen = true;
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             _videoPlayerContainer.FontSizeFactor = 1.5F;
@@ -139,10 +145,11 @@ namespace Nikse.SubtitleEdit.Forms
             timer1.Start();
         }
 
-        internal bool IsFullscreen => WindowState == FormWindowState.Maximized;
+        internal bool IsFullscreen { get; set; }
 
         internal void NoFullscreen()
         {
+            IsFullscreen = false;
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             WindowState = FormWindowState.Normal;
             _videoPlayerContainer.FontSizeFactor = 1.0F;
@@ -151,7 +158,9 @@ namespace Nikse.SubtitleEdit.Forms
             _videoPlayerContainer.ShowFullscreenButton = Configuration.Settings.General.VideoPlayerShowFullscreenButton;
             _videoPlayerContainer.ShowNonFullScreenControls();
             if (RedockOnFullscreenEnd)
+            {
                 Close();
+            }
         }
 
         private void VideoPlayerUndocked_Shown(object sender, EventArgs e)

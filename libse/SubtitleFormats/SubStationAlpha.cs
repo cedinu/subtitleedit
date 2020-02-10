@@ -70,7 +70,10 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 sb.AppendLine(subtitle.Header.Trim());
                 const string formatLine = "Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text";
                 if (!subtitle.Header.Contains(formatLine))
+                {
                     sb.AppendLine(formatLine);
+                }
+
                 styles = AdvancedSubStationAlpha.GetStylesFromHeader(subtitle.Header);
             }
             else if (!string.IsNullOrEmpty(subtitle.Header) && subtitle.Header.Contains("[V4+ Styles]"))
@@ -88,7 +91,10 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 var ssa = Configuration.Settings.SubtitleSettings;
                 string boldStyle = "0"; // 0=regular
                 if (ssa.SsaFontBold)
+                {
                     boldStyle = "-1"; // -1 = true, 0 is false
+                }
+
                 sb.AppendLine(string.Format(header,
                                             title,
                                             ssa.SsaFontName,
@@ -110,32 +116,54 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
                 string actor = "NTP";
                 if (!string.IsNullOrEmpty(p.Actor))
+                {
                     actor = p.Actor;
+                }
 
                 string marginL = "0000";
                 if (!string.IsNullOrEmpty(p.MarginL) && Utilities.IsInteger(p.MarginL))
+                {
                     marginL = p.MarginL.PadLeft(4, '0');
+                }
+
                 string marginR = "0000";
                 if (!string.IsNullOrEmpty(p.MarginR) && Utilities.IsInteger(p.MarginR))
+                {
                     marginR = p.MarginR.PadLeft(4, '0');
+                }
+
                 string marginV = "0000";
                 if (!string.IsNullOrEmpty(p.MarginV) && Utilities.IsInteger(p.MarginV))
+                {
                     marginV = p.MarginV.PadLeft(4, '0');
+                }
 
                 string effect = "";
                 if (!string.IsNullOrEmpty(p.Effect))
+                {
                     effect = p.Effect;
+                }
 
                 if (!string.IsNullOrEmpty(p.Extra) && isValidAssHeader && styles.Contains(p.Extra))
+                {
                     style = p.Extra;
+                }
+
                 if (style == "Default")
+                {
                     style = "*Default";
+                }
+
                 if (p.IsComment)
+                {
                     sb.AppendLine(string.Format(commentWriteFormat, start, end, AdvancedSubStationAlpha.FormatText(p), style, p.Layer, actor, marginL, marginR, marginV, effect));
+                }
                 else
+                {
                     sb.AppendLine(string.Format(paragraphWriteFormat, start, end, AdvancedSubStationAlpha.FormatText(p), style, p.Layer, actor, marginL, marginR, marginV, effect));
+                }
             }
-            return sb.ToString().Trim();
+            return sb.ToString().Trim() + Environment.NewLine;
         }
 
         private static void LoadStylesFromAdvancedSubstationAlpha(Subtitle subtitle, string title, string header, string headerNoStyles, StringBuilder sb)
@@ -149,13 +177,18 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     try
                     {
                         var ssaStyle = AdvancedSubStationAlpha.GetSsaStyle(styleName, subtitle.Header);
-                        
+
                         string bold = "0";
                         if (ssaStyle.Bold)
+                        {
                             bold = "-1";
+                        }
+
                         string italic = "0";
                         if (ssaStyle.Italic)
+                        {
                             italic = "-1";
+                        }
 
                         string newAlignment = "2";
                         switch (ssaStyle.Alignment)
@@ -194,7 +227,7 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                                             ssaStyle.Outline.ToArgb(), ssaStyle.Background.ToArgb(), bold, italic, ssaStyle.BorderStyle, ssaStyle.OutlineWidth.ToString(CultureInfo.InvariantCulture), ssaStyle.ShadowWidth.ToString(CultureInfo.InvariantCulture),
                                             newAlignment, ssaStyle.MarginLeft, ssaStyle.MarginRight, ssaStyle.MarginVertical));
                         styleFound = true;
-                       
+
                     }
                     catch
                     {
@@ -238,29 +271,43 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 {
                     string name = null;
                     if (node.Attributes["xml:id"] != null)
+                    {
                         name = node.Attributes["xml:id"].Value;
+                    }
                     else if (node.Attributes["id"] != null)
+                    {
                         name = node.Attributes["id"].Value;
+                    }
+
                     if (name != null)
                     {
                         stylexmlCount++;
 
                         string fontFamily = "Arial";
                         if (node.Attributes["tts:fontFamily"] != null)
+                        {
                             fontFamily = node.Attributes["tts:fontFamily"].Value;
+                        }
 
                         string fontWeight = "normal";
                         if (node.Attributes["tts:fontWeight"] != null)
+                        {
                             fontWeight = node.Attributes["tts:fontWeight"].Value;
+                        }
 
                         string fontStyle = "normal";
                         if (node.Attributes["tts:fontStyle"] != null)
+                        {
                             fontStyle = node.Attributes["tts:fontStyle"].Value;
+                        }
 
                         string color = "#ffffff";
                         if (node.Attributes["tts:color"] != null)
+                        {
                             color = node.Attributes["tts:color"].Value.Trim();
-                        var c = Color.White;
+                        }
+
+                        Color c;
                         try
                         {
                             if (color.StartsWith("rgb(", StringComparison.Ordinal))
@@ -275,14 +322,19 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         }
                         catch
                         {
+                            c = Color.White;
                         }
 
                         string fontSize = "20";
                         if (node.Attributes["tts:fontSize"] != null)
+                        {
                             fontSize = node.Attributes["tts:fontSize"].Value.Replace("px", string.Empty).Replace("em", string.Empty);
-                        int fSize;
-                        if (!int.TryParse(fontSize, out fSize))
+                        }
+
+                        if (!int.TryParse(fontSize, out var fSize))
+                        {
                             fSize = 20;
+                        }
 
                         const string styleFormat = "Style: {0},{1},{2},{3},65535,65535,-2147483640,-1,0,1,3,0,2,10,10,10,0,1";
 
@@ -327,13 +379,16 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             int lineNumber = 0;
 
             var header = new StringBuilder();
-            foreach (string line in lines)
+            for (int i1 = 0; i1 < lines.Count; i1++)
             {
+                string line = lines[i1];
                 lineNumber++;
                 if (!eventsStarted)
+                {
                     header.AppendLine(line);
+                }
 
-                 if (!string.IsNullOrEmpty(line) && line.TrimStart().StartsWith(';'))
+                if (!string.IsNullOrEmpty(line) && line.TrimStart().StartsWith(';'))
                 {
                     // skip comment lines
                 }
@@ -343,7 +398,7 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 }
                 else if (eventsStarted && !string.IsNullOrWhiteSpace(line))
                 {
-                    string s = line.Trim().ToLower();
+                    string s = line.Trim().ToLowerInvariant();
                     if (line.Length > 10 && s.StartsWith("format:", StringComparison.Ordinal))
                     {
                         var format = s.Substring(8).Split(',');
@@ -351,23 +406,41 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         {
                             var formatTrimmed = format[i].Trim();
                             if (formatTrimmed.Equals("layer", StringComparison.Ordinal))
+                            {
                                 indexLayer = i;
+                            }
                             else if (formatTrimmed.Equals("start", StringComparison.Ordinal))
+                            {
                                 indexStart = i;
+                            }
                             else if (formatTrimmed.Equals("end", StringComparison.Ordinal))
+                            {
                                 indexEnd = i;
+                            }
                             else if (formatTrimmed.Equals("text", StringComparison.Ordinal))
+                            {
                                 indexText = i;
+                            }
                             else if (formatTrimmed.Equals("effect", StringComparison.Ordinal))
+                            {
                                 indexEffect = i;
+                            }
                             else if (formatTrimmed.Equals("style", StringComparison.Ordinal))
+                            {
                                 indexStyle = i;
+                            }
                             else if (formatTrimmed.Equals("marginl", StringComparison.Ordinal))
+                            {
                                 indexMarginL = i;
+                            }
                             else if (formatTrimmed.Equals("marginr", StringComparison.Ordinal))
+                            {
                                 indexMarginR = i;
+                            }
                             else if (formatTrimmed.Equals("marginv", StringComparison.Ordinal))
+                            {
                                 indexMarginV = i;
+                            }
                         }
                     }
                     else if (!string.IsNullOrEmpty(s))
@@ -385,36 +458,64 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
                         string[] splittedLine;
                         if (s.StartsWith("dialog:", StringComparison.Ordinal))
+                        {
                             splittedLine = line.Remove(0, 7).Split(',');
+                        }
                         else if (s.StartsWith("dialogue:", StringComparison.Ordinal))
+                        {
                             splittedLine = line.Remove(0, 9).Split(',');
+                        }
                         else
+                        {
                             splittedLine = line.Split(',');
+                        }
 
                         for (int i = 0; i < splittedLine.Length; i++)
                         {
                             if (i == indexStart)
+                            {
                                 start = splittedLine[i].Trim();
+                            }
                             else if (i == indexEnd)
+                            {
                                 end = splittedLine[i].Trim();
+                            }
                             else if (i == indexLayer)
+                            {
                                 int.TryParse(splittedLine[i], out layer);
+                            }
                             else if (i == indexEffect)
+                            {
                                 effect = splittedLine[i];
+                            }
                             else if (i == indexText)
+                            {
                                 text = splittedLine[i];
+                            }
                             else if (i == indexStyle)
+                            {
                                 style = splittedLine[i];
+                            }
                             else if (i == indexMarginL)
+                            {
                                 marginL = splittedLine[i].Trim();
+                            }
                             else if (i == indexMarginR)
+                            {
                                 marginR = splittedLine[i].Trim();
+                            }
                             else if (i == indexMarginV)
+                            {
                                 marginV = splittedLine[i].Trim();
+                            }
                             else if (i == indexName)
+                            {
                                 name = splittedLine[i];
+                            }
                             else if (i > indexText)
+                            {
                                 text += "," + splittedLine[i];
+                            }
                         }
 
                         try
@@ -427,18 +528,36 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                             };
 
                             if (!string.IsNullOrEmpty(style))
+                            {
                                 p.Extra = style;
+                            }
+
                             if (!string.IsNullOrEmpty(marginL))
+                            {
                                 p.MarginL = marginL;
+                            }
+
                             if (!string.IsNullOrEmpty(marginR))
+                            {
                                 p.MarginR = marginR;
+                            }
+
                             if (!string.IsNullOrEmpty(marginV))
+                            {
                                 p.MarginV = marginV;
+                            }
+
                             if (!string.IsNullOrEmpty(effect))
+                            {
                                 p.Effect = effect;
+                            }
+
                             p.Layer = layer;
                             if (!string.IsNullOrEmpty(name))
+                            {
                                 p.Actor = name;
+                            }
+
                             p.IsComment = s.StartsWith("comment:", StringComparison.Ordinal);
                             subtitle.Paragraphs.Add(p);
                         }
@@ -446,13 +565,22 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         {
                             _errorCount++;
                             if (errors.Length < 2000)
+                            {
                                 errors.AppendLine(string.Format(Configuration.Settings.Language.Main.LineNumberXErrorReadingTimeCodeFromSourceLineY, lineNumber, line));
+                            }
+                            else if (subtitle.Paragraphs.Count == 0)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
             }
             if (header.Length > 0)
+            {
                 subtitle.Header = header.ToString();
+            }
+
             subtitle.Renumber();
             Errors = errors.ToString();
         }

@@ -8,9 +8,9 @@ namespace Nikse.SubtitleEdit.Core.Forms
     public class InterjectionRemoveContext
     {
         /// <summary>
-        /// True if interjection should be removed only if exists in separeted line otherwise false.
+        /// True if interjection should be removed only if exists in separated line otherwise false.
         /// </summary>
-        public bool OnlySeparetedLines { get; set; }
+        public bool OnlySeparatedLines { get; set; }
 
         /// <summary>
         /// The check list that will be used to check interjections.
@@ -107,6 +107,10 @@ namespace Nikse.SubtitleEdit.Core.Forms
                             {
                                 temp = temp.Remove(index - 2, 1).Replace("  ", " ");
                             }
+                            else if (index > 3 && temp.Length == index + 1 && ".!?".Contains(temp[index - 2]) && temp[index - 1] == ' ' && ".!?".Contains(temp[index]))
+                            {
+                                temp = temp.Remove(index, 1).TrimEnd();
+                            }
 
                             string pre = string.Empty;
                             if (index > 0)
@@ -116,7 +120,17 @@ namespace Nikse.SubtitleEdit.Core.Forms
 
                             bool removeAfter = true;
 
-                            if (index > s.Length)
+                            if (index > 2 && temp.Length > index)
+                            {
+                                var ending = temp.Substring(index - 2, 3);
+                                if (ending == ", ." || ending == ", !" || ending == ", ?" || ending == ", …")
+                                {
+                                    temp = temp.Remove(index - 2, 2);
+                                    removeAfter = false;
+                                }
+                            }
+
+                            if (removeAfter && index > s.Length)
                             {
                                 if (temp.Length > index - s.Length + 3)
                                 {
@@ -243,7 +257,7 @@ namespace Nikse.SubtitleEdit.Core.Forms
                                     }
                                 }
 
-                                if (temp.Length > 0 && s[0].ToString(CultureInfo.InvariantCulture) != s[0].ToString(CultureInfo.InvariantCulture).ToLower())
+                                if (temp.Length > 0 && s[0].ToString(CultureInfo.InvariantCulture) != s[0].ToString(CultureInfo.InvariantCulture).ToLowerInvariant())
                                 {
                                     temp = char.ToUpper(temp[0]) + temp.Substring(1);
                                     doRepeat = true;
@@ -422,7 +436,7 @@ namespace Nikse.SubtitleEdit.Core.Forms
 
                 text = text.Replace(Environment.NewLine + "</i>" + Environment.NewLine, "</i>" + Environment.NewLine);
 
-                if (context.OnlySeparetedLines)
+                if (context.OnlySeparatedLines)
                 {
                     if (string.IsNullOrEmpty(text))
                     {
@@ -438,6 +452,14 @@ namespace Nikse.SubtitleEdit.Core.Forms
                     }
 
                     return oldText;
+                }
+            }
+
+            if (!oldText.Contains("  "))
+            {
+                while (text.Contains("  "))
+                {
+                    text = text.Replace("  ", " ");
                 }
             }
 

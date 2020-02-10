@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -25,7 +26,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         public override bool IsMine(List<string> lines, string fileName)
         {
             if (lines == null || lines.Count > 2 && !string.IsNullOrEmpty(lines[0]) && lines[0].Contains("{QTtext}"))
+            {
                 return false;
+            }
 
             return base.IsMine(lines, fileName);
         }
@@ -47,7 +50,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
             var sb = new StringBuilder();
             int count = 1;
-            foreach (Paragraph p in subtitle.Paragraphs)
+            foreach (var p in subtitle.Paragraphs)
             {
                 string startTime = $"{p.StartTime.Hours:00}:{p.StartTime.Minutes:00}:{p.StartTime.Seconds:00}:{MillisecondsToFramesMaxFrameRate(p.StartTime.Milliseconds):00}";
                 string timeOut = $"{p.EndTime.Hours:00}:{p.EndTime.Minutes:00}:{p.EndTime.Seconds:00}:{MillisecondsToFramesMaxFrameRate(p.EndTime.Milliseconds):00}";
@@ -68,7 +71,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             {
                 ReadLine(subtitle, line);
                 if (_text.Length > 1000)
+                {
                     return;
+                }
             }
             if (_text != null && _text.ToString().TrimStart().Length > 0)
             {
@@ -118,7 +123,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         private static bool TryReadTimeCodesLine(string line, Paragraph paragraph)
         {
             line = line.Trim();
-            if (RegexTimeCodes.IsMatch(line))
+            if (line.Length > 20 && line.StartsWith("SUBTITLE:", StringComparison.Ordinal) && RegexTimeCodes.IsMatch(line))
             {
                 //SUBTITLE: 59  TIMEIN: 00:04:28:06 TIMEOUT: 00:04:32:12
                 string s = line.Replace("SUBTITLE:", string.Empty).Replace("TIMEIN", string.Empty).Replace("TIMEOUT", string.Empty).RemoveChar(' ').Replace("\t", string.Empty);
@@ -132,16 +137,27 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
                     int endHours = 0;
                     if (parts[5] != "--")
+                    {
                         endHours = int.Parse(parts[5]);
+                    }
+
                     int endMinutes = 0;
                     if (parts[6] != "--")
+                    {
                         endMinutes = int.Parse(parts[6]);
+                    }
+
                     int endSeconds = 0;
                     if (parts[7] != "--")
+                    {
                         endSeconds = int.Parse(parts[7]);
+                    }
+
                     int endMilliseconds = 0;
                     if (parts[8] != "--")
+                    {
                         endMilliseconds = FramesToMillisecondsMax999(int.Parse(parts[8]));
+                    }
 
                     paragraph.StartTime = new TimeCode(startHours, startMinutes, startSeconds, startMilliseconds);
                     paragraph.EndTime = new TimeCode(endHours, endMinutes, endSeconds, endMilliseconds);

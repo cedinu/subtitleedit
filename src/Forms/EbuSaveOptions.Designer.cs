@@ -29,12 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Nikse.SubtitleEdit.Core.TimeCode timeCode1 = new Nikse.SubtitleEdit.Core.TimeCode();
+            Nikse.SubtitleEdit.Core.TimeCode timeCode2 = new Nikse.SubtitleEdit.Core.TimeCode();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageHeader = new System.Windows.Forms.TabPage();
+            this.labelLanguageCodeFriendlyName = new System.Windows.Forms.Label();
+            this.buttonChooseLanguageCode = new System.Windows.Forms.Button();
             this.timeUpDownStartTime = new Nikse.SubtitleEdit.Controls.TimeUpDown();
             this.labelColorRequiresTeletext = new System.Windows.Forms.Label();
             this.labelFrameRate = new System.Windows.Forms.Label();
@@ -85,6 +87,7 @@
             this.labelOriginalProgramTitle = new System.Windows.Forms.Label();
             this.tabPageTextAndTiming = new System.Windows.Forms.TabPage();
             this.groupBoxVerticalPosition = new System.Windows.Forms.GroupBox();
+            this.labelUseBox = new System.Windows.Forms.Label();
             this.numericUpDownNewLineRows = new System.Windows.Forms.NumericUpDown();
             this.labelNewLineRows = new System.Windows.Forms.Label();
             this.labelMarginTop = new System.Windows.Forms.Label();
@@ -122,7 +125,7 @@
             this.buttonOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonOK.Location = new System.Drawing.Point(607, 510);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
             this.buttonOK.Text = "Save";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -135,7 +138,7 @@
             this.buttonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonCancel.Location = new System.Drawing.Point(688, 510);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -161,6 +164,8 @@
             // 
             // tabPageHeader
             // 
+            this.tabPageHeader.Controls.Add(this.labelLanguageCodeFriendlyName);
+            this.tabPageHeader.Controls.Add(this.buttonChooseLanguageCode);
             this.tabPageHeader.Controls.Add(this.timeUpDownStartTime);
             this.tabPageHeader.Controls.Add(this.labelColorRequiresTeletext);
             this.tabPageHeader.Controls.Add(this.labelFrameRate);
@@ -211,24 +216,46 @@
             this.tabPageHeader.Text = "General subtitle information";
             this.tabPageHeader.UseVisualStyleBackColor = true;
             // 
+            // labelLanguageCodeFriendlyName
+            // 
+            this.labelLanguageCodeFriendlyName.AutoSize = true;
+            this.labelLanguageCodeFriendlyName.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelLanguageCodeFriendlyName.Location = new System.Drawing.Point(440, 157);
+            this.labelLanguageCodeFriendlyName.Name = "labelLanguageCodeFriendlyName";
+            this.labelLanguageCodeFriendlyName.Size = new System.Drawing.Size(166, 13);
+            this.labelLanguageCodeFriendlyName.TabIndex = 73;
+            this.labelLanguageCodeFriendlyName.Text = "labelLanguageCodeFriendlyName";
+            // 
+            // buttonChooseLanguageCode
+            // 
+            this.buttonChooseLanguageCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonChooseLanguageCode.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.buttonChooseLanguageCode.Location = new System.Drawing.Point(405, 153);
+            this.buttonChooseLanguageCode.Name = "buttonChooseLanguageCode";
+            this.buttonChooseLanguageCode.Size = new System.Drawing.Size(31, 21);
+            this.buttonChooseLanguageCode.TabIndex = 6;
+            this.buttonChooseLanguageCode.Text = "...";
+            this.buttonChooseLanguageCode.UseVisualStyleBackColor = true;
+            this.buttonChooseLanguageCode.Click += new System.EventHandler(this.buttonChooseLanguageCode_Click);
+            // 
             // timeUpDownStartTime
             // 
             this.timeUpDownStartTime.AutoSize = true;
             this.timeUpDownStartTime.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.timeUpDownStartTime.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.timeUpDownStartTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.timeUpDownStartTime.Location = new System.Drawing.Point(179, 411);
             this.timeUpDownStartTime.Margin = new System.Windows.Forms.Padding(4);
             this.timeUpDownStartTime.Name = "timeUpDownStartTime";
             this.timeUpDownStartTime.Size = new System.Drawing.Size(96, 27);
             this.timeUpDownStartTime.TabIndex = 14;
-            timeCode1.Hours = 0;
-            timeCode1.Milliseconds = 0;
-            timeCode1.Minutes = 0;
-            timeCode1.Seconds = 0;
-            timeCode1.TimeSpan = System.TimeSpan.Parse("00:00:00");
-            timeCode1.TotalMilliseconds = 0D;
-            timeCode1.TotalSeconds = 0D;
-            this.timeUpDownStartTime.TimeCode = timeCode1;
+            timeCode2.Hours = 0;
+            timeCode2.Milliseconds = 0;
+            timeCode2.Minutes = 0;
+            timeCode2.Seconds = 0;
+            timeCode2.TimeSpan = System.TimeSpan.Parse("00:00:00");
+            timeCode2.TotalMilliseconds = 0D;
+            timeCode2.TotalSeconds = 0D;
+            this.timeUpDownStartTime.TimeCode = timeCode2;
             this.timeUpDownStartTime.UseVideoOffset = false;
             // 
             // labelColorRequiresTeletext
@@ -447,6 +474,7 @@
             this.textBoxLanguageCode.Name = "textBoxLanguageCode";
             this.textBoxLanguageCode.Size = new System.Drawing.Size(219, 20);
             this.textBoxLanguageCode.TabIndex = 5;
+            this.textBoxLanguageCode.TextChanged += new System.EventHandler(this.textBoxLanguageCode_TextChanged);
             // 
             // labelLanguageCode
             // 
@@ -597,7 +625,7 @@
             this.buttonImport.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.buttonImport.Location = new System.Drawing.Point(613, 6);
             this.buttonImport.Name = "buttonImport";
-            this.buttonImport.Size = new System.Drawing.Size(134, 21);
+            this.buttonImport.Size = new System.Drawing.Size(134, 23);
             this.buttonImport.TabIndex = 20;
             this.buttonImport.Text = "Import...";
             this.buttonImport.UseVisualStyleBackColor = true;
@@ -698,6 +726,7 @@
             this.groupBoxVerticalPosition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxVerticalPosition.Controls.Add(this.labelUseBox);
             this.groupBoxVerticalPosition.Controls.Add(this.numericUpDownNewLineRows);
             this.groupBoxVerticalPosition.Controls.Add(this.labelNewLineRows);
             this.groupBoxVerticalPosition.Controls.Add(this.labelMarginTop);
@@ -710,6 +739,17 @@
             this.groupBoxVerticalPosition.TabIndex = 46;
             this.groupBoxVerticalPosition.TabStop = false;
             this.groupBoxVerticalPosition.Text = "Vertical position";
+            // 
+            // labelUseBox
+            // 
+            this.labelUseBox.AutoSize = true;
+            this.labelUseBox.ForeColor = System.Drawing.Color.Red;
+            this.labelUseBox.Location = new System.Drawing.Point(318, 80);
+            this.labelUseBox.Name = "labelUseBox";
+            this.labelUseBox.Size = new System.Drawing.Size(240, 13);
+            this.labelUseBox.TabIndex = 73;
+            this.labelUseBox.Text = "Check \'Use box around text\' for only one new-line";
+            this.labelUseBox.Visible = false;
             // 
             // numericUpDownNewLineRows
             // 
@@ -727,6 +767,7 @@
             0,
             0,
             0});
+            this.numericUpDownNewLineRows.ValueChanged += new System.EventHandler(this.numericUpDownNewLineRows_ValueChanged);
             // 
             // labelNewLineRows
             // 
@@ -812,6 +853,7 @@
             this.checkBoxTeletextBox.TabIndex = 0;
             this.checkBoxTeletextBox.Text = "Use box around text";
             this.checkBoxTeletextBox.UseVisualStyleBackColor = true;
+            this.checkBoxTeletextBox.CheckedChanged += new System.EventHandler(this.checkBoxTeletextBox_CheckedChanged);
             // 
             // comboBoxJustificationCode
             // 
@@ -979,5 +1021,8 @@
         private System.Windows.Forms.Label labelNewLineRows;
         private System.Windows.Forms.NumericUpDown numericUpDownMarginBottom;
         private System.Windows.Forms.Label labelColorRequiresTeletext;
+        private System.Windows.Forms.Button buttonChooseLanguageCode;
+        private System.Windows.Forms.Label labelLanguageCodeFriendlyName;
+        private System.Windows.Forms.Label labelUseBox;
     }
 }

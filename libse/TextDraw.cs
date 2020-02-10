@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Text;
 
 namespace Nikse.SubtitleEdit.Core
@@ -23,10 +25,15 @@ namespace Nikse.SubtitleEdit.Core
                 for (int i = list.Length - 1; i >= 0; i--)
                 {
                     if (list[i].X > next.X)
+                    {
                         next.X = list[i].X;
+                    }
+
                     k++;
                     if (k > 60 || i <= pathPointsStart && pathPointsStart != -1)
+                    {
                         break;
+                    }
                 }
             }
 
@@ -39,13 +46,21 @@ namespace Nikse.SubtitleEdit.Core
 
             var fontStyle = FontStyle.Regular;
             if (isItalic)
+            {
                 fontStyle |= FontStyle.Italic;
-            if (isBold)
-                fontStyle |= FontStyle.Bold;
-            if (isUnderline)
-                fontStyle |= FontStyle.Underline;
+            }
 
-            var fontSize = (float) GetFontSize(font.Size);
+            if (isBold)
+            {
+                fontStyle |= FontStyle.Bold;
+            }
+
+            if (isUnderline)
+            {
+                fontStyle |= FontStyle.Underline;
+            }
+
+            var fontSize = (float)GetFontSize(font.Size);
             try
             {
                 path.AddString(sb.ToString(), font.FontFamily, (int)fontStyle, fontSize, next, sf);
@@ -83,17 +98,54 @@ namespace Nikse.SubtitleEdit.Core
 
                     float width = 0;
                     var list = (PointF[])path.PathPoints.Clone(); // avoid using very slow path.PathPoints indexer!!!
-                    int index = System.Math.Max(list.Length - 100, 0);
-                    for (int i = index; i < list.Length; i += 2)
+                    int max = list.Length;
+                    if (max <= 500)
                     {
-                        if (list[i].X > width)
-                            width = list[i].X;
+                        for (int i = 0; i < max; i++)
+                        {
+                            if (list[i].X > width)
+                            {
+                                width = list[i].X;
+                            }
+                        }
+                        return width;
                     }
-                    int max = System.Math.Min(100, list.Length);
-                    for (int i = 0; i < max; i += 2)
+
+                    int interval = 1;
+                    if (max > 1500)
+                    {
+                        interval = 5;
+                    }
+                    else if (max > 1000)
+                    {
+                        interval = 3;
+                    }
+                    else
+                    {
+                        interval = 2;
+                    }
+                    for (int i = 0; i < max; i += interval)
                     {
                         if (list[i].X > width)
+                        {
                             width = list[i].X;
+                        }
+                    }
+                    if (list[1].X > width)
+                    {
+                        width = list[1].X;
+                    }
+                    if (list[2].X > width)
+                    {
+                        width = list[2].X;
+                    }
+                    if (list[max - 1].X > width)
+                    {
+                        width = list[max - 1].X;
+                    }
+                    if (list[max - 2].X > width)
+                    {
+                        width = list[max - 2].X;
                     }
 
                     return width;
@@ -119,13 +171,17 @@ namespace Nikse.SubtitleEdit.Core
                     for (int i = index; i < list.Length; i += 2)
                     {
                         if (list[i].Y > height)
+                        {
                             height = list[i].Y;
+                        }
                     }
 
                     for (int i = 0; i < list.Length; i += 2)
                     {
                         if (list[i].Y > height)
+                        {
                             height = list[i].Y;
+                        }
                     }
 
                     return height;

@@ -24,7 +24,7 @@ namespace Nikse.SubtitleEdit.Forms
             InitializeComponent();
             UiUtil.FixFonts(this);
 
-            if (original == null || original.Paragraphs == null || original.Paragraphs.Count == 0)
+            if (original?.Paragraphs == null || original.Paragraphs.Count == 0)
             {
                 _subtitle = subtitle;
             }
@@ -44,7 +44,9 @@ namespace Nikse.SubtitleEdit.Forms
             else
             {
                 foreach (string template in Configuration.Settings.Tools.ExportCustomTemplates.Split('æ'))
+                {
                     _templates.Add(template);
+                }
             }
             ShowTemplates(_templates);
 
@@ -67,8 +69,8 @@ namespace Nikse.SubtitleEdit.Forms
 
         public sealed override string Text
         {
-            get { return base.Text; }
-            set { base.Text = value; }
+            get => base.Text;
+            set => base.Text = value;
         }
 
         private void ShowTemplates(List<string> templates)
@@ -85,7 +87,9 @@ namespace Nikse.SubtitleEdit.Forms
                 }
             }
             if (listViewTemplates.Items.Count > 0)
+            {
                 listViewTemplates.Items[0].Selected = true;
+            }
         }
 
         private void buttonNew_Click(object sender, EventArgs e)
@@ -96,7 +100,9 @@ namespace Nikse.SubtitleEdit.Forms
         private bool NameExists(string name)
         {
             if (string.IsNullOrEmpty(name))
+            {
                 return true;
+            }
 
             for (int i = 0; i < _templates.Count; i++)
             {
@@ -163,7 +169,9 @@ namespace Nikse.SubtitleEdit.Forms
                         SaveTemplates();
                         ShowTemplates(_templates);
                         if (idx < listViewTemplates.Items.Count)
+                        {
                             listViewTemplates.Items[idx].Selected = true;
+                        }
                     }
                 }
             }
@@ -174,7 +182,7 @@ namespace Nikse.SubtitleEdit.Forms
             DialogResult = DialogResult.Cancel;
         }
 
-        private Encoding GetCurrentEncoding()
+        private TextEncoding GetCurrentEncoding()
         {
             return UiUtil.GetTextEncodingComboBoxCurrentEncoding(comboBoxEncoding);
         }
@@ -184,20 +192,26 @@ namespace Nikse.SubtitleEdit.Forms
             if (_batchConvert)
             {
                 if (listViewTemplates.SelectedItems.Count == 1)
+                {
                     CurrentFormatName = listViewTemplates.SelectedItems[0].Text;
+                }
+
                 DialogResult = DialogResult.OK;
                 return;
             }
 
             saveFileDialog1.Title = Configuration.Settings.Language.ExportCustomText.SaveSubtitleAs;
             if (!string.IsNullOrEmpty(_title))
+            {
                 saveFileDialog1.FileName = Path.GetFileNameWithoutExtension(_title) + ".txt";
+            }
+
             saveFileDialog1.Filter = Configuration.Settings.Language.General.AllFiles + "|*.*";
             if (saveFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 try
                 {
-                    File.WriteAllText(saveFileDialog1.FileName, GenerateText(_subtitle, _translated, _title), GetCurrentEncoding());
+                    FileUtil.WriteAllText(saveFileDialog1.FileName, GenerateText(_subtitle, _translated, _title), GetCurrentEncoding());
                     LogMessage = string.Format(Configuration.Settings.Language.ExportCustomText.SubtitleExportedInCustomFormatToX, saveFileDialog1.FileName);
                     DialogResult = DialogResult.OK;
                 }
@@ -211,12 +225,11 @@ namespace Nikse.SubtitleEdit.Forms
         private string GenerateText(Subtitle subtitle, Subtitle translation, string title)
         {
             if (listViewTemplates.SelectedItems.Count != 1)
+            {
                 return string.Empty;
+            }
 
-            if (title == null)
-                title = string.Empty;
-            else
-                title = Path.GetFileNameWithoutExtension(title);
+            title = title == null ? string.Empty : Path.GetFileNameWithoutExtension(title);
 
             try
             {
@@ -235,15 +248,24 @@ namespace Nikse.SubtitleEdit.Forms
             var sb = new StringBuilder();
             sb.Append(ExportCustomTextFormat.GetHeaderOrFooter(title, subtitle, arr[1]));
             string template = ExportCustomTextFormat.GetParagraphTemplate(arr[2]);
+            var isXml = arr[1].Contains("<?xml version=", StringComparison.OrdinalIgnoreCase);
             for (int i = 0; i < subtitle.Paragraphs.Count; i++)
             {
                 Paragraph p = subtitle.Paragraphs[i];
                 string start = ExportCustomTextFormat.GetTimeCode(p.StartTime, arr[3]);
                 string end = ExportCustomTextFormat.GetTimeCode(p.EndTime, arr[3]);
-                string text = ExportCustomTextFormat.GetText(p.Text, arr[4]);
+
+                string text = p.Text;
+                if (isXml)
+                {
+                    text = text.Replace("<", "&lt;")
+                               .Replace(">", "&gt;")
+                               .Replace("&", "&amp;");
+                }
+                text = ExportCustomTextFormat.GetText(text, arr[4]);
 
                 string translationText = string.Empty;
-                if (translation != null && translation.Paragraphs != null && translation.Paragraphs.Count > 0)
+                if (translation?.Paragraphs != null && translation.Paragraphs.Count > 0)
                 {
                     var trans = Utilities.GetOriginalParagraph(i, p, translation.Paragraphs);
                     if (trans != null)
@@ -272,7 +294,9 @@ namespace Nikse.SubtitleEdit.Forms
         private void Delete()
         {
             if (listViewTemplates.SelectedItems.Count != 1)
+            {
                 return;
+            }
 
             int idx = listViewTemplates.SelectedItems[0].Index;
             for (int i = listViewTemplates.Items.Count - 1; i >= 0; i--)
@@ -284,15 +308,22 @@ namespace Nikse.SubtitleEdit.Forms
                     for (int j = _templates.Count - 1; j > 0; j--)
                     {
                         if (_templates[j].StartsWith(name + "Æ", StringComparison.InvariantCultureIgnoreCase))
+                        {
                             _templates.RemoveAt(j);
+                        }
                     }
                     item.Remove();
                 }
             }
             if (idx >= listViewTemplates.Items.Count)
+            {
                 idx--;
+            }
+
             if (idx >= 0)
+            {
                 listViewTemplates.Items[idx].Selected = true;
+            }
 
             SaveTemplates();
         }
@@ -300,7 +331,9 @@ namespace Nikse.SubtitleEdit.Forms
         private void ExportCustomText_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)

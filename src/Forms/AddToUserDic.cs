@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Nikse.SubtitleEdit.Forms
 {
-    public partial class AddToUserDic : Form
+    public sealed partial class AddToUserDic : Form
     {
         public AddToUserDic()
         {
@@ -15,6 +15,7 @@ namespace Nikse.SubtitleEdit.Forms
             UiUtil.FixFonts(this);
             Text = Configuration.Settings.Language.AddToUserDictionary.Title;
             labelDescription.Text = Configuration.Settings.Language.AddToUserDictionary.Description;
+            labelLanguage.Text = Configuration.Settings.General.Language;
             buttonCancel.Text = Configuration.Settings.Language.General.Cancel;
             buttonOK.Text = Configuration.Settings.Language.General.Ok;
             UiUtil.FixLargeFonts(this, buttonOK);
@@ -23,7 +24,9 @@ namespace Nikse.SubtitleEdit.Forms
         private void AddToUserDic_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
@@ -33,7 +36,7 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            NewWord = textBoxAddName.Text.RemoveControlCharacters().Trim().ToLower();
+            NewWord = textBoxAddName.Text.RemoveControlCharacters().Trim().ToLowerInvariant();
             if (NewWord.Length == 0)
             {
                 DialogResult = DialogResult.Cancel;
@@ -42,9 +45,14 @@ namespace Nikse.SubtitleEdit.Forms
 
             string language = comboBoxDictionaries.Text;
             if (language.IndexOf('[') > 0)
+            {
                 language = language.Substring(language.IndexOf('[')).TrimStart('[');
+            }
+
             if (language.IndexOf(']') > 0)
+            {
                 language = language.Substring(0, language.IndexOf(']'));
+            }
 
             var userWordList = new List<string>();
 
@@ -61,14 +69,18 @@ namespace Nikse.SubtitleEdit.Forms
         internal void Initialize(string hunspellName, string text)
         {
             if (!string.IsNullOrEmpty(text))
+            {
                 textBoxAddName.Text = text.Trim().TrimEnd('.', '!', '?');
+            }
 
             comboBoxDictionaries.Items.Clear();
             foreach (string name in Utilities.GetDictionaryLanguages())
             {
                 comboBoxDictionaries.Items.Add(name);
                 if (hunspellName != null && name.Equals(hunspellName, StringComparison.OrdinalIgnoreCase))
+                {
                     comboBoxDictionaries.SelectedIndex = comboBoxDictionaries.Items.Count - 1;
+                }
             }
         }
 

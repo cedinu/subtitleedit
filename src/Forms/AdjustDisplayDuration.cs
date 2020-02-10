@@ -8,41 +8,42 @@ namespace Nikse.SubtitleEdit.Forms
 {
     public sealed partial class AdjustDisplayDuration : PositionAndSizeForm
     {
+        private const string Sec = "seconds";
+        private const string Per = "percent";
+        private const string Recal = "recalc";
+        private const string Fixed = "fixed";
+
         public string AdjustValue
         {
             get
             {
                 if (radioButtonPercent.Checked)
+                {
                     return numericUpDownPercent.Value.ToString(CultureInfo.InvariantCulture);
+                }
+
                 if (radioButtonAutoRecalculate.Checked)
-                    return radioButtonAutoRecalculate.Text + ", " + labelMaxCharsPerSecond.Text + ": " + numericUpDownMaxCharsSec.Value; // TODO: Make language string with string.Format
+                {
+                    return $"{radioButtonAutoRecalculate.Text}, {labelMaxCharsPerSecond.Text}: {numericUpDownMaxCharsSec.Value}";
+                }
+
                 return numericUpDownSeconds.Value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
-        public bool AdjustUsingPercent
-        {
-            get
-            {
-                return radioButtonPercent.Checked;
-            }
-        }
+        public bool AdjustUsingPercent => radioButtonPercent.Checked;
 
-        public bool AdjustUsingSeconds
-        {
-            get
-            {
-                return radioButtonSeconds.Checked;
-            }
-        }
+        public bool AdjustUsingSeconds => radioButtonSeconds.Checked;
 
-        public decimal MaxCharactersPerSecond
-        {
-            get
-            {
-                return numericUpDownMaxCharsSec.Value;
-            }
-        }
+        public bool AdjustUsingRecalc => radioButtonAutoRecalculate.Checked;
+
+        public decimal MaxCharactersPerSecond => numericUpDownMaxCharsSec.Value;
+
+        public decimal OptimalCharactersPerSecond => numericUpDownOptimalCharsSec.Value;
+
+        public int FixedMilliseconds => (int)numericUpDownFixedMilliseconds.Value;
+
+        public bool ExtendOnly => checkBoxExtendOnly.Checked;
 
         public AdjustDisplayDuration()
         {
@@ -51,15 +52,25 @@ namespace Nikse.SubtitleEdit.Forms
             UiUtil.FixFonts(this);
             Icon = Properties.Resources.SubtitleEditFormIcon;
 
-            if (Configuration.Settings.Tools.AdjustDurationSeconds >= numericUpDownSeconds.Minimum &&
-                Configuration.Settings.Tools.AdjustDurationSeconds <= numericUpDownSeconds.Maximum)
-                numericUpDownSeconds.Value = Configuration.Settings.Tools.AdjustDurationSeconds;
+            numericUpDownSeconds.Enabled = false;
+            numericUpDownPercent.Enabled = false;
 
-            if (Configuration.Settings.Tools.AdjustDurationPercent >= numericUpDownPercent.Minimum &&
-                Configuration.Settings.Tools.AdjustDurationPercent <= numericUpDownPercent.Maximum)
-                numericUpDownPercent.Value = Configuration.Settings.Tools.AdjustDurationPercent;
+            decimal adjustSeconds = Configuration.Settings.Tools.AdjustDurationSeconds;
+            if (adjustSeconds >= numericUpDownSeconds.Minimum && adjustSeconds <= numericUpDownSeconds.Maximum)
+            {
+                numericUpDownSeconds.Value = adjustSeconds;
+            }
 
+            int adjustPercent = Configuration.Settings.Tools.AdjustDurationPercent;
+            if (adjustPercent >= numericUpDownPercent.Minimum && adjustPercent <= numericUpDownPercent.Maximum)
+            {
+                numericUpDownPercent.Value = adjustPercent;
+            }
+
+            numericUpDownOptimalCharsSec.Value = (decimal)Configuration.Settings.General.SubtitleOptimalCharactersPerSeconds;
             numericUpDownMaxCharsSec.Value = (decimal)Configuration.Settings.General.SubtitleMaximumCharactersPerSeconds;
+
+            checkBoxExtendOnly.Checked = Configuration.Settings.Tools.AdjustDurationExtendOnly;
 
             LanguageStructure.AdjustDisplayDuration language = Configuration.Settings.Language.AdjustDisplayDuration;
             Text = language.Title;
@@ -67,39 +78,52 @@ namespace Nikse.SubtitleEdit.Forms
             radioButtonSeconds.Text = language.Seconds;
             radioButtonPercent.Text = language.Percent;
             radioButtonAutoRecalculate.Text = language.Recalculate;
+            labelOptimalCharsSec.Text = Configuration.Settings.Language.Settings.OptimalCharactersPerSecond;
             labelMaxCharsPerSecond.Text = Configuration.Settings.Language.Settings.MaximumCharactersPerSecond;
             labelAddSeconds.Text = language.AddSeconds;
             labelAddInPercent.Text = language.SetAsPercent;
             labelNote.Text = language.Note;
+            radioButtonFixed.Text = language.Fixed;
+            labelMillisecondsFixed.Text = language.Milliseconds;
+            checkBoxExtendOnly.Text = language.ExtendOnly;
             buttonOK.Text = Configuration.Settings.Language.General.Ok;
             buttonCancel.Text = Configuration.Settings.Language.General.Cancel;
             FixLargeFonts();
 
-            if (Configuration.Settings.Tools.AdjustDurationLast == "seconds")
+            switch (Configuration.Settings.Tools.AdjustDurationLast)
             {
-                radioButtonSeconds.Checked = true;
+                case Sec:
+                    radioButtonSeconds.Checked = true;
+                    break;
+                case Per:
+                    radioButtonPercent.Checked = true;
+                    break;
+                case Recal:
+                    radioButtonAutoRecalculate.Checked = true;
+                    break;
+                case Fixed:
+                    radioButtonFixed.Checked = true;
+                    break;
             }
-            else if (Configuration.Settings.Tools.AdjustDurationLast == "percent")
-            {
-                radioButtonPercent.Checked = true;
-            }
-            else if (Configuration.Settings.Tools.AdjustDurationLast == "recalc")
-            {
-                radioButtonAutoRecalculate.Checked = true;
-            }
+            FixEnabled();
         }
 
         private void FixLargeFonts()
         {
             if (labelNote.Left + labelNote.Width + 5 > Width)
+            {
                 Width = labelNote.Left + labelNote.Width + 5;
+            }
+
             UiUtil.FixLargeFonts(this, buttonOK);
         }
 
         private void FormAdjustDisplayTime_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void RadioButtonPercentCheckedChanged(object sender, EventArgs e)
@@ -109,24 +133,12 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void FixEnabled()
         {
-            if (radioButtonPercent.Checked)
-            {
-                numericUpDownPercent.Enabled = true;
-                numericUpDownSeconds.Enabled = false;
-                numericUpDownMaxCharsSec.Enabled = false;
-            }
-            else if (radioButtonSeconds.Checked)
-            {
-                numericUpDownPercent.Enabled = false;
-                numericUpDownSeconds.Enabled = true;
-                numericUpDownMaxCharsSec.Enabled = false;
-            }
-            else
-            {
-                numericUpDownPercent.Enabled = false;
-                numericUpDownSeconds.Enabled = false;
-                numericUpDownMaxCharsSec.Enabled = true;
-            }
+            numericUpDownPercent.Enabled = radioButtonPercent.Checked;
+            numericUpDownSeconds.Enabled = radioButtonSeconds.Checked;
+            numericUpDownMaxCharsSec.Enabled = radioButtonAutoRecalculate.Checked;
+            numericUpDownOptimalCharsSec.Enabled = radioButtonAutoRecalculate.Checked;
+            checkBoxExtendOnly.Enabled = radioButtonAutoRecalculate.Checked;
+            numericUpDownFixedMilliseconds.Enabled = radioButtonFixed.Checked;
         }
 
         private void RadioButtonSecondsCheckedChanged(object sender, EventArgs e)
@@ -138,36 +150,48 @@ namespace Nikse.SubtitleEdit.Forms
         {
             Configuration.Settings.Tools.AdjustDurationSeconds = numericUpDownSeconds.Value;
             Configuration.Settings.Tools.AdjustDurationPercent = (int)numericUpDownPercent.Value;
+            Configuration.Settings.Tools.AdjustDurationExtendOnly = checkBoxExtendOnly.Checked;
 
             if (radioButtonSeconds.Checked)
             {
-                Configuration.Settings.Tools.AdjustDurationLast = "seconds";
+                Configuration.Settings.Tools.AdjustDurationLast = Sec;
             }
             else if (radioButtonPercent.Checked)
             {
-                Configuration.Settings.Tools.AdjustDurationLast = "percent";
+                Configuration.Settings.Tools.AdjustDurationLast = Per;
             }
             else if (radioButtonAutoRecalculate.Checked)
             {
-                Configuration.Settings.Tools.AdjustDurationLast = "recalc";
+                Configuration.Settings.Tools.AdjustDurationLast = Recal;
+            }
+            else if (radioButtonFixed.Checked)
+            {
+                Configuration.Settings.Tools.AdjustDurationLast = Fixed;
             }
 
             DialogResult = DialogResult.OK;
+        }
+
+        public void HideRecalculate()
+        {
+            if (radioButtonAutoRecalculate.Checked)
+            {
+                radioButtonSeconds.Checked = true;
+            }
+
+            radioButtonAutoRecalculate.Visible = false;
+            labelMaxCharsPerSecond.Visible = false;
+            numericUpDownMaxCharsSec.Visible = false;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            FixEnabled();
         }
 
         private void radioButtonAutoRecalculate_CheckedChanged(object sender, EventArgs e)
         {
             FixEnabled();
         }
-
-        public void HideRecalculate()
-        {
-            if (radioButtonAutoRecalculate.Checked)
-                radioButtonSeconds.Checked = true;
-            radioButtonAutoRecalculate.Visible = false;
-            labelMaxCharsPerSecond.Visible = false;
-            numericUpDownMaxCharsSec.Visible = false;
-        }
-
     }
 }

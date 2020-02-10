@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Nikse.SubtitleEdit.Core.SubtitleFormats
@@ -10,6 +11,18 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public override string Name => "JSON Type 8";
 
+        public override bool IsMine(List<string> lines, string fileName)
+        {
+            var subtitle = new Subtitle();
+            LoadSubtitle(subtitle, lines, fileName);
+            if (_errorCount >= subtitle.Paragraphs.Count)
+            {
+                return false;
+            }
+            var avgDurSecs = subtitle.Paragraphs.Average(p => p.Duration.TotalSeconds);
+            return avgDurSecs < 60;
+        }
+
         public override string ToText(Subtitle subtitle, string title)
         {
             var sb = new StringBuilder(@"[");
@@ -17,7 +30,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             foreach (Paragraph p in subtitle.Paragraphs)
             {
                 if (count > 0)
+                {
                     sb.Append(',');
+                }
+
                 sb.Append("{\"start_time\":");
                 sb.Append(p.StartTime.TotalSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 sb.Append(",\"end_time\":");
@@ -36,10 +52,15 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             _errorCount = 0;
             var sb = new StringBuilder();
             foreach (string s in lines)
+            {
                 sb.Append(s);
+            }
+
             string allText = sb.ToString().Trim();
             if (!(allText.StartsWith("{", StringComparison.Ordinal) || allText.StartsWith("[", StringComparison.Ordinal)))
+            {
                 return;
+            }
 
             foreach (string line in allText.Split('{', '}', '[', ']'))
             {
@@ -56,7 +77,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                         if (double.TryParse(start, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture, out startSeconds) &&
                             double.TryParse(end, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture, out endSeconds))
                         {
-                            subtitle.Paragraphs.Add(new Paragraph(Json.DecodeJsonText(text), startSeconds*TimeCode.BaseUnit, endSeconds*TimeCode.BaseUnit));
+                            subtitle.Paragraphs.Add(new Paragraph(Json.DecodeJsonText(text), startSeconds * TimeCode.BaseUnit, endSeconds * TimeCode.BaseUnit));
                         }
                         else
                         {
@@ -71,6 +92,5 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             }
             subtitle.Renumber();
         }
-
     }
 }

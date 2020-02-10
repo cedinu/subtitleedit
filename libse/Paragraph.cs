@@ -12,17 +12,7 @@ namespace Nikse.SubtitleEdit.Core
 
         public TimeCode EndTime { get; set; }
 
-        public TimeCode Duration
-        {
-            get
-            {
-                return new TimeCode(EndTime.TotalMilliseconds - StartTime.TotalMilliseconds);
-            }
-        }
-
-        public int StartFrame { get; set; }
-
-        public int EndFrame { get; set; }
+        public TimeCode Duration => new TimeCode(EndTime.TotalMilliseconds - StartTime.TotalMilliseconds);
 
         public bool Forced { get; set; }
 
@@ -41,7 +31,7 @@ namespace Nikse.SubtitleEdit.Core
 
         public int Layer { get; set; }
 
-        public string ID { get; private set; }
+        public string Id { get; }
 
         public string Language { get; set; }
 
@@ -49,17 +39,17 @@ namespace Nikse.SubtitleEdit.Core
 
         public bool NewSection { get; set; }
 
-        private string GenerateId()
+        public string Bookmark { get; set; }
+
+        public bool IsDefault => Math.Abs(StartTime.TotalMilliseconds) < 0.01 && Math.Abs(EndTime.TotalMilliseconds) < 0.01 && string.IsNullOrEmpty(Text);
+
+        private static string GenerateId()
         {
             return Guid.NewGuid().ToString();
         }
 
-        public Paragraph()
+        public Paragraph() : this(new TimeCode(), new TimeCode(), string.Empty)
         {
-            StartTime = TimeCode.FromSeconds(0);
-            EndTime = TimeCode.FromSeconds(0);
-            Text = string.Empty;
-            ID = GenerateId();
         }
 
         public Paragraph(TimeCode startTime, TimeCode endTime, string text)
@@ -67,7 +57,7 @@ namespace Nikse.SubtitleEdit.Core
             StartTime = startTime;
             EndTime = endTime;
             Text = text;
-            ID = GenerateId();
+            Id = GenerateId();
         }
 
         public Paragraph(Paragraph paragraph, bool generateNewId = true)
@@ -76,8 +66,6 @@ namespace Nikse.SubtitleEdit.Core
             Text = paragraph.Text;
             StartTime = new TimeCode(paragraph.StartTime.TotalMilliseconds);
             EndTime = new TimeCode(paragraph.EndTime.TotalMilliseconds);
-            StartFrame = paragraph.StartFrame;
-            EndFrame = paragraph.EndFrame;
             Forced = paragraph.Forced;
             Extra = paragraph.Extra;
             IsComment = paragraph.IsComment;
@@ -88,71 +76,46 @@ namespace Nikse.SubtitleEdit.Core
             MarginV = paragraph.MarginV;
             Effect = paragraph.Effect;
             Layer = paragraph.Layer;
-            ID = generateNewId ? GenerateId() : paragraph.ID;
+            Id = generateNewId ? GenerateId() : paragraph.Id;
             Language = paragraph.Language;
             Style = paragraph.Style;
             NewSection = paragraph.NewSection;
-        }
-
-        public Paragraph(int startFrame, int endFrame, string text)
-        {
-            StartTime = new TimeCode();
-            EndTime = new TimeCode();
-            StartFrame = startFrame;
-            EndFrame = endFrame;
-            Text = text;
-            ID = GenerateId();
+            Bookmark = paragraph.Bookmark;
         }
 
         public Paragraph(string text, double startTotalMilliseconds, double endTotalMilliseconds)
+            : this(new TimeCode(startTotalMilliseconds), new TimeCode(endTotalMilliseconds), text)
         {
-            StartTime = new TimeCode(startTotalMilliseconds);
-            EndTime = new TimeCode(endTotalMilliseconds);
-            Text = text;
-            ID = GenerateId();
         }
 
         public void Adjust(double factor, double adjustmentInSeconds)
         {
             if (StartTime.IsMaxTime)
+            {
                 return;
+            }
 
-            StartTime.TotalMilliseconds = StartTime.TotalMilliseconds * factor + (adjustmentInSeconds * TimeCode.BaseUnit);
-            EndTime.TotalMilliseconds = EndTime.TotalMilliseconds * factor + (adjustmentInSeconds * TimeCode.BaseUnit);
-        }
-
-        public void CalculateFrameNumbersFromTimeCodes(double frameRate)
-        {
-            StartFrame = (int)Math.Round((StartTime.TotalMilliseconds / TimeCode.BaseUnit * frameRate));
-            EndFrame = (int)Math.Round((EndTime.TotalMilliseconds / TimeCode.BaseUnit * frameRate));
-        }
-
-        public void CalculateTimeCodesFromFrameNumbers(double frameRate)
-        {
-            StartTime.TotalMilliseconds = StartFrame * (TimeCode.BaseUnit / frameRate);
-            EndTime.TotalMilliseconds = EndFrame * (TimeCode.BaseUnit / frameRate);
+            StartTime.TotalMilliseconds = StartTime.TotalMilliseconds * factor + adjustmentInSeconds * TimeCode.BaseUnit;
+            EndTime.TotalMilliseconds = EndTime.TotalMilliseconds * factor + adjustmentInSeconds * TimeCode.BaseUnit;
         }
 
         public override string ToString()
         {
-            return StartTime + " --> " + EndTime + " " + Text;
+            return $"{StartTime} --> {EndTime} {Text}";
         }
 
-        public int NumberOfLines
-        {
-            get
-            {
-                return Utilities.GetNumberOfLines(Text);
-            }
-        }
+        public int NumberOfLines => Utilities.GetNumberOfLines(Text);
 
         public double WordsPerMinute
         {
             get
             {
                 if (string.IsNullOrEmpty(Text))
+                {
                     return 0;
-                return (60.0 / Duration.TotalSeconds) * Text.CountWords();
+                }
+
+                return 60.0 / Duration.TotalSeconds * Text.CountWords();
             }
         }
     }

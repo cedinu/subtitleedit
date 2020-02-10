@@ -42,6 +42,7 @@ namespace Nikse.SubtitleEdit.Forms
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.subtitleListViewTo = new Nikse.SubtitleEdit.Controls.SubtitleListView();
             this.subtitleListViewFrom = new Nikse.SubtitleEdit.Controls.SubtitleListView();
+            this.labelApiKeyNotFound = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // comboBoxFrom
@@ -79,13 +80,12 @@ namespace Nikse.SubtitleEdit.Forms
             this.comboBoxTo.Name = "comboBoxTo";
             this.comboBoxTo.Size = new System.Drawing.Size(121, 21);
             this.comboBoxTo.TabIndex = 3;
-            this.comboBoxTo.SelectedIndexChanged += new System.EventHandler(this.comboBoxTo_SelectedIndexChanged);
             // 
             // buttonTranslate
             // 
             this.buttonTranslate.Location = new System.Drawing.Point(624, 34);
             this.buttonTranslate.Name = "buttonTranslate";
-            this.buttonTranslate.Size = new System.Drawing.Size(75, 21);
+            this.buttonTranslate.Size = new System.Drawing.Size(75, 23);
             this.buttonTranslate.TabIndex = 5;
             this.buttonTranslate.Text = "Translate";
             this.buttonTranslate.UseVisualStyleBackColor = true;
@@ -96,7 +96,7 @@ namespace Nikse.SubtitleEdit.Forms
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.Location = new System.Drawing.Point(754, 529);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 6;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -108,7 +108,7 @@ namespace Nikse.SubtitleEdit.Forms
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.Location = new System.Drawing.Point(835, 529);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 7;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -187,11 +187,23 @@ namespace Nikse.SubtitleEdit.Forms
             this.subtitleListViewFrom.Click += new System.EventHandler(this.subtitleListViewFrom_DoubleClick);
             this.subtitleListViewFrom.DoubleClick += new System.EventHandler(this.subtitleListViewFrom_DoubleClick);
             // 
+            // labelApiKeyNotFound
+            // 
+            this.labelApiKeyNotFound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelApiKeyNotFound.AutoSize = true;
+            this.labelApiKeyNotFound.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.labelApiKeyNotFound.Location = new System.Drawing.Point(202, 529);
+            this.labelApiKeyNotFound.Name = "labelApiKeyNotFound";
+            this.labelApiKeyNotFound.Size = new System.Drawing.Size(145, 13);
+            this.labelApiKeyNotFound.TabIndex = 12;
+            this.labelApiKeyNotFound.Text = "Warning: API key not found!";
+            // 
             // GoogleTranslate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(925, 558);
+            this.Controls.Add(this.labelApiKeyNotFound);
             this.Controls.Add(this.comboBoxFrom);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.labelPleaseWait);
@@ -234,5 +246,6 @@ namespace Nikse.SubtitleEdit.Forms
         private System.Windows.Forms.LinkLabel linkLabelPoweredByGoogleTranslate;
         private System.Windows.Forms.Label labelPleaseWait;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label labelApiKeyNotFound;
     }
 }

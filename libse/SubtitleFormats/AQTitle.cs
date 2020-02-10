@@ -39,9 +39,13 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 string text = Utilities.RemoveSsaTags(p.Text);
                 int noOfLines = Utilities.GetNumberOfLines(text);
                 if (noOfLines > 2)
+                {
                     text = Utilities.AutoBreakLine(text);
+                }
                 else if (noOfLines == 1)
+                {
                     text += Environment.NewLine;
+                }
 
                 sb.AppendLine(string.Format(paragraphWriteFormat, EncodeTimeCode(p.StartTime), EncodeTimeCode(p.EndTime), text, Environment.NewLine));
             }
@@ -67,12 +71,11 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             var tc = DecodeTimeCode(timePart);
                             if (expecting == ExpectingLine.TimeStart)
                             {
-                                paragraph = new Paragraph { StartFrame = int.Parse(timePart), StartTime = tc };
+                                paragraph = new Paragraph { StartTime = tc };
                                 expecting = ExpectingLine.Text;
                             }
                             else if (expecting == ExpectingLine.TimeEndOrText)
                             {
-                                paragraph.EndFrame = int.Parse(timePart);
                                 paragraph.EndTime = tc;
                                 subtitle.Paragraphs.Add(paragraph);
                                 paragraph = new Paragraph();
@@ -94,9 +97,14 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                         {
                             string text = line.Replace("|", Environment.NewLine);
                             if (string.IsNullOrEmpty(paragraph.Text))
+                            {
                                 paragraph.Text = text.Trim();
+                            }
                             else
+                            {
                                 paragraph.Text += Environment.NewLine + text;
+                            }
+
                             if (paragraph.Text.Length > 2000)
                             {
                                 _errorCount += 100;
@@ -108,8 +116,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     else if (expecting == ExpectingLine.TimeStart && !string.IsNullOrWhiteSpace(line))
                     {
                         int ms = (int)paragraph.EndTime.TotalMilliseconds;
-                        int frames = paragraph.EndFrame;
-                        paragraph = new Paragraph { StartTime = { TotalMilliseconds = ms }, StartFrame = frames, Text = line.Trim() };
+                        paragraph = new Paragraph { StartTime = { TotalMilliseconds = ms }, Text = line.Trim() };
                         expecting = ExpectingLine.TimeEndOrText;
                     }
                 }
@@ -125,7 +132,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         private static TimeCode DecodeTimeCode(string timePart)
         {
-            int milliseconds = (int) Math.Round(TimeCode.BaseUnit / Configuration.Settings.General.CurrentFrameRate * int.Parse(timePart));
+            int milliseconds = (int)Math.Round(TimeCode.BaseUnit / Configuration.Settings.General.CurrentFrameRate * int.Parse(timePart));
             return new TimeCode(milliseconds);
         }
 

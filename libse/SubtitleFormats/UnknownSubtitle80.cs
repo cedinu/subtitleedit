@@ -60,7 +60,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     _errorCount++;
                     if (_errorCount > 10)
+                    {
                         return;
+                    }
                 }
             }
             subtitle.RemoveEmptyLines();
@@ -69,7 +71,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         private static string EncodeTimeCode(TimeCode time)
         {
-            return "[" + time.ToHHMMSSFF().Remove(8,1).Insert(8, ".") + "]";
+            return "[" + time.ToHHMMSSFF().Remove(8, 1).Insert(8, ".") + "]";
         }
 
     }

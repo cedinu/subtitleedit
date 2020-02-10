@@ -42,9 +42,9 @@ namespace Nikse.SubtitleEdit.Forms
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(428, 315);
+            this.buttonOK.Location = new System.Drawing.Point(453, 315);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 21);
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 4;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -54,9 +54,9 @@ namespace Nikse.SubtitleEdit.Forms
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(509, 315);
+            this.buttonCancel.Location = new System.Drawing.Point(534, 315);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 5;
             this.buttonCancel.Text = "C&ancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -66,7 +66,7 @@ namespace Nikse.SubtitleEdit.Forms
             // 
             this.buttonFind.Location = new System.Drawing.Point(196, 32);
             this.buttonFind.Name = "buttonFind";
-            this.buttonFind.Size = new System.Drawing.Size(75, 21);
+            this.buttonFind.Size = new System.Drawing.Size(75, 23);
             this.buttonFind.TabIndex = 1;
             this.buttonFind.Text = "Find";
             this.buttonFind.UseVisualStyleBackColor = true;
@@ -85,7 +85,7 @@ namespace Nikse.SubtitleEdit.Forms
             // 
             this.buttonFindNext.Location = new System.Drawing.Point(277, 32);
             this.buttonFindNext.Name = "buttonFindNext";
-            this.buttonFindNext.Size = new System.Drawing.Size(75, 21);
+            this.buttonFindNext.Size = new System.Drawing.Size(75, 23);
             this.buttonFindNext.TabIndex = 2;
             this.buttonFindNext.Text = "Find next";
             this.buttonFindNext.UseVisualStyleBackColor = true;
@@ -93,6 +93,7 @@ namespace Nikse.SubtitleEdit.Forms
             // 
             // subtitleListView1
             // 
+            this.subtitleListView1.AllowColumnReorder = true;
             this.subtitleListView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -100,12 +101,13 @@ namespace Nikse.SubtitleEdit.Forms
             this.subtitleListView1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.subtitleListView1.FullRowSelect = true;
             this.subtitleListView1.GridLines = true;
+            this.subtitleListView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.subtitleListView1.HideSelection = false;
             this.subtitleListView1.Location = new System.Drawing.Point(12, 59);
             this.subtitleListView1.MultiSelect = false;
             this.subtitleListView1.Name = "subtitleListView1";
             this.subtitleListView1.OwnerDraw = true;
-            this.subtitleListView1.Size = new System.Drawing.Size(572, 250);
+            this.subtitleListView1.Size = new System.Drawing.Size(597, 250);
             this.subtitleListView1.SubtitleFontBold = false;
             this.subtitleListView1.SubtitleFontName = "Tahoma";
             this.subtitleListView1.SubtitleFontSize = 8;
@@ -119,7 +121,7 @@ namespace Nikse.SubtitleEdit.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(596, 345);
+            this.ClientSize = new System.Drawing.Size(621, 345);
             this.Controls.Add(this.buttonFindNext);
             this.Controls.Add(this.textBoxFindText);
             this.Controls.Add(this.buttonFind);
@@ -130,7 +132,9 @@ namespace Nikse.SubtitleEdit.Forms
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(630, 370);
             this.Name = "FindSubtitleLine";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Find subtitle line";

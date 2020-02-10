@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Nikse.SubtitleEdit.Core;
 
 namespace Nikse.SubtitleEdit.Logic
 {
@@ -44,6 +45,7 @@ namespace Nikse.SubtitleEdit.Logic
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool AttachConsole(int dwProcessId);
+        internal const int ATTACH_PARENT_PROCESS = -1;
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -172,9 +174,12 @@ namespace Nikse.SubtitleEdit.Logic
 
         #endregion MPV
 
-        #region System
+        #region Linux System
 
         internal const int LC_NUMERIC = 1;
+
+        internal const int RTLD_NOW = 0x0001;
+        internal const int RTLD_GLOBAL = 0x0100;
 
         [DllImport("libc.so.6")]
         internal static extern IntPtr setlocale(int category, string locale);
@@ -184,6 +189,43 @@ namespace Nikse.SubtitleEdit.Logic
 
         [DllImport("libdl.so")]
         internal static extern IntPtr dlclose(IntPtr handle);
+
+        [DllImport("libdl.so")]
+        internal static extern IntPtr dlsym(IntPtr handle, string symbol);
+
+        #endregion
+
+        #region Cross platform
+
+        internal static IntPtr CrossLoadLibrary(string fileName)
+        {
+            if (Configuration.IsRunningOnWindows)
+            {
+                return LoadLibrary(fileName);
+            }
+            return dlopen(fileName, RTLD_NOW | RTLD_GLOBAL);
+        }
+
+        internal static void CrossFreeLibrary(IntPtr handle)
+        {
+            if (Configuration.IsRunningOnWindows)
+            {
+                FreeLibrary(handle);
+            }
+            else
+            {
+                dlclose(handle);
+            }
+        }
+
+        internal static IntPtr CrossGetProcAddress(IntPtr handle, string name)
+        {
+            if (Configuration.IsRunningOnWindows)
+            {
+                return GetProcAddress(handle, name);
+            }
+            return dlsym(handle, name);
+        }
 
         #endregion
     }

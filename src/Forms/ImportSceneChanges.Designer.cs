@@ -38,14 +38,14 @@
             this.radioButtonFrames = new System.Windows.Forms.RadioButton();
             this.radioButtonHHMMSSMS = new System.Windows.Forms.RadioButton();
             this.buttonOpenText = new System.Windows.Forms.Button();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
             this.groupBoxGenerateSceneChanges = new System.Windows.Forms.GroupBox();
-            this.labelThressholdDescription = new System.Windows.Forms.Label();
+            this.labelThresholdDescription = new System.Windows.Forms.Label();
             this.numericUpDownThreshold = new System.Windows.Forms.NumericUpDown();
             this.labelFfmpegThreshold = new System.Windows.Forms.Label();
             this.buttonDownloadFfmpeg = new System.Windows.Forms.Button();
             this.buttonImportWithFfmpeg = new System.Windows.Forms.Button();
             this.textBoxGenerate = new System.Windows.Forms.TextBox();
-            this.textBoxLog = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBoxImportText.SuspendLayout();
@@ -167,7 +167,7 @@
             // buttonOpenText
             // 
             this.buttonOpenText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOpenText.Location = new System.Drawing.Point(191, 19);
+            this.buttonOpenText.Location = new System.Drawing.Point(189, 21);
             this.buttonOpenText.Name = "buttonOpenText";
             this.buttonOpenText.Size = new System.Drawing.Size(153, 23);
             this.buttonOpenText.TabIndex = 0;
@@ -175,12 +175,27 @@
             this.buttonOpenText.UseVisualStyleBackColor = true;
             this.buttonOpenText.Click += new System.EventHandler(this.buttonOpenText_Click);
             // 
+            // textBoxLog
+            // 
+            this.textBoxLog.AllowDrop = true;
+            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxLog.Location = new System.Drawing.Point(7, 19);
+            this.textBoxLog.MaxLength = 0;
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ReadOnly = true;
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxLog.Size = new System.Drawing.Size(337, 387);
+            this.textBoxLog.TabIndex = 6;
+            // 
             // groupBoxGenerateSceneChanges
             // 
             this.groupBoxGenerateSceneChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxGenerateSceneChanges.Controls.Add(this.labelThressholdDescription);
+            this.groupBoxGenerateSceneChanges.Controls.Add(this.labelThresholdDescription);
             this.groupBoxGenerateSceneChanges.Controls.Add(this.numericUpDownThreshold);
             this.groupBoxGenerateSceneChanges.Controls.Add(this.labelFfmpegThreshold);
             this.groupBoxGenerateSceneChanges.Controls.Add(this.buttonDownloadFfmpeg);
@@ -195,13 +210,13 @@
             // 
             // labelThressholdDescription
             // 
-            this.labelThressholdDescription.AutoSize = true;
-            this.labelThressholdDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.labelThressholdDescription.Location = new System.Drawing.Point(115, 384);
-            this.labelThressholdDescription.Name = "labelThressholdDescription";
-            this.labelThressholdDescription.Size = new System.Drawing.Size(195, 13);
-            this.labelThressholdDescription.TabIndex = 5;
-            this.labelThressholdDescription.Text = "Lower value gives more scene changes";
+            this.labelThresholdDescription.AutoSize = true;
+            this.labelThresholdDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.labelThresholdDescription.Location = new System.Drawing.Point(115, 384);
+            this.labelThresholdDescription.Name = "labelThresholdDescription";
+            this.labelThresholdDescription.Size = new System.Drawing.Size(195, 13);
+            this.labelThresholdDescription.TabIndex = 5;
+            this.labelThresholdDescription.Text = "Lower value gives more scene changes";
             // 
             // numericUpDownThreshold
             // 
@@ -278,21 +293,6 @@
             this.textBoxGenerate.Size = new System.Drawing.Size(337, 299);
             this.textBoxGenerate.TabIndex = 1;
             // 
-            // textBoxLog
-            // 
-            this.textBoxLog.AllowDrop = true;
-            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLog.Location = new System.Drawing.Point(7, 19);
-            this.textBoxLog.MaxLength = 0;
-            this.textBoxLog.Multiline = true;
-            this.textBoxLog.Name = "textBoxLog";
-            this.textBoxLog.ReadOnly = true;
-            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(337, 387);
-            this.textBoxLog.TabIndex = 6;
-            // 
             // progressBar1
             // 
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -357,7 +357,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button buttonDownloadFfmpeg;
         private System.Windows.Forms.TextBox textBoxIImport;
-        private System.Windows.Forms.Label labelThressholdDescription;
+        private System.Windows.Forms.Label labelThresholdDescription;
         private System.Windows.Forms.NumericUpDown numericUpDownThreshold;
         private System.Windows.Forms.Label labelFfmpegThreshold;
         private System.Windows.Forms.TextBox textBoxLog;

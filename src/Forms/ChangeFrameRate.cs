@@ -14,17 +14,10 @@ namespace Nikse.SubtitleEdit.Forms
             InitializeComponent();
             UiUtil.FixFonts(this);
 
-            comboBoxFrameRateFrom.Items.Add(23.976);
-            comboBoxFrameRateFrom.Items.Add(24.0);
-            comboBoxFrameRateFrom.Items.Add(25.0);
-            comboBoxFrameRateFrom.Items.Add(29.97);
+            InitializeCombobox(comboBoxFrameRateFrom);
+            InitializeCombobox(comboBoxFrameRateTo);
 
-            comboBoxFrameRateTo.Items.Add(23.976);
-            comboBoxFrameRateTo.Items.Add(24.0);
-            comboBoxFrameRateTo.Items.Add(25.0);
-            comboBoxFrameRateTo.Items.Add(29.97);
-
-            LanguageStructure.ChangeFrameRate language = Configuration.Settings.Language.ChangeFrameRate;
+            var language = Configuration.Settings.Language.ChangeFrameRate;
             Text = language.Title;
             labelInfo.Text = language.ConvertFrameRateOfSubtitle;
             labelFromFrameRate.Text = language.FromFrameRate;
@@ -32,12 +25,36 @@ namespace Nikse.SubtitleEdit.Forms
             buttonOK.Text = Configuration.Settings.Language.General.Ok;
             buttonCancel.Text = Configuration.Settings.Language.General.Cancel;
             UiUtil.FixLargeFonts(this, buttonOK);
+            if (Configuration.IsRunningOnWindows)
+            {
+                buttonSwap.Text = "🡙";
+            }
+            else
+            {
+                buttonSwap.Text = "<->";
+                buttonSwap.Width = 35;
+                buttonSwap.Font = new Font(Font.FontFamily, Font.Size);
+            }
+        }
+
+        private void InitializeCombobox(ComboBox comboBox)
+        {
+            comboBox.BeginUpdate();
+            comboBox.Items.Clear();
+            comboBox.Items.Add(23.976);
+            comboBox.Items.Add(24.0);
+            comboBox.Items.Add(25.0);
+            comboBox.Items.Add(29.97);
+            comboBox.Items.Add(30);
+            comboBox.EndUpdate();
         }
 
         private void FormChangeFrameRate_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         public void Initialize(string fromFrameRate)
@@ -53,10 +70,10 @@ namespace Nikse.SubtitleEdit.Forms
             openFileDialog1.FileName = string.Empty;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                VideoInfo info = UiUtil.GetVideoInfo(openFileDialog1.FileName);
-                if (info != null && info.Success)
+                var info = UiUtil.GetVideoInfo(openFileDialog1.FileName);
+                if (info?.Success == true)
                 {
-                    return info.FramesPerSecond.ToString();
+                    return Math.Round(info.FramesPerSecond, 3).ToString();
                 }
             }
             return oldFrameRate;
@@ -80,8 +97,7 @@ namespace Nikse.SubtitleEdit.Forms
                 return;
             }
 
-            double d;
-            if (double.TryParse(comboBoxFrameRateFrom.Text, out d) && double.TryParse(comboBoxFrameRateTo.Text, out d))
+            if (double.TryParse(comboBoxFrameRateFrom.Text, out _) && double.TryParse(comboBoxFrameRateTo.Text, out _))
             {
                 DialogResult = DialogResult.OK;
             }
@@ -91,21 +107,17 @@ namespace Nikse.SubtitleEdit.Forms
             }
         }
 
-        public double OldFrameRate
+        private void buttonSwap_Click(object sender, EventArgs e)
         {
-            get
-            {
-                return double.Parse(comboBoxFrameRateFrom.Text);
-            }
+            string oldFrameRate = comboBoxFrameRateFrom.Text;
+            string newFrameRate = comboBoxFrameRateTo.Text;
+
+            comboBoxFrameRateFrom.Text = newFrameRate;
+            comboBoxFrameRateTo.Text = oldFrameRate;
         }
 
-        public double NewFrameRate
-        {
-            get
-            {
-                return double.Parse(comboBoxFrameRateTo.Text);
-            }
-        }
+        public double OldFrameRate => double.Parse(comboBoxFrameRateFrom.Text);
 
+        public double NewFrameRate => double.Parse(comboBoxFrameRateTo.Text);
     }
 }

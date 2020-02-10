@@ -2,7 +2,7 @@
 <Language Name="português (Portugal)">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.6</Version>
+    <Version>3.5.13</Version>
     <TranslatedBy>Traduzido para Português de Portugal, por moob
 Email: mailto:moob42341@gmail.com</TranslatedBy>
     <CultureName>pt-PT</CultureName>
@@ -28,12 +28,13 @@ Email: mailto:moob42341@gmail.com</TranslatedBy>
     <CharsPerSec>Caracteres/seg</CharsPerSec>
     <WordsPerMin>Palavras/min</WordsPerMin>
     <Actor>Actor</Actor>
-	<Gap>Intervalo</Gap>
+    <Gap>Intervalo</Gap>
     <Region>Região</Region>
     <NumberSymbol>#</NumberSymbol>
     <Number>Número</Number>
     <Text>Texto</Text>
     <HourMinutesSecondsMilliseconds>Hora:min:seg:ms</HourMinutesSecondsMilliseconds>
+    <HourMinutesSecondsFrames>Hora:min:seg:fotogramas</HourMinutesSecondsFrames>
     <Bold>Negrito</Bold>
     <Italic>Itálico</Italic>
     <Underline>Sublinhado</Underline>
@@ -45,7 +46,7 @@ Email: mailto:moob42341@gmail.com</TranslatedBy>
     <FrameRateX>Fotogramas por segundo: {0:0.0###}</FrameRateX>
     <TotalFramesX>Total de fotogramas: {0:#,##0.##}</TotalFramesX>
     <VideoEncodingX>Codificação de vídeo: {0}</VideoEncodingX>
-    <SingleLineLengths>Comprimento da linha individual:</SingleLineLengths>
+    <SingleLineLengths>Comprimento da linha:</SingleLineLengths>
     <TotalLengthX>Comprimento total: {0}</TotalLengthX>
     <TotalLengthXSplitLine>Comprimento total: {0} (dividir linha!)</TotalLengthXSplitLine>
     <SplitLine>Dividir linha!</SplitLine>
@@ -55,7 +56,6 @@ Email: mailto:moob42341@gmail.com</TranslatedBy>
     <OverlapNextX>Sobrepor a seguinte ({0:#,##0.###})</OverlapNextX>
     <Negative>Negativo</Negative>
     <RegularExpressionIsNotValid>Expressão regular não válida!</RegularExpressionIsNotValid>
-    <SubtitleSaved>Legenda guardada</SubtitleSaved>
     <CurrentSubtitle>Legenda corrente</CurrentSubtitle>
     <OriginalText>Texto original</OriginalText>
     <OpenOriginalSubtitleFile>Abrir legenda original...</OpenOriginalSubtitleFile>
@@ -78,6 +78,10 @@ Email: mailto:moob42341@gmail.com</TranslatedBy>
     <Before>Antes</Before>
     <After>Depois</After>
     <Size>Tamanho</Size>
+    <Search>Procurar</Search>
+    <DeleteCurrentLine>Eliminar a linha actual</DeleteCurrentLine>
+    <Width>Largura</Width>
+    <Height>Altura</Height>
   </General>
   <About>
     <Title>Acerca do Subtitle Edit</Title>
@@ -86,7 +90,7 @@ Pode distribui-lo, modificá-lo e usá-lo livremente.
 
 Código fonte em C# disponível em https://github.com/SubtitleEdit/subtitleedit
 
-Visite www.nikse.dk para verificar se existem actualizações.
+Visite https://www.nikse.dk para verificar se existem actualizações.
 
 Agradecem-se sugestões.
 
@@ -143,8 +147,10 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <Recalculate>Recalcular</Recalculate>
     <AddSeconds>Adicionar segundos</AddSeconds>
     <SetAsPercent>Definir a percentagem de duração</SetAsPercent>
-    <Note>Nota: A duração não pode sobrepor o tempo de início do próximo texto</Note>
-    <PleaseSelectAValueFromTheDropDownList>Por favor, seleccione um valor da lista abaixo</PleaseSelectAValueFromTheDropDownList>
+    <Note>Nota: A duração não pode sobrepor o tempo de início do texto seguinte</Note>
+    <Fixed>Corrigido</Fixed>
+    <Milliseconds>Milissegundos</Milliseconds>
+    <ExtendOnly>Apenas aumentar</ExtendOnly>
   </AdjustDisplayDuration>
   <ApplyDurationLimits>
     <Title>Aplicar limites de duração</Title>
@@ -161,7 +167,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
   </AudioToText>
   <AutoBreakUnbreakLines>
     <TitleAutoBreak>Auto-ajustar linhas seleccionadas</TitleAutoBreak>
-    <TitleUnbreak>Remover quebras de linha das linhas seleccionadas</TitleUnbreak>
+    <TitleUnbreak>Eliminar quebras de linha das linhas seleccionadas</TitleUnbreak>
     <LinesFoundX>Linhas encontradas: {0}</LinesFoundX>
     <OnlyBreakLinesLongerThan>Dividir só linhas maiores que</OnlyBreakLinesLongerThan>
     <OnlyUnbreakLinesLongerThan>Unir só linhas menores que</OnlyUnbreakLinesLongerThan>
@@ -172,12 +178,13 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <InputDescription>Ficheiros de entrada (seleccione ou arraste e solte)</InputDescription>
     <Status>Estado</Status>
     <Output>Saída</Output>
-    <ChooseOutputFolder>Seleccionar pasta de saída</ChooseOutputFolder>
-    <OverwriteExistingFiles>Substituir os ficheiros existentes</OverwriteExistingFiles>
+    <SaveInSourceFolder>Guardar na pasta do ficheiro de origem</SaveInSourceFolder>
+    <SaveInOutputFolder>Guardar na pasta de destino</SaveInOutputFolder>
+    <OverwriteFiles>Substituir ficheiros</OverwriteFiles>
     <Style>Estilo...</Style>
-	<UseStyleFromSource>Usar o estilo da origem</UseStyleFromSource>
+    <UseStyleFromSource>Usar o estilo da origem</UseStyleFromSource>
     <ConvertOptions>Opções de conversão</ConvertOptions>
-    <RemoveFormatting>Remover etiquetas de formatação</RemoveFormatting>
+    <RemoveFormatting>Eliminar etiquetas de formatação</RemoveFormatting>
     <RemoveTextForHI>Eliminar texto para Deficientes Auditivos</RemoveTextForHI>
     <OverwriteOriginalFiles>Substituir os ficheiros originais (nova extensão se o formato for alterado)</OverwriteOriginalFiles>
     <RedoCasing>Refazer Maiúsculas/Minúsculas</RedoCasing>
@@ -187,13 +194,16 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <NotConverted>Sem sucesso</NotConverted>
     <Converted>Convertido</Converted>
     <Settings>Configurações</Settings>
+    <FixRtl>Corrigir RTL</FixRtl>
+    <FixRtlAddUnicode>Corrigir RTL via etiquetas Unicode</FixRtlAddUnicode>
+    <FixRtlRemoveUnicode>Eliminar etiquetas Unicode RTL</FixRtlRemoveUnicode>
+    <FixRtlReverseStartEnd>Inverter RTL início/fim</FixRtlReverseStartEnd>
     <SplitLongLines>Dividir linhas longas</SplitLongLines>
     <AutoBalance>Igualar automaticamente as linhas</AutoBalance>
     <ScanFolder>Examinar pasta...</ScanFolder>
-    <ScanningFolder>A examinar {0} e as sub-pastas por ficheiros de legendas...</ScanningFolder>
     <Recursive>Incluir sub-pastas</Recursive>
     <SetMinMsBetweenSubtitles>Definir mínimo em (ms) entre as linhas</SetMinMsBetweenSubtitles>
-	<BridgeGaps>Unir intervalos</BridgeGaps>
+    <BridgeGaps>Unir intervalos</BridgeGaps>
     <PlainText>Texto sem formatação</PlainText>
     <Ocr>OCR...</Ocr>
     <Filter>Filtro</Filter>
@@ -201,14 +211,27 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <FilterSrtNoUtf8BOM>Ficheiros SubRip (.srt) sem o cabeçalho UTF-8 BOM</FilterSrtNoUtf8BOM>
     <FilterMoreThanTwoLines>Mais de duas linhas numa legenda</FilterMoreThanTwoLines>
     <FilterContains>O texto contém...</FilterContains>
+    <FilterFileNameContains>O nome do ficheiro contém...</FilterFileNameContains>
     <FixCommonErrorsErrorX>Erros frequentes corrigidos: {0}</FixCommonErrorsErrorX>
     <MultipleReplaceErrorX>Múltiplas substituições: {0}</MultipleReplaceErrorX>
     <AutoBalanceErrorX>Balanço automático: {0}</AutoBalanceErrorX>
-	<OffsetTimeCodes>Tempos de compensação</OffsetTimeCodes>
+    <OffsetTimeCodes>Tempos de compensação</OffsetTimeCodes>
+    <TransportStreamSettings>Configurações de Transport Stream</TransportStreamSettings>
+    <TransportStreamOverrideXPosition>Substituir a posição original X</TransportStreamOverrideXPosition>
+    <TransportStreamOverrideYPosition>Substituir a posição original Y</TransportStreamOverrideYPosition>
+    <TransportStreamOverrideVideoSize>Substituir o tamanho original do vídeo</TransportStreamOverrideVideoSize>
+    <TransportStreamFileNameEnding>Fim do nome do ficheiro</TransportStreamFileNameEnding>
+    <TransportStreamSettingsButton>Configurações de TS...</TransportStreamSettingsButton>
+    <RemoveLineBreaks>Eliminar quebras de linha</RemoveLineBreaks>
   </BatchConvert>
   <Beamer>
     <Title>Vídeo projector</Title>
   </Beamer>
+  <Bookmarks>
+    <EditBookmark>Editar marcador</EditBookmark>
+    <AddBookmark>Adicionar marcador</AddBookmark>
+    <GoToBookmark>Ir para o marcador</GoToBookmark>
+  </Bookmarks>
   <ChangeCasing>
     <Title>Inverter Maiúsculas/Minúsculas</Title>
     <ChangeCasingTo>Inverter maiúsculas para</ChangeCasingTo>
@@ -291,7 +314,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <XNumberOfDifferenceAndPercentLettersChanged>Número de diferenças: {0} ({1:0.##}% de letras alteradas)</XNumberOfDifferenceAndPercentLettersChanged>
     <ShowOnlyDifferences>Mostrar só as diferenças</ShowOnlyDifferences>
     <IgnoreLineBreaks>Ignorar quebra de linha</IgnoreLineBreaks>
-	<IgnoreFormatting>Ignorar formatação</IgnoreFormatting>
+    <IgnoreFormatting>Ignorar formatação</IgnoreFormatting>
     <OnlyLookForDifferencesInText>Procurar só as diferenças no texto</OnlyLookForDifferencesInText>
     <CannotCompareWithImageBasedSubtitles>Não é possível comparar legendas baseadas em imagens</CannotCompareWithImageBasedSubtitles>
   </CompareSubtitles>
@@ -325,7 +348,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
   <DurationsBridgeGaps>
     <Title>Unir pequenos intervalos entre durações</Title>
     <GapsBridgedX>Número de pequenos intervalos unidos: {0}</GapsBridgedX>
-    <GapToNext>Ir para o próximo intervalo em segundos</GapToNext>
+    <GapToNext>Intervalo até ao seguinte em segundos</GapToNext>
     <BridgeGapsSmallerThanXPart1>Colmatar os intervalos menores do que</BridgeGapsSmallerThanXPart1>
     <BridgeGapsSmallerThanXPart2>milissegundos</BridgeGapsSmallerThanXPart2>
     <MinMillisecondsBetweenLines>Min. milissegundos entre as linhas</MinMillisecondsBetweenLines>
@@ -339,7 +362,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <IfoFiles>Ficheiros IFO</IfoFiles>
     <VobFiles>Ficheiros VOB</VobFiles>
     <Add>Adicionar...</Add>
-    <Remove>Remover</Remove>
+    <Remove>Eliminar</Remove>
     <Clear>Limpar</Clear>
     <MoveUp>Mover para cima</MoveUp>
     <MoveDown>Mover para baixo</MoveDown>
@@ -401,6 +424,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <TextLeftJustifiedText>Alinhado à esquerda</TextLeftJustifiedText>
     <TextCenteredText>Centralizado</TextCenteredText>
     <TextRightJustifiedText>Alinhado à direita</TextRightJustifiedText>
+    <UseBoxForOneNewLine>Marcar 'Usar a caixa à volta do texto' apenas numa linha nova</UseBoxForOneNewLine>
   </EbuSaveOptions>
   <EffectKaraoke>
     <Title>Efeito Karaoke</Title>
@@ -437,7 +461,8 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <Title>Exportar Final Cut Pro XML advanced</Title>
     <FontName>Tipo de letra</FontName>
     <FontSize>Tamanho</FontSize>
-    <FontFace>Rosto de fonte</FontFace>
+    <FontFace>Estilo da letra</FontFace>
+    <FontFaceRegular>Normal</FontFaceRegular>
     <Alignment>Alinhamento</Alignment>
     <Baseline>Linha de base</Baseline>
   </ExportFcpXmlAdvanced>
@@ -471,7 +496,8 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <Left>Esquerda</Left>
     <Right>Direita</Right>
     <Center>Centro</Center>
-	<CenterLeftJustify>Centro, justificado à esquerda</CenterLeftJustify>
+    <CenterLeftJustify>Centro, justificado à esquerda</CenterLeftJustify>
+    <CenterTopJustify>Centro, superior justificado</CenterTopJustify>
     <BottomMargin>Margem inferior</BottomMargin>
     <LeftRightMargin>Margem esq./dto.</LeftRightMargin>
     <SaveBluRraySupAs>Escolha o nome do ficheiro Blu-ray sup</SaveBluRraySupAs>
@@ -486,10 +512,10 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <LineHeight>Espaço entre linha</LineHeight>
     <BoxSingleLine>Caixa - linha única</BoxSingleLine>
     <BoxMultiLine>Caixa - todas as linhas</BoxMultiLine>
-    <Forced>Forçado</Forced>
+    <Forced>Forçada</Forced>
     <ChooseBackgroundColor>Escolha a cor do fundo</ChooseBackgroundColor>
     <SaveImageAs>Guardar imagem como...</SaveImageAs>
-	<FcpUseFullPathUrl>Utilizar o caminho completo do endereço no FCP xml</FcpUseFullPathUrl>
+    <FcpUseFullPathUrl>Utilizar o caminho completo do endereço no FCP xml</FcpUseFullPathUrl>
   </ExportPngXml>
   <ExportText>
     <Title>Exportar texto</Title>
@@ -498,8 +524,8 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <FormatText>Formatar texto</FormatText>
     <None>Nenhum</None>
     <MergeAllLines>Combinar todas as linhas</MergeAllLines>
-    <UnbreakLines>Remover quebras de linha</UnbreakLines>
-    <RemoveStyling>Remover estilo</RemoveStyling>
+    <UnbreakLines>Eliminar quebras de linha</UnbreakLines>
+    <RemoveStyling>Eliminar estilo</RemoveStyling>
     <ShowLineNumbers>Mostrar número de linhas</ShowLineNumbers>
     <AddNewLineAfterLineNumber>Adicionar nova linha depois do número de linha</AddNewLineAfterLineNumber>
     <ShowTimeCode>Mostrar os tempos</ShowTimeCode>
@@ -549,21 +575,23 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <Fixes>Correcções</Fixes>
     <Log>Registo</Log>
     <Function>Função</Function>
-    <RemovedEmptyLine>Remover linha em branco</RemovedEmptyLine>
-    <RemovedEmptyLineAtTop>Remover linha inicial em branco</RemovedEmptyLineAtTop>
-    <RemovedEmptyLineAtBottom>Remover linha final em branco</RemovedEmptyLineAtBottom>
+    <RemovedEmptyLine>Eliminar linha em branco</RemovedEmptyLine>
+    <RemovedEmptyLineAtTop>Eliminar linha inicial em branco</RemovedEmptyLineAtTop>
+    <RemovedEmptyLineAtBottom>Eliminar linha final em branco</RemovedEmptyLineAtBottom>
+    <RemovedEmptyLineInMiddle>Eliminar linha do meio em branco</RemovedEmptyLineInMiddle>
     <RemovedEmptyLinesUnsedLineBreaks>Eliminar quebras de linha em branco/sem uso</RemovedEmptyLinesUnsedLineBreaks>
     <EmptyLinesRemovedX>Linhas em branco eliminadas: {0}</EmptyLinesRemovedX>
     <FixOverlappingDisplayTimes>Corrigir sobreposições de tempo</FixOverlappingDisplayTimes>
     <FixShortDisplayTimes>Corrigir tempos curtos</FixShortDisplayTimes>
     <FixLongDisplayTimes>Corrigir tempos longos</FixLongDisplayTimes>
+    <FixShortGaps>Corrigir intervalos curtos</FixShortGaps>
     <FixInvalidItalicTags>Corrigir etiquetas itálicas inválidas</FixInvalidItalicTags>
-    <RemoveUnneededSpaces>Remover espaços desnecessários</RemoveUnneededSpaces>
-    <RemoveUnneededPeriods>Remover pontos desnecessários</RemoveUnneededPeriods>
+    <RemoveUnneededSpaces>Eliminar espaços desnecessários</RemoveUnneededSpaces>
+    <RemoveUnneededPeriods>Eliminar pontos desnecessários</RemoveUnneededPeriods>
     <FixMissingSpaces>Corrigir espaços em falta</FixMissingSpaces>
     <BreakLongLines>Dividir linhas longas</BreakLongLines>
-    <RemoveLineBreaks>Remover quebras de linha em textos curtos só com uma frase</RemoveLineBreaks>
-    <RemoveLineBreaksAll>Remover quebras de linha em textos curtos (todos excepto diálogos)</RemoveLineBreaksAll>
+    <RemoveLineBreaks>Eliminar quebras de linha em textos curtos só com uma frase</RemoveLineBreaks>
+    <RemoveLineBreaksAll>Eliminar quebras de linha em textos curtos (todos excepto diálogos)</RemoveLineBreaksAll>
     <FixUppercaseIInsindeLowercaseWords>Corrigir 'i' maiúscula em palavras em minúsculo (erro de OCR)</FixUppercaseIInsindeLowercaseWords>
     <FixDoubleApostrophes>Substituir apóstrofe dupla ('') por aspas (")</FixDoubleApostrophes>
     <AddPeriods>Adicionar ponto final quando a linha seguinte começar com maiúscula</AddPeriods>
@@ -573,7 +601,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <FixLowercaseIToUppercaseI>Corrigir "i" minúscula sozinha por "I" maiúscula (Inglês)</FixLowercaseIToUppercaseI>
     <FixCommonOcrErrors>Corrigir erros frequentes de OCR (usando lista de substituição OCR)</FixCommonOcrErrors>
     <CommonOcrErrorsFixed>Erros frequentes de OCR corrigidos (ficheiro OcrReplaceList usado): {0}</CommonOcrErrorsFixed>
-    <RemoveSpaceBetweenNumber>Remover espaços entre números</RemoveSpaceBetweenNumber>
+    <RemoveSpaceBetweenNumber>Eliminar espaços entre números</RemoveSpaceBetweenNumber>
     <FixDialogsOnOneLine>Corrigir diálogos numa linha</FixDialogsOnOneLine>
     <RemoveSpaceBetweenNumbersFixed>Eliminar espaços entre números corrigido: {0}</RemoveSpaceBetweenNumbersFixed>
     <FixTurkishAnsi>Corrigir ANSI turco (Islandês) caracteres para Unicode</FixTurkishAnsi>
@@ -581,10 +609,10 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <FixSpanishInvertedQuestionAndExclamationMarks>Corrigir sinais invertidos (interrogação e exclamação) do espanhol</FixSpanishInvertedQuestionAndExclamationMarks>
     <AddMissingQuote>Adicionar aspa em falta (")</AddMissingQuote>
     <AddMissingQuotes>Adicionar aspas em falta (")</AddMissingQuotes>
-    <FixHyphens>Remover hífen em linhas que começam com hífen (-)</FixHyphens>
-    <FixHyphensAdd>Adicionar hífen em linhas duplas só com um hífen (-)</FixHyphensAdd>
-    <FixHyphen>Corrigir linhas que começam com hífen (-)</FixHyphen>
-    <XHyphensFixed>Hífens removidos: {0}</XHyphensFixed>
+    <FixHyphens>Eliminar travessão em linhas que começam com travessão (-)</FixHyphens>
+    <FixHyphensAdd>Adicionar travessão em linhas duplas só com um travessão (-)</FixHyphensAdd>
+    <FixHyphen>Corrigir linhas que começam com travessão (-)</FixHyphen>
+    <XHyphensFixed>Travessões removidos: {0}</XHyphensFixed>
     <AddMissingQuotesExample>"Como estás? -&gt; "Como estás?"</AddMissingQuotesExample>
     <XMissingQuotesAdded>Aspas em falta adicionadas: {0}</XMissingQuotesAdded>
     <Fix3PlusLines>Corrigir legendas com mais de duas linhas</Fix3PlusLines>
@@ -594,20 +622,21 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <NothingToFix>Nada para corrigir :)</NothingToFix>
     <FixesFoundX>Correcções encontradas: {0}</FixesFoundX>
     <XFixesApplied>Correcções aplicadas: {0}</XFixesApplied>
-    <NothingToFixBut>Nada a corrigir, mas algumas coisas podem ser melhoradas - veja o registo para mais detalhes</NothingToFixBut>
-    <Continue>Continuar</Continue>
-    <ContinueAnyway>Continuar mesmo assim?</ContinueAnyway>
+    <NothingFixableBut>Não pôde ser corrigido automaticamente. A legenda contém erros - veja o registo para mais detalhes</NothingFixableBut>
+    <XFixedBut>{0} erro(s) corrigido(s) mas a legenda ainda contém erros - veja o registo para mais detalhes</XFixedBut>
+    <XCouldBeFixedBut>{0} o(s) erro(s) pode(m) ser corrigido(s) mas a legenda ainda conterá erros - veja o registo para mais detalhes</XCouldBeFixedBut>
     <UncheckedFixLowercaseIToUppercaseI>Desmarcar "Corrigir "i" minúscula sozinha por "I" maiúscula (Inglês)"</UncheckedFixLowercaseIToUppercaseI>
     <XIsChangedToUppercase>{0} i's alterados para maiúsculo</XIsChangedToUppercase>
     <FixFirstLetterToUppercaseAfterParagraph>Corrigir primeira letra do parágrafo para maiúscula</FixFirstLetterToUppercaseAfterParagraph>
-    <MergeShortLine>Remover quebra de linha em linha curta (uma frase)</MergeShortLine>
-    <MergeShortLineAll>Remover quebra de linha em linha curta (excepto diálogos)</MergeShortLineAll>
+    <MergeShortLine>Eliminar quebra de linha em linha curta (uma frase)</MergeShortLine>
+    <MergeShortLineAll>Eliminar quebra de linha em linha curta (excepto diálogos)</MergeShortLineAll>
     <XLineBreaksAdded>{0} quebras de linha adicionadas</XLineBreaksAdded>
     <BreakLongLine>Dividir linha longa</BreakLongLine>
     <FixLongDisplayTime>Corrigir duração longa</FixLongDisplayTime>
     <FixInvalidItalicTag>Corrigir etiqueta itálica inválida</FixInvalidItalicTag>
     <FixShortDisplayTime>Corrigir duração curta</FixShortDisplayTime>
     <FixOverlappingDisplayTime>Corrigir tempo sobreposto</FixOverlappingDisplayTime>
+    <FixShortGap>Corrigir intervalo curto</FixShortGap>
     <FixInvalidItalicTagsExample>&lt;i&gt;E eu com isso.&lt;i&gt; -&gt; &lt;i&gt;E eu com isso.&lt;/i&gt;</FixInvalidItalicTagsExample>
     <RemoveUnneededSpacesExample>Ei  tu , aí. -&gt; Ei tu, aí.</RemoveUnneededSpacesExample>
     <RemoveUnneededPeriodsExample>Ei tu!. -&gt; Ei tu!</RemoveUnneededPeriodsExample>
@@ -621,7 +650,8 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <XOverlappingTimestampsFixed>{0} sobreposições de tempo corrigidas</XOverlappingTimestampsFixed>
     <XDisplayTimesProlonged>{0} durações prolongadas</XDisplayTimesProlonged>
     <XInvalidHtmlTagsFixed>{0} etiquetas HTML inválidas corrigidas</XInvalidHtmlTagsFixed>
-    <XDisplayTimesShortned>{0} duração encurtada</XDisplayTimesShortned>
+    <XDisplayTimesShortned>{0} durações reduzidas</XDisplayTimesShortned>
+    <XGapsFixed>{0} intervalos curtos corrigidos</XGapsFixed>
     <XLinesUnbreaked>{0} linhas unidas</XLinesUnbreaked>
     <UnneededSpace>Espaço desnecessário</UnneededSpace>
     <XUnneededSpacesRemoved>{0} espaços desnecessários removidos</XUnneededSpacesRemoved>
@@ -639,8 +669,8 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <AutoBreak>Ajuste &amp;auto</AutoBreak>
     <Unbreak>&amp;Combinar</Unbreak>
     <FixDoubleDash>Corrigir '--' -&gt; '...'</FixDoubleDash>
-    <FixDoubleGreaterThan>Remover '&gt;&gt;'</FixDoubleGreaterThan>
-    <FixEllipsesStart>Remover '...' no início</FixEllipsesStart>
+    <FixDoubleGreaterThan>Eliminar '&gt;&gt;'</FixDoubleGreaterThan>
+    <FixEllipsesStart>Eliminar '...' no início</FixEllipsesStart>
     <FixMissingOpenBracket>Corrigir [ omitido na linha</FixMissingOpenBracket>
     <FixMusicNotation>Substituir símbolos musicais (e.g. âTª) por símbolos adequados</FixMusicNotation>
     <XFixDoubleDash>{0} '--' corrigidos</XFixDoubleDash>
@@ -663,8 +693,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
   <GetDictionaries>
     <Title>Precisa de dicionários?</Title>
     <DescriptionLine1>A revisão ortográfica do Subtitle Edit é baseada no mecanismo NHunspell</DescriptionLine1>
-    <DescriptionLine2>que usa os dicionários do Open Office.</DescriptionLine2>
-    <GetDictionariesHere>Obtenha dicionários aqui:</GetDictionariesHere>
+    <DescriptionLine2>que usa os dicionários do LibreOffice.</DescriptionLine2>
     <ChooseLanguageAndClickDownload>Seleccione o idioma e clique em transferir</ChooseLanguageAndClickDownload>
     <OpenDictionariesFolder>Abrir a pasta dos 'Dicionários'</OpenDictionariesFolder>
     <Download>Transferir</Download>
@@ -688,6 +717,13 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <PleaseWait>Por favor, aguarde... isto pode demorar.</PleaseWait>
     <PoweredByGoogleTranslate>Powered by Google translate</PoweredByGoogleTranslate>
     <PoweredByMicrosoftTranslate>Powered by Microsoft translate</PoweredByMicrosoftTranslate>
+    <MsClientSecretNeeded>Desculpe, precisa de uma chave de 'Tradutor de texto' dos Serviços Cognitivos da Microsoft para usar o mais recente tradutor da Microsoft.
+
+Vá a "Opções -&gt; Configurações -&gt; Ferramentas" para inserir a chave.</MsClientSecretNeeded>
+    <GoogleApiKeyNeeded>Desculpe, precisa de uma chave API do Google para usar o Tradutor do Google mais recente.
+
+Vá a "Opções -&gt; Configurações -&gt; Ferramentas" para inserir a chave API do Tradutor do Google.</GoogleApiKeyNeeded>
+    <GoogleNoApiKeyWarning>A tentar traduzir sem chave API... (tradução lenta e limitada)</GoogleNoApiKeyWarning>
   </GoogleTranslate>
   <GoogleOrMicrosoftTranslate>
     <Title>Tradutor do Google vs Microsoft</Title>
@@ -707,19 +743,23 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <ImageFiles>Ficheiros de imagens</ImageFiles>
     <Input>Entrada</Input>
     <InputDescription>Escolha os ficheiros de entrada (Selecionar ou arrastar-e-soltar)</InputDescription>
-    <Remove>Remover</Remove>
-    <RemoveAll>Remover todas</RemoveAll>
+    <Remove>Eliminar</Remove>
+    <RemoveAll>Eliminar tudo</RemoveAll>
   </ImportImages>
   <ImportSceneChanges>
-    <Title>Importar mudanças de cena</Title>
+    <Title>Gerar/Importar mudanças de cena</Title>
     <OpenTextFile>Abrir ficheiro de texto...</OpenTextFile>
-    <ImportOptions>Importar opções</ImportOptions>
+    <Generate>Gerar mudanças de cena</Generate>
+    <Import>Importar mudanças de cena</Import>
     <TextFiles>Ficheiros de texto</TextFiles>
     <TimeCodes>Tempos</TimeCodes>
     <Frames>Fotogramas</Frames>
     <Seconds>Segundos</Seconds>
     <Milliseconds>Milissegundos</Milliseconds>
-    <GetSceneChangesWithFfmpeg>Obter as alterações de cena com o FFmpeg</GetSceneChangesWithFfmpeg>
+    <GetSceneChangesWithFfmpeg>Gerar as alterações de cena com o FFmpeg</GetSceneChangesWithFfmpeg>
+    <Sensitivity>Sensibilidade</Sensitivity>
+    <SensitivityDescription>Um valor mais baixo oferece mais alterações de cena</SensitivityDescription>
+    <NoSceneChangesFound>Nenhuma mudança de cena foi encontrada.</NoSceneChangesFound>
   </ImportSceneChanges>
   <ImportText>
     <Title>Importar texto sem formatação</Title>
@@ -730,11 +770,12 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <Splitting>Divisão</Splitting>
     <AutoSplitText>Auto-dividir texto</AutoSplitText>
     <OneLineIsOneSubtitle>Uma linha é uma legenda</OneLineIsOneSubtitle>
+    <TwoLinesAreOneSubtitle>Duas linhas numa</TwoLinesAreOneSubtitle>
     <LineBreak>Quebra de linha</LineBreak>
     <SplitAtBlankLines>Dividir nas linhas em branco</SplitAtBlankLines>
     <MergeShortLines>Combinar as linhas curtas continuadas</MergeShortLines>
-    <RemoveEmptyLines>Remover as linhas em branco</RemoveEmptyLines>
-    <RemoveLinesWithoutLetters>Remover as linhas sem letras</RemoveLinesWithoutLetters>
+    <RemoveEmptyLines>Eliminar linhas em branco</RemoveEmptyLines>
+    <RemoveLinesWithoutLetters>Eliminar linhas sem letras</RemoveLinesWithoutLetters>
     <GenerateTimeCodes>Gerar tempos</GenerateTimeCodes>
     <GapBetweenSubtitles>Espaço entre linhas (milissegundos)</GapBetweenSubtitles>
     <Auto>Auto</Auto>
@@ -743,6 +784,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <TextFiles>Ficheiros de texto</TextFiles>
     <PreviewLinesModifiedX>Pré-visualizar - legendas modificados: {0}</PreviewLinesModifiedX>
     <TimeCodes>Tempos</TimeCodes>
+    <SplitAtEndChars>Dividir nos últimos caracteres</SplitAtEndChars>
   </ImportText>
   <Interjections>
     <Title>Interjeições</Title>
@@ -756,7 +798,9 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
     <FileName>Nome do ficheiro</FileName>
     <Join>Juntar</Join>
     <TotalNumberOfLinesX>Total do número de linhas: {0:#,###,###}</TotalNumberOfLinesX>
-    <Note>Nota: Os ficheiros já devem ter os tempos correctos</Note>
+    <AlreadyCorrectTimeCodes>Os ficheiros já devem ter os tempos correctos</AlreadyCorrectTimeCodes>
+    <AppendTimeCodes>Adicionar tempo final do ficheiro anterior</AppendTimeCodes>
+    <AddMs>Adicionar milissegundos após cada ficheiro</AddMs>
   </JoinSubtitles>
   <LanguageNames>
     <NotSpecified>Não especificado</NotSpecified>
@@ -916,6 +960,8 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
         <AdvancedSubStationAlphaProperties>Advanced Sub Station Alpha propriedades...</AdvancedSubStationAlphaProperties>
         <SubStationAlphaProperties>Sub Station Alpha propriedades...</SubStationAlphaProperties>
         <EbuProperties>EBU STL propriedades...</EbuProperties>
+        <DvdStuioProProperties>DVD Studio Pro propriedades...</DvdStuioProProperties>
+        <TimedTextProperties>Propriedades de Timed Text...</TimedTextProperties>
         <PacProperties>PAC propriedades...</PacProperties>
         <OpenOriginal>Abrir legenda original (modo tradutor)...</OpenOriginal>
         <SaveOriginal>Guardar legenda original</SaveOriginal>
@@ -994,6 +1040,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
         <SplitLongLines>Dividir as linhas longas...</SplitLongLines>
         <MinimumDisplayTimeBetweenParagraphs>Duração mínima entre linhas...</MinimumDisplayTimeBetweenParagraphs>
         <SortBy>Ordenar por</SortBy>
+        <NetflixQualityCheck>Controlo de qualidade Netflix...</NetflixQualityCheck>
         <Number>Ordem numérica</Number>
         <StartTime>Tempo inicial</StartTime>
         <EndTime>Tempo final</EndTime>
@@ -1018,13 +1065,15 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
       <Video>
         <Title>Vídeo</Title>
         <OpenVideo>Abrir ficheiro de vídeo...</OpenVideo>
+        <OpenVideoFromUrl>Abrir vídeo a partir de um endereço...</OpenVideoFromUrl>
         <OpenDvd>Abrir DVD...</OpenDvd>
         <ChooseAudioTrack>Seleccione a faixa de áudio</ChooseAudioTrack>
         <CloseVideo>Fechar ficheiro de vídeo</CloseVideo>
         <SetVideoOffset>Definir o deslocamento do vídeo...</SetVideoOffset>
-		<SmptTimeMode>SMPTE temporização (drop frame)</SmptTimeMode>
-        <ImportSceneChanges>Importar mudanças de cena...</ImportSceneChanges>
-        <RemoveSceneChanges>Remover mudanças de cena</RemoveSceneChanges>
+        <SmptTimeMode>SMPTE temporização (drop frame)</SmptTimeMode>
+        <GenerateTextFromVideo>Gerar texto a partir do vídeo...</GenerateTextFromVideo>
+        <GenerateImportSceneChanges>Gerar/Importar mudanças de cena...</GenerateImportSceneChanges>
+        <RemoveSceneChanges>Eliminar mudanças de cena</RemoveSceneChanges>
         <WaveformBatchGenerate>Gerar formas de onda em série...</WaveformBatchGenerate>
         <ShowHideVideo>Mostrar/ocultar vídeo</ShowHideVideo>
         <ShowHideWaveform>Mostrar/ocultar forma de onda</ShowHideWaveform>
@@ -1084,7 +1133,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
         <RemoveTextForHi>Eliminar texto para Deficientes Auditivos</RemoveTextForHi>
         <VisualSync>Sincronia visual</VisualSync>
         <SpellCheck>Verificação ortográfica</SpellCheck>
-        <NetflixQualityCheck>Verificação de qualidade da legenda Netflix</NetflixQualityCheck>
+        <NetflixQualityCheck>Controlo de qualidade Netflix</NetflixQualityCheck>
         <Settings>Configurações</Settings>
         <Help>Ajuda</Help>
         <ShowHideWaveform>Mostrar/ocultar forma de onda</ShowHideWaveform>
@@ -1099,7 +1148,7 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
         <AdvancedSubStationAlphaStyles>Estilos Advanced Sub Station Alpha...</AdvancedSubStationAlphaStyles>
         <TimedTextSetRegion>Timed Text - Definir região</TimedTextSetRegion>
         <TimedTextSetStyle>Timed Text - Definir estilo</TimedTextSetStyle>
-        <TimedTextStyles>Estilos Timed Text...</TimedTextStyles>
+        <TimedTextStyles>Estilos do Timed Text...</TimedTextStyles>
         <TimedTextSetLanguage>Timed Text - Definir o idioma</TimedTextSetLanguage>
         <SamiSetStyle>Sami - Definir classe</SamiSetStyle>
         <NuendoSetStyle>Nuendo - Definir caractere</NuendoSetStyle>
@@ -1108,14 +1157,14 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
         <Paste>Colar</Paste>
         <Delete>Eliminar</Delete>
         <SplitLineAtCursorPosition>Dividir linha a partir do cursor</SplitLineAtCursorPosition>
-		<SplitLineAtCursorAndWaveformPosition>Dividir linha a partir do cursor/posição de vídeo</SplitLineAtCursorAndWaveformPosition>
+        <SplitLineAtCursorAndWaveformPosition>Dividir linha a partir do cursor/posição de vídeo</SplitLineAtCursorAndWaveformPosition>
         <AutoDurationCurrentLine>Duração automática (linha corrente)</AutoDurationCurrentLine>
         <SelectAll>Seleccionar tudo</SelectAll>
         <InsertFirstLine>Inserir linha</InsertFirstLine>
         <InsertBefore>Inserir antes</InsertBefore>
         <InsertAfter>Inserir depois</InsertAfter>
         <InsertSubtitleAfter>Inserir legenda após esta linha</InsertSubtitleAfter>
-        <CopyToClipboard>Copiar como texto para a área de transferência</CopyToClipboard>
+        <CopyToClipboard>Copiar linha(s)</CopyToClipboard>
         <Column>Coluna</Column>
         <ColumnDeleteText>Eliminar texto</ColumnDeleteText>
         <ColumnDeleteTextAndShiftCellsUp>Eliminar texto e deslocar células para cima</ColumnDeleteTextAndShiftCellsUp>
@@ -1131,27 +1180,39 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
         <MergeSelectedLinesAsDialog>Combinar as linhas seleccionadas como diálogo</MergeSelectedLinesAsDialog>
         <MergeWithLineBefore>Combinar com a linha anterior</MergeWithLineBefore>
         <MergeWithLineAfter>Combinar com a linha seguinte</MergeWithLineAfter>
-        <Normal>Normal (remove a formatação)</Normal>
+        <RemoveFormatting>Eliminar formatação</RemoveFormatting>
+        <RemoveFormattingAll>Eliminar qualquer formatação</RemoveFormattingAll>
+        <RemoveFormattingBold>Eliminar negrito</RemoveFormattingBold>
+        <RemoveFormattingItalic>Eliminar itálico</RemoveFormattingItalic>
+        <RemoveFormattingUnderline>Eliminar sublinhado</RemoveFormattingUnderline>
+        <RemoveFormattingColor>Eliminar cor</RemoveFormattingColor>
+        <RemoveFormattingFontName>Eliminar tipo de letra</RemoveFormattingFontName>
+        <RemoveFormattingAlignment>Eliminar alinhamento</RemoveFormattingAlignment>
         <Underline>Sublinhado</Underline>
+        <Box>Caixa</Box>
         <Color>Cor</Color>
         <FontName>Tipo de letra</FontName>
+        <Superscript>Superscript</Superscript>
+        <Subscript>Subscript</Subscript>
         <Alignment>Alinhamento</Alignment>
         <AutoBalanceSelectedLines>Auto-ajustar linhas seleccionadas</AutoBalanceSelectedLines>
-        <RemoveLineBreaksFromSelectedLines>Remover quebras de linha das linhas seleccionadas</RemoveLineBreaksFromSelectedLines>
+        <RemoveLineBreaksFromSelectedLines>Eliminar quebras de linha das linhas seleccionadas</RemoveLineBreaksFromSelectedLines>
         <TypewriterEffect>Efeito máquina de escrever</TypewriterEffect>
         <KaraokeEffect>Efeito Karaoke</KaraokeEffect>
         <ShowSelectedLinesEarlierLater>Mostrar linhas seleccionadas antes/depois</ShowSelectedLinesEarlierLater>
         <VisualSyncSelectedLines>Sincronia visual das linhas seleccionadas</VisualSyncSelectedLines>
         <GoogleAndMicrosoftTranslateSelectedLine>Google/Microsoft traduzir linha original</GoogleAndMicrosoftTranslateSelectedLine>
-        <GoogleTranslateSelectedLines>Traduzir pelo Google as linhas seleccionadas</GoogleTranslateSelectedLines>
+        <TranslateSelectedLines>Traduzir linhas seleccionadas...</TranslateSelectedLines>
         <AdjustDisplayDurationForSelectedLines>Ajustar duração das linhas seleccionadas</AdjustDisplayDurationForSelectedLines>
         <FixCommonErrorsInSelectedLines>Corrigir erros frequentes nas linhas seleccionadas</FixCommonErrorsInSelectedLines>
         <ChangeCasingForSelectedLines>Alterar Maiúsculas/Minúsculas nas linhas seleccionadas</ChangeCasingForSelectedLines>
         <SaveSelectedLines>Guardar linhas seleccionadas como...</SaveSelectedLines>
         <WebVTTSetNewVoice>Definir nova voz</WebVTTSetNewVoice>
-        <WebVTTRemoveVoices>Remover vozes</WebVTTRemoveVoices>
+        <WebVTTRemoveVoices>Eliminar vozes</WebVTTRemoveVoices>
         <NewActor>Novo actor...</NewActor>
-        <RemoveActors>Remover actores</RemoveActors>
+        <RemoveActors>Eliminar actores</RemoveActors>
+        <EditBookmark>Editar marcador</EditBookmark>
+        <RemoveBookmark>Eliminar marcador</RemoveBookmark>
       </ContextMenu>
     </Menu>
     <Controls>
@@ -1160,13 +1221,14 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
       <ListView>Lista</ListView>
       <SourceView>Original</SourceView>
       <UndoChangesInEditPanel>Anular alterações no painel de edição</UndoChangesInEditPanel>
-      <Previous>&lt;Anterior</Previous>
-      <Next>Próxima &gt;</Next>
+      <Previous>Anterior</Previous>
+      <Next>Próxima</Next>
       <AutoBreak>Ajuste auto &amp;</AutoBreak>
       <Unbreak>Combinar</Unbreak>
     </Controls>
     <VideoControls>
       <Translate>Traduzir</Translate>
+      <CreateAndAdjust>Criar/ajustar</CreateAndAdjust>
       <Create>Criar</Create>
       <Adjust>Ajustar</Adjust>
       <SelectCurrentElementWhilePlaying>Selecção da linha durante a reprodução</SelectCurrentElementWhilePlaying>
@@ -1199,13 +1261,11 @@ Nota: Verifique o espaço em disco.</WaveFileMalformed>
       <SetstartTimeAndOffsetOfRest>Iníci&amp;o e compensar o resto</SetstartTimeAndOffsetOfRest>
       <SearchTextOnline>Procurar texto online</SearchTextOnline>
       <GoogleTranslate>Google Tradutor</GoogleTranslate>
-      <GoogleIt>Pesquisar Google</GoogleIt>
+      <GoogleIt>Pesquisa Google</GoogleIt>
       <SecondsBackShort>&lt;&lt;</SecondsBackShort>
       <SecondsForwardShort>&gt;&gt;</SecondsForwardShort>
       <VideoPosition>Posição vídeo:</VideoPosition>
       <TranslateTip>Dica: Use &lt;ALT+seta acima/abaixo&gt; para ir à legenda ant/seg</TranslateTip>
-      <CreateTip>Dica: Use as teclas &lt;CTRL+seta esquerda/direita&gt;</CreateTip>
-      <AdjustTip>Dica: Use &lt;ALT+seta acima/abaixo&gt; para ir à legenda ant/seg</AdjustTip>
       <BeforeChangingTimeInWaveformX>Antes de alterar o tempo na forma de onda: {0}</BeforeChangingTimeInWaveformX>
       <NewTextInsertAtX>Novo texto inserido em {0}</NewTextInsertAtX>
       <Center>Centralizar</Center>
@@ -1312,7 +1372,6 @@ Deseja continuar?</SubtitleAppendPrompt>
     <RedoPerformed>Refazer aplicado</RedoPerformed>
     <NothingToUndo>Nada para anular</NothingToUndo>
     <InvalidLanguageNameX>Nome de idioma inválido: {0}</InvalidLanguageNameX>
-    <UnableToChangeLanguage>Não é possível alterar o idioma!</UnableToChangeLanguage>
     <DoNotDisplayMessageAgain>Não exibir esta mensagem novamente</DoNotDisplayMessageAgain>
     <NumberOfCorrectedWords>Número de palavras corrigidas: {0}</NumberOfCorrectedWords>
     <NumberOfSkippedWords>Número de palavras omitidas: {0}</NumberOfSkippedWords>
@@ -1334,8 +1393,7 @@ Deseja continuar?</SubtitleAppendPrompt>
     <DeleteOneLinePrompt>Deseja eliminar linha?</DeleteOneLinePrompt>
     <BeforeInsertLine>Antes de inserir linha</BeforeInsertLine>
     <LineInserted>Linha inserida</LineInserted>
-    <BeforeLineUpdatedInListView>Antes de actualizar linha na lista</BeforeLineUpdatedInListView>
-    <BeforeSettingFontToNormal>Antes de definir o tipo de letra para normal</BeforeSettingFontToNormal>
+    <BeforeLineUpdatedInListView>Antes da linha ser actualizada na lista</BeforeLineUpdatedInListView>
     <BeforeSplitLine>Antes de dividir a linha</BeforeSplitLine>
     <LineSplitted>Linha foi dividida</LineSplitted>
     <BeforeMergeLines>Antes de combinar as linhas</BeforeMergeLines>
@@ -1356,7 +1414,6 @@ Deseja continuar?</SubtitleAppendPrompt>
     <SubtitleImportedFromMatroskaFile>Legenda importada do ficheiro Matroska (.mkv)</SubtitleImportedFromMatroskaFile>
     <DropFileXNotAccepted>Ficheiro '{0}' não aceite - ficheiro demasiado grande</DropFileXNotAccepted>
     <DropOnlyOneFile>Só pode baixar um ficheiro</DropOnlyOneFile>
-    <BeforeCreateAdjustLines>Antes de criar/ajustar linhas</BeforeCreateAdjustLines>
     <OpenAnsiSubtitle>Abrir legenda...</OpenAnsiSubtitle>
     <BeforeChangeCasing>Antes de alterar o formato</BeforeChangeCasing>
     <CasingCompleteMessageNoNames>Número de linhas com formato alterado: {0}/{1}</CasingCompleteMessageNoNames>
@@ -1383,7 +1440,6 @@ Deseja continuar?</SubtitleAppendPrompt>
     <ShowSelectedLinesXSecondsLinesLater>Mostrar linhas seleccionadas {0:0.0##} segundos depois</ShowSelectedLinesXSecondsLinesLater>
     <ShowSelectionAndForwardXSecondsLinesEarlier>Mostrar selecção e continuar {0:0.0##} segundos antes</ShowSelectionAndForwardXSecondsLinesEarlier>
     <ShowSelectionAndForwardXSecondsLinesLater>Mostrar selecção e continuar {0:0.0##} segundos depois</ShowSelectionAndForwardXSecondsLinesLater>
-    <ShowSelectedLinesEarlierLaterPerformed>Mostrar antes/depois aplicado nas linhas seleccionadas</ShowSelectedLinesEarlierLaterPerformed>
     <DoubleWordsViaRegEx>Palavras duplicadas via RegEx {0}</DoubleWordsViaRegEx>
     <BeforeSortX>Antes de ordenar: {0}</BeforeSortX>
     <SortedByX>Ordenado por: {0}</SortedByX>
@@ -1401,10 +1457,9 @@ Deseja continuar?</SubtitleAppendPrompt>
     <OcrReplacePairXNotAdded>O par OCR lista de substituição '{0} -&gt; {1}' NÃO foi adicionado à lista de substituição OCR</OcrReplacePairXNotAdded>
     <XLinesSelected>{0} linhas seleccionadas</XLinesSelected>
     <UnicodeMusicSymbolsAnsiWarning>A legenda contém caracteres em Unicode. Guardar como ANSI irá removê-las. Deseja continuar?</UnicodeMusicSymbolsAnsiWarning>
-    <UnicodeCharactersAnsiWarning>A legenda contém caracteres Unicode. Guardar a legenda com a codificação ANSI perde estes caracteres. Deseja continuar?</UnicodeCharactersAnsiWarning>
     <NegativeTimeWarning>A legenda contém tempos negativos. Deseja continuar?</NegativeTimeWarning>
     <BeforeMergeShortLines>Antes de combinar as linhas curtas</BeforeMergeShortLines>
-	<MergedShortLinesX>Número de linhas combinadas: {0}</MergedShortLinesX>
+    <MergedShortLinesX>Número de linhas combinadas: {0}</MergedShortLinesX>
     <BeforeSplitLongLines>Antes de dividir linhas longas</BeforeSplitLongLines>
     <LongLinesSplitX>Número de linhas divididas: {0}</LongLinesSplitX>
     <BeforeDurationsBridgeGap>Antes de unir pequenos intervalos</BeforeDurationsBridgeGap>
@@ -1433,12 +1488,8 @@ Deseja continuar?</SubtitleAppendPrompt>
     <UserAndAction>Utilizador/acção</UserAndAction>
     <NetworkMode>Modo de rede</NetworkMode>
     <XStartedSessionYAtZ>{0}: Sessão iniciada {1} de {2}</XStartedSessionYAtZ>
-    <SpellChekingViaWordXLineYOfX>Verificação ortográfica usando o Microsoft Word {0} - linha {1} / {2}</SpellChekingViaWordXLineYOfX>
-    <UnableToStartWord>Impossível iniciar o Microsoft Word</UnableToStartWord>
-    <SpellCheckAbortedXCorrections>Verificação ortográfica cancelada. {0} linhas modificadas.</SpellCheckAbortedXCorrections>
-    <SpellCheckCompletedXCorrections>Verificação ortográfica completa. {0} linhas modificadas.</SpellCheckCompletedXCorrections>
     <OpenOtherSubtitle>Abrir outra legenda</OpenOtherSubtitle>
-    <BeforeToggleDialogDashes>Antes de alternar traços de diálogo</BeforeToggleDialogDashes>
+    <BeforeToggleDialogDashes>Antes de alternar travessões</BeforeToggleDialogDashes>
     <ExportPlainTextAs>Exportar texto sem formatação como</ExportPlainTextAs>
     <TextFiles>Ficheiros de texto</TextFiles>
     <SubtitleExported>Legenda exportada</SubtitleExported>
@@ -1451,7 +1502,8 @@ Deseja continuar?</SubtitleAppendPrompt>
     <BeforeColumnDelete>Antes de eliminar coluna</BeforeColumnDelete>
     <BeforeColumnImportText>Antes da importação de texto da coluna</BeforeColumnImportText>
     <BeforeColumnShiftCellsDown>Antes baixar as células da coluna</BeforeColumnShiftCellsDown>
-	<BeforeX>Antes: {0}</BeforeX>
+    <BeforeX>Antes: {0}</BeforeX>
+    <LinesUpdatedX>Linhas actualizadas: {0}</LinesUpdatedX>
     <ErrorLoadingPluginXErrorY>Erro ao carregar plugin: {0}: {1}</ErrorLoadingPluginXErrorY>
     <BeforeRunningPluginXVersionY>Antes de executar plugin: {0}: {1}</BeforeRunningPluginXVersionY>
     <UnableToReadPluginResult>Impossível de ler o resultado da legenda do plugin!</UnableToReadPluginResult>
@@ -1466,15 +1518,16 @@ Deseja continuar?</SubtitleAppendPrompt>
     <ImportTimeCodesDifferentNumberOfLinesWarning>Legenda com tempos tem um número diferente de linhas ({0}) do que as legendas actuais ({1}) - mesmo assim deseja continuar?</ImportTimeCodesDifferentNumberOfLinesWarning>
     <ParsingTransportStream>A analisar o fluxo de transporte - por favor aguarde...</ParsingTransportStream>
     <XPercentCompleted>{0}% concluído</XPercentCompleted>
-	<NextX>Próximo: {0}</NextX>
+    <NextX>Próximo: {0}</NextX>
     <PromptInsertSubtitleOverlap>Inserir linha na posição da forma de onda causará sobreposição!
 
 Deseja continuar?</PromptInsertSubtitleOverlap>
+    <SubtitleContainsNegativeDurationsX>A legenda contém a duração negativa na(s) linha(s): {0}</SubtitleContainsNegativeDurationsX>
     <SetPlayRateX>Definir a taxa de velocidade para {0}%</SetPlayRateX>
-	<ErrorLoadIdx>Não foi possível ler/editar o ficheiro idx. Os ficheiros idx são parte de um par de ficheiros idx/sub (também conhecidos como VobSub) e o Subtitle Edit pode abrir o ficheiro sub.</ErrorLoadIdx>
+    <ErrorLoadIdx>Não foi possível ler/editar o ficheiro idx. Os ficheiros idx são parte de um par de ficheiros idx/sub (também conhecidos como VobSub) e o Subtitle Edit pode abrir o ficheiro sub.</ErrorLoadIdx>
     <ErrorLoadRar>Este ficheiro parece ser um ficheiro comprimido .rar. O Subtitle Edit não pode abrir ficheiros comprimidos.</ErrorLoadRar>
     <ErrorLoadZip>Este ficheiro parece ser um ficheiro comprimido .zip. O Subtitle Edit não pode abrir ficheiros comprimidos.</ErrorLoadZip>
-	<ErrorLoad7Zip>Este ficheiro parece ser um ficheiro comprimido 7-Zip. O Subtitle Edit não pode abrir ficheiros comprimidos.</ErrorLoad7Zip>
+    <ErrorLoad7Zip>Este ficheiro parece ser um ficheiro comprimido 7-Zip. O Subtitle Edit não pode abrir ficheiros comprimidos.</ErrorLoad7Zip>
     <ErrorLoadPng>Este ficheiro parece ser um ficheiro de imagem no formato PNG. O Subtitle Edit não pode abrir ficheiros PNG.</ErrorLoadPng>
     <ErrorLoadJpg>Este ficheiro parece ser um ficheiro de imagem no formato JPG. O Subtitle Edit não pode abrir ficheiros JPG.</ErrorLoadJpg>
     <ErrorLoadSrr>Este ficheiro parece ser um ficheiro ReScene (.srr) - não é um ficheiro de legenda.</ErrorLoadSrr>
@@ -1492,13 +1545,14 @@ Se editou este ficheiro no Subtitle Edit é possível que encontre a cópia de s
   <MatroskaSubtitleChooser>
     <Title>Seleccionar legenda através de um ficheiro Matroska (.mkv)</Title>
     <TitleMp4>Seleccionar legenda através de um ficheiro MP4</TitleMp4>
+    <PleaseChoose>Existe mais de uma legenda - por favor, escolha</PleaseChoose>
     <TrackXLanguageYTypeZ>Faixa {0} - idioma: {1} - tipo: {2}</TrackXLanguageYTypeZ>
   </MatroskaSubtitleChooser>
   <MeasurementConverter>
     <Title>Conversão de unidades</Title>
     <ConvertFrom>Converter de</ConvertFrom>
     <ConvertTo>Converter para</ConvertTo>
-    <CopyToClipboard>Copiar para a Área de Transferência</CopyToClipboard>
+    <CopyToClipboard>Copiar</CopyToClipboard>
     <Celsius>Celsius</Celsius>
     <Fahrenheit>Fahrenheit</Fahrenheit>
     <Miles>Milhas</Miles>
@@ -1547,6 +1601,8 @@ Se editou este ficheiro no Subtitle Edit é possível que encontre a cópia de s
     <RegEx>Expressão regular</RegEx>
     <UnequalLines>Linhas com números ímpares</UnequalLines>
     <EqualLines>Linhas com números pares</EqualLines>
+    <DurationLessThan>Duração menor que</DurationLessThan>
+    <DurationGreaterThan>Duração maior que</DurationGreaterThan>
   </ModifySelection>
   <MultipleReplace>
     <Title>Múltipla substituição</Title>
@@ -1555,14 +1611,14 @@ Se editou este ficheiro no Subtitle Edit é possível que encontre a cópia de s
     <Normal>Normal</Normal>
     <CaseSensitive>Diferenciar maiúsculas/minúsculas</CaseSensitive>
     <RegularExpression>Expressão regular</RegularExpression>
-	<Description>Descrição</Description>
+    <Description>Descrição</Description>
     <LinesFoundX>Linhas encontradas: {0}</LinesFoundX>
-    <Remove>Remover</Remove>
+    <Remove>Eliminar</Remove>
     <Add>&amp;Adicionar</Add>
     <Update>&amp;Actualizar</Update>
     <Enabled>Activo</Enabled>
     <SearchType>Tipo de pesquisa</SearchType>
-    <RemoveAll>Remover tudo</RemoveAll>
+    <RemoveAll>Eliminar tudo</RemoveAll>
     <Import>Importar...</Import>
     <Export>Exportar...</Export>
     <ImportRulesTitle>Importar regra(s) de substituição de...</ImportRulesTitle>
@@ -1578,7 +1634,7 @@ Se editou este ficheiro no Subtitle Edit é possível que encontre a cópia de s
     <GroupName>Nome do grupo</GroupName>
     <RenameGroup>Renomear grupo...</RenameGroup>
     <NewGroup>Novo grupo...</NewGroup>
-	<NothingToImport>Nada para importar</NothingToImport>
+    <NothingToImport>Nada para importar</NothingToImport>
   </MultipleReplace>
   <NetworkChat>
     <Title>Conversação</Title>
@@ -1622,7 +1678,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <GetPluginsInfo2>Seleccione o plugin e clique "Transferir"</GetPluginsInfo2>
     <PluginXDownloaded>Plugin {0} transferido</PluginXDownloaded>
     <Download>&amp;Transferir</Download>
-    <Remove>&amp;Remover</Remove>
+    <Remove>&amp;Eliminar</Remove>
     <UpdateAllX>Actualizar todos ({0})</UpdateAllX>
     <UnableToDownloadPluginListX>Impossível de tansferir a lista de plugins: {0}</UnableToDownloadPluginListX>
     <NewVersionOfSubtitleEditRequired>É necessário uma versão mais recente do Subtitle Edit</NewVersionOfSubtitleEditRequired>
@@ -1716,7 +1772,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <WordLists>Listas de palavras</WordLists>
     <SsaStyle>Estilo SSA/ASS</SsaStyle>
     <Network>Rede</Network>
-	<Rules>Regras</Rules>
+    <Rules>Regras</Rules>
     <ShowToolBarButtons>Mostrar botões da barra de ferramentas</ShowToolBarButtons>
     <New>Novo</New>
     <Open>Abrir</Open>
@@ -1725,29 +1781,42 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <Find>Localizar</Find>
     <Replace>Substituir</Replace>
     <VisualSync>Sincronia visual</VisualSync>
-    <SpellCheck>Ortografia</SpellCheck>
-    <NetflixQualityCheck>Verificação de qualidade Netflix</NetflixQualityCheck>
+    <SpellCheck>Verificação ortográfica</SpellCheck>
+    <NetflixQualityCheck>Controlo de qualidade Netflix</NetflixQualityCheck>
     <SettingsName>Configurações</SettingsName>
     <Help>Ajuda</Help>
-	<UnbreakNoSpace>Remover quebra sem espaço em branco (CJK)</UnbreakNoSpace>
-	<FontInUi>Tipo de letra da Interface</FontInUi>
+    <UnbreakNoSpace>Eliminar quebra sem espaço em branco (CJK)</UnbreakNoSpace>
+    <ToggleBookmarks>Alternar marcadores</ToggleBookmarks>
+    <ToggleBookmarksWithComment>Alternar marcadores - adicionar comentário</ToggleBookmarksWithComment>
+    <ClearBookmarks>Eliminar marcadores</ClearBookmarks>
+    <GoToBookmark>Ir para o marcador</GoToBookmark>
+    <GoToPreviousBookmark>Ir para o marcador anterior</GoToPreviousBookmark>
+    <GoToNextBookmark>Ir para o marcador seguinte</GoToNextBookmark>
+    <ChooseProfile>Escolher perfil</ChooseProfile>
+    <DuplicateLine>Duplicar linha</DuplicateLine>
+    <FontInUi>Tipo de letra da Interface</FontInUi>
     <ShowFrameRate>Mostrar taxa de fotogramas na barra de ferramentas</ShowFrameRate>
     <DefaultFrameRate>Taxa de fotogramas padrão</DefaultFrameRate>
     <DefaultFileEncoding>Codificação padrão do ficheiro</DefaultFileEncoding>
     <AutoDetectAnsiEncoding>Auto detectar codificação ANSI</AutoDetectAnsiEncoding>
-    <SubtitleLineMaximumLength>Comprimento máximo de única linha</SubtitleLineMaximumLength>
+    <Profile>Perfil</Profile>
+    <Profiles>Perfis</Profiles>
+    <ImportProfiles>Importar perfis</ImportProfiles>
+    <ExportProfiles>Exportar perfis</ExportProfiles>
+    <SubtitleLineMaximumLength>Comprimento máximo de linha</SubtitleLineMaximumLength>
+    <OptimalCharactersPerSecond>Caracteres/seg ideais</OptimalCharactersPerSecond>
     <MaximumCharactersPerSecond>Máximo caracteres/seg</MaximumCharactersPerSecond>
     <MaximumWordssPerMinute>Máximo palavras/min</MaximumWordssPerMinute>
     <AutoWrapWhileTyping>Moldar o texto ao escrever</AutoWrapWhileTyping>
-    <DurationMinimumMilliseconds>Duração mínima milissegundos</DurationMinimumMilliseconds>
-    <DurationMaximumMilliseconds>Duração máxima milissegundos</DurationMaximumMilliseconds>
+    <DurationMinimumMilliseconds>Duração mínima, milisseg</DurationMinimumMilliseconds>
+    <DurationMaximumMilliseconds>Duração máxima, milisseg</DurationMaximumMilliseconds>
     <MinimumGapMilliseconds>Min. de intervalo entre legendas em ms</MinimumGapMilliseconds>
     <MaximumLines>Número máximo de linhas</MaximumLines>
     <SubtitleFont>Tipo de letra</SubtitleFont>
     <SubtitleFontSize>Tamanho do tipo de letra da legenda</SubtitleFontSize>
     <SubtitleBold>Negrito</SubtitleBold>
     <VideoAutoOpen>Abrir automaticamente o vídeo ao abrir a legenda</VideoAutoOpen>
-	<AllowVolumeBoost>Permitir aumento de volume</AllowVolumeBoost>
+    <AllowVolumeBoost>Permitir aumento de volume</AllowVolumeBoost>
     <SubtitleCenter>Centralizado</SubtitleCenter>
     <SubtitleFontColor>Cor do tipo de letra</SubtitleFontColor>
     <SubtitleBackgroundColor>Cor de fundo</SubtitleBackgroundColor>
@@ -1759,7 +1828,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <StartInSourceView>Iniciar no separador (Original) da janela principal</StartInSourceView>
     <RemoveBlankLinesWhenOpening>Eliminar linhas em branco ao abrir a legenda</RemoveBlankLinesWhenOpening>
     <ShowLineBreaksAs>Ver quebras de linha na "Lista" da janela principal como:</ShowLineBreaksAs>
-	<SaveAsFileNameFrom>"Guardar como..." usa o nome do ficheiro de:</SaveAsFileNameFrom>
+    <SaveAsFileNameFrom>"Guardar como..." usa o nome do ficheiro de:</SaveAsFileNameFrom>
     <MainListViewDoubleClickAction>Ao clicar duas vezes na linha de texto na janela principal irá...</MainListViewDoubleClickAction>
     <MainListViewColumnsInfo>Escolher as colunas visíveis da lista</MainListViewColumnsInfo>
     <MainListViewNothing>Não faz nada</MainListViewNothing>
@@ -1781,6 +1850,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <AutoBackupDeleteAfterThreeMonths>3 meses</AutoBackupDeleteAfterThreeMonths>
     <AutoBackupDeleteAfterSixMonths>6 meses</AutoBackupDeleteAfterSixMonths>
     <CheckForUpdates>Verificar se há actualizações</CheckForUpdates>
+    <AutoSave>Guardar automaticamente</AutoSave>
     <AllowEditOfOriginalSubtitle>Permitir a edição da legenda original</AllowEditOfOriginalSubtitle>
     <PromptDeleteLines>Confirmar eliminação de linhas</PromptDeleteLines>
     <TimeCodeMode>Modo de tempos</TimeCodeMode>
@@ -1828,7 +1898,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <SpectrogramOneColorGradient>Degradê de cor</SpectrogramOneColorGradient>
     <SpectrogramClassic>Clássico</SpectrogramClassic>
     <WaveformUseFFmpeg>Usar o FFmpeg para extrair o áudio "wav"</WaveformUseFFmpeg>
-	<DownloadFFmpeg>Transferir o FFmpeg</DownloadFFmpeg>
+    <DownloadFFmpeg>Transferir o FFmpeg</DownloadFFmpeg>
     <WaveformFFmpegPath>Directoria do FFmpeg</WaveformFFmpegPath>
     <WaveformBrowseToFFmpeg>Procurar por FFmpeg</WaveformBrowseToFFmpeg>
     <WaveformBrowseToVLC>Procurar por VLC portátil</WaveformBrowseToVLC>
@@ -1842,7 +1912,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <NamesIgnoreLists>Nomes ignorados (diferencia maiús/minús)</NamesIgnoreLists>
     <AddName>Adicionar nome</AddName>
     <AddWord>Adicionar palavra</AddWord>
-    <Remove>Remover</Remove>
+    <Remove>Eliminar</Remove>
     <AddPair>Adicionar par</AddPair>
     <UserWordList>Lista de palavras do utilizador</UserWordList>
     <OcrFixList>Lista de correcções OCR</OcrFixList>
@@ -1851,7 +1921,7 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <WordAddedX>Palavra adicionada: {0}</WordAddedX>
     <WordAlreadyExists>A palavra já existe!</WordAlreadyExists>
     <WordNotFound>Palavra não encontrada</WordNotFound>
-    <RemoveX>Remover {0}?</RemoveX>
+    <RemoveX>Eliminar {0}?</RemoveX>
     <CannotUpdateNamesOnline>Não foi possível actualizar a lista de nomes xml online!</CannotUpdateNamesOnline>
     <ProxyServerSettings>Configuração do servidor proxy</ProxyServerSettings>
     <ProxyAddress>Endereço proxy</ProxyAddress>
@@ -1866,9 +1936,9 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <EndSceneIndex>O parágrafo final da cena é</EndSceneIndex>
     <FirstPlusX>Primeiro + {0}</FirstPlusX>
     <LastMinusX>Último - {0}</LastMinusX>
-    <FixCommonerrors>Corrigir erros frequentes</FixCommonerrors>
-    <RemoveTextForHi>Eliminar texto para Deficientes Auditivos</RemoveTextForHi>
-    <MergeLinesShorterThan>Remover quebra em linha menor que...</MergeLinesShorterThan>
+    <FixCommonerrors>Corrigir erros</FixCommonerrors>
+    <RemoveTextForHi>Deficientes Auditivos</RemoveTextForHi>
+    <MergeLinesShorterThan>Eliminar quebra em linha menor que...</MergeLinesShorterThan>
     <MusicSymbol>Símbolo musical</MusicSymbol>
     <MusicSymbolsReplace>Símbolos musicais para substituir (separados por vírgula)</MusicSymbolsReplace>
     <FixCommonOcrErrorsUseHardcodedRules>Corrigir erros frequentes de OCR - também utilizar regras codificadas</FixCommonOcrErrorsUseHardcodedRules>
@@ -1880,11 +1950,13 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <Alt>Alt</Alt>
     <Shift>Shift</Shift>
     <Key>Tecla</Key>
-	<ListView>Visualização de lista</ListView>
+    <ListViewAndTextBox>Exibição de lista e caixa de texto</ListViewAndTextBox>
+    <ListView>Exibição de lista</ListView>
     <TextBox>Caixa de texto</TextBox>
     <UpdateShortcut>Actualizar</UpdateShortcut>
     <ToggleDockUndockOfVideoControls>Alternar acoplar/desacoplar controlos de vídeo</ToggleDockUndockOfVideoControls>
     <CreateSetEndAddNewAndGoToNew>Definir o fim, adicionar novo e ir para o novo</CreateSetEndAddNewAndGoToNew>
+    <AdjustViaEndAutoStart>Ajustar através da posição final</AdjustViaEndAutoStart>
     <AdjustViaEndAutoStartAndGoToNext>Ajustar pela posição final e ir para o seguinte</AdjustViaEndAutoStartAndGoToNext>
     <AdjustSetEndTimeAndGoToNext>Definir o fim e ir para a seguinte</AdjustSetEndTimeAndGoToNext>
     <AdjustSetStartAutoDurationAndGoToNext>Início da Auto duração e ir para o seguinte</AdjustSetStartAutoDurationAndGoToNext>
@@ -1901,8 +1973,8 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <AdjustSetEndAndOffsetTheRestAndGoToNext>Definir o fim, compensar o resto e ir para a próxima</AdjustSetEndAndOffsetTheRestAndGoToNext>
     <AdjustExtendCurrentSubtitle>Alongar o tempo da linha actual até à próxima linha ou até à duração máxima</AdjustExtendCurrentSubtitle>
     <RecalculateDurationOfCurrentSubtitle>Recalcular a duração da linha actual</RecalculateDurationOfCurrentSubtitle>
-    <MainCreateStartDownEndUp>Criar novo na tecla "Page Down", definir tempo final na tecla "Page Up"</MainCreateStartDownEndUp>
-    <MergeDialog>Combinar os diálogos (inserir hífens)</MergeDialog>
+    <MainCreateStartDownEndUp>Inserir nova linha com tecla "Page Down", definir tempo final com tecla "Page Up"</MainCreateStartDownEndUp>
+    <MergeDialog>Combinar os diálogos (inserir travessões)</MergeDialog>
     <GoToNext>Ir para a linha seguinte</GoToNext>
     <GoToPrevious>Ir para a linha anterior</GoToPrevious>
     <GoToCurrentSubtitleStart>Ir para o início da linha actual</GoToCurrentSubtitleStart>
@@ -1910,25 +1982,34 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <GoToPreviousSubtitleAndFocusVideo>Ir para a linha anterior e definir a posição do vídeo</GoToPreviousSubtitleAndFocusVideo>
     <GoToNextSubtitleAndFocusVideo>Ir para a próxima linha e definir a posição de vídeo</GoToNextSubtitleAndFocusVideo>
     <ToggleFocus>Alternar o realce entre a caixa de texto da legenda e o separador (Lista) na janela principal</ToggleFocus>
-    <ToggleDialogDashes>Alternar hífens de diálogo</ToggleDialogDashes>
-	<ToggleMusicSymbols>Alternar símbolos de música</ToggleMusicSymbols>
+    <ToggleDialogDashes>Alternar travessões</ToggleDialogDashes>
+    <ToggleMusicSymbols>Alternar símbolos de música</ToggleMusicSymbols>
     <Alignment>Alinhamento (linhas seleccionadas)</Alignment>
-    <CopyTextOnly>Copiar só o texto para a área de transferência (linhas seleccionadas)</CopyTextOnly>
+    <AlignmentN1>Alinhamento inferior esquerdo - {\an1}</AlignmentN1>
+    <AlignmentN2>Alinhamento inferior central - {\an2}</AlignmentN2>
+    <AlignmentN3>Alinhamento inferior direito - {\an3}</AlignmentN3>
+    <AlignmentN4>Alinhamento central esquerdo - {\an4}</AlignmentN4>
+    <AlignmentN5>Alinhamento central - {\an5}</AlignmentN5>
+    <AlignmentN6>Alinhamento central direito - {\an6}</AlignmentN6>
+    <AlignmentN7>Alinhamento superior esquerdo - {\an7}</AlignmentN7>
+    <AlignmentN8>Alinhamento superior central - {\an8}</AlignmentN8>
+    <AlignmentN9>Alinhamento superior direito - {\an9}</AlignmentN9>
+    <CopyTextOnly>Copiar apenas o texto (linhas seleccionadas)</CopyTextOnly>
     <CopyTextOnlyFromOriginalToCurrent>Copiar o texto do original para a actual</CopyTextOnlyFromOriginalToCurrent>
     <AutoDurationSelectedLines>Auto-duração (linhas seleccionadas)</AutoDurationSelectedLines>
-    <ReverseStartAndEndingForRTL>Inverter RTL início/fim</ReverseStartAndEndingForRTL>
+    <ReverseStartAndEndingForRtl>Inverter RTL início/fim</ReverseStartAndEndingForRtl>
     <VerticalZoom>Zoom vertical entrada</VerticalZoom>
     <VerticalZoomOut>Zoom vertical saída</VerticalZoomOut>
     <WaveformSeekSilenceForward>Localizar silêncio no áudio adiante</WaveformSeekSilenceForward>
     <WaveformSeekSilenceBack>Localizar silêncio no áudio atrás</WaveformSeekSilenceBack>
     <WaveformAddTextHere>Adicionar texto aqui (para uma selecção nova)</WaveformAddTextHere>
     <WaveformAddTextHereFromClipboard>Adicionar texto aqui (para uma selecção nova a partir da área de transferência)</WaveformAddTextHereFromClipboard>
+    <SetParagraphAsSelection>Definir a actual como nova selecção</SetParagraphAsSelection>
     <WaveformPlayNewSelection>Reproduzir selecção</WaveformPlayNewSelection>
     <WaveformPlayNewSelectionEnd>Reproduzir a partir do fim da selecção</WaveformPlayNewSelectionEnd>
     <WaveformPlayFirstSelectedSubtitle>Reproduzir a partir da primeira legenda selecionada</WaveformPlayFirstSelectedSubtitle>
     <WaveformFocusListView>Destacar a lista de visualização</WaveformFocusListView>
-    <WaveformGoToNextSubtitle>Ir para a próxima linha (a partir da posição do vídeo)</WaveformGoToNextSubtitle>
-	<WaveformGoToPreviousSceneChange>Ir para a mudança de cena anterior</WaveformGoToPreviousSceneChange>
+    <WaveformGoToPreviousSceneChange>Ir para a mudança de cena anterior</WaveformGoToPreviousSceneChange>
     <WaveformGoToNextSceneChange>Ir para a próxima mudança de cena</WaveformGoToNextSceneChange>
     <WaveformToggleSceneChange>Alternar a mudança de cena</WaveformToggleSceneChange>
     <GoBack1Frame>Um fotograma para atrás</GoBack1Frame>
@@ -1943,11 +2024,14 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <GoForward1Second>Um segundo para a frente</GoForward1Second>
     <GoBack5Seconds>Cinco segundos para trás</GoBack5Seconds>
     <GoForward5Seconds>Cinco segundos para a frente</GoForward5Seconds>
+    <WaveformGoToPrevSubtitle>Ir para linha anterior (da posição do vídeo)</WaveformGoToPrevSubtitle>
+    <WaveformGoToNextSubtitle>Ir para a próxima linha (da posição do vídeo)</WaveformGoToNextSubtitle>
     <TogglePlayPause>Alternar reproduzir/pausar</TogglePlayPause>
     <Pause>Pausar</Pause>
     <Fullscreen>Ecrã inteiro</Fullscreen>
-	<PlayRateSlower>Taxa de velocidade lenta</PlayRateSlower>
-	<PlayRateFaster>Taxa de velocidade rápida</PlayRateFaster>
+    <PlayRateSlower>Taxa de velocidade lenta</PlayRateSlower>
+    <PlayRateFaster>Taxa de velocidade rápida</PlayRateFaster>
+    <VideoResetSpeedAndZoom>Repor velocidade/zoom</VideoResetSpeedAndZoom>
     <CustomSearch1>Traduzir, pesquisa personalizada 1</CustomSearch1>
     <CustomSearch2>Traduzir, pesquisa personalizada 2</CustomSearch2>
     <CustomSearch3>Traduzir, pesquisa personalizada 3</CustomSearch3>
@@ -1960,11 +2044,17 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <SyntaxColorTextIfTooLong>Texto colorido se for muito longo</SyntaxColorTextIfTooLong>
     <SyntaxColorTextMoreThanMaxLines>Texto colorido se for superior a {0} linhas</SyntaxColorTextMoreThanMaxLines>
     <SyntaxColorOverlap>Cor se houver tempos sobrepostos</SyntaxColorOverlap>
+    <SyntaxColorGap>Cor se o intervalo for muito curto</SyntaxColorGap>
     <SyntaxErrorColor>Cor dos erros</SyntaxErrorColor>
     <GoToFirstSelectedLine>Ir para a primeira linha seleccionada</GoToFirstSelectedLine>
     <GoToNextEmptyLine>Ir para a próxima linha em branco</GoToNextEmptyLine>
     <MergeSelectedLines>Combinar as linhas seleccionadas</MergeSelectedLines>
+    <MergeSelectedLinesAndAutoBreak>Combinar as linhas seleccionadas e quebrar linha</MergeSelectedLinesAndAutoBreak>
+    <MergeSelectedLinesAndUnbreak>Combinar as linhas seleccionadas e remover quebra</MergeSelectedLinesAndUnbreak>
+    <MergeSelectedLinesAndUnbreakCjk>Combinar as linhas seleccionadas e remover quebra sem espaço (CJK)</MergeSelectedLinesAndUnbreakCjk>
     <MergeSelectedLinesOnlyFirstText>Combinar as linhas seleccionadas, manter só o primeiro texto que não esteja em branco</MergeSelectedLinesOnlyFirstText>
+    <MergeSelectedLinesBilingual>Combinar as linhas seleccionadas bilingue</MergeSelectedLinesBilingual>
+    <SplitSelectedLineBilingual>Dividir linha seleccionada bilingue</SplitSelectedLineBilingual>
     <ToggleTranslationMode>Alternar o modo de tradutor</ToggleTranslationMode>
     <SwitchOriginalAndTranslation>Mudar entre original e tradução</SwitchOriginalAndTranslation>
     <MergeOriginalAndTranslation>Combinar o orginal com o traduzido</MergeOriginalAndTranslation>
@@ -1973,34 +2063,49 @@ editar o mesmo ficheiro de legenda (colaboração)</Information>
     <ShortcutIsAlreadyDefinedX>Atalho já definido: {0}</ShortcutIsAlreadyDefinedX>
     <ToggleTranslationAndOriginalInPreviews>Alternar tradução e original na pré-visualização vídeo/áudio</ToggleTranslationAndOriginalInPreviews>
     <ListViewColumnDelete>Coluna, eliminar texto</ListViewColumnDelete>
+    <ListViewColumnDeleteAndShiftUp>Coluna, eliminar texto e mover para cima</ListViewColumnDeleteAndShiftUp>
     <ListViewColumnInsert>Coluna, inserir texto</ListViewColumnInsert>
     <ListViewColumnPaste>Coluna, colar</ListViewColumnPaste>
     <ListViewColumnTextUp>Coluna, texto para cima</ListViewColumnTextUp>
     <ListViewColumnTextDown>Coluna, texto para baixo</ListViewColumnTextDown>
     <ListViewFocusWaveform>Destacar a forma de onda/espectrograma</ListViewFocusWaveform>
-    <ListViewGoToNextError>Ir para o próximo erro</ListViewGoToNextError>
+    <ListViewGoToNextError>Ir para o erro seguinte</ListViewGoToNextError>
     <ShowBeamer>Iniciar a legenda em ecrã inteiro</ShowBeamer>
-    <MainTextBoxMoveLastWordDown>Mover a última palavra para baixo para a próxima linha de legendas</MainTextBoxMoveLastWordDown>
-    <MainTextBoxMoveFirstWordFromNextUp>Mover a primeira palavra a partir da próxima linha acima das legendas</MainTextBoxMoveFirstWordFromNextUp>
+    <MainTextBoxMoveLastWordDown>Mover a última palavra até à próxima linha da legenda</MainTextBoxMoveLastWordDown>
+    <MainTextBoxMoveFirstWordFromNextUp>Buscar a primeira palavra da próxima linha da legenda</MainTextBoxMoveFirstWordFromNextUp>
     <MainTextBoxMoveFirstWordUpCurrent>Mover a primeira palavra da linha de cima (linha actual)</MainTextBoxMoveFirstWordUpCurrent>
     <MainTextBoxMoveLastWordDownCurrent>Mover a primeira palavra da linha de baixo (linha actual)</MainTextBoxMoveLastWordDownCurrent>
     <MainTextBoxSelectionToLower>Selecção para minúsculas</MainTextBoxSelectionToLower>
     <MainTextBoxSelectionToUpper>Selecção para maiúsculas</MainTextBoxSelectionToUpper>
+    <MainTextBoxSelectionToRuby>Selecção para Ruby (Japonês)</MainTextBoxSelectionToRuby>
     <MainTextBoxToggleAutoDuration>Alternar duração automática</MainTextBoxToggleAutoDuration>
-    <MainTextBoxAutoBreak>Quebra de texto automática</MainTextBoxAutoBreak>
-    <MainTextBoxUnbreak>Remover quebra de texto</MainTextBoxUnbreak>
+    <MainTextBoxAutoBreak>Quebra de linha automática</MainTextBoxAutoBreak>
+    <MainTextBoxAutoBreakFromPos>Quebrar no primeiro espaço a partir da posição do cursor</MainTextBoxAutoBreakFromPos>
+    <MainTextBoxAutoBreakFromPosAndGoToNext>Quebrar no primeiro espaço a partir da posição do cursor e ir para o próximo</MainTextBoxAutoBreakFromPosAndGoToNext>
+    <MainTextBoxUnbreak>Eliminar quebra de linha</MainTextBoxUnbreak>
     <MainFileSaveAll>Guardar tudo</MainFileSaveAll>
     <Miscellaneous>Diversos</Miscellaneous>
     <CpsIncludesSpace>Caracteres/seg (CPS) incluindo espaços</CpsIncludesSpace>
-    <UseDoNotBreakAfterList>Utilizar "não quebrar linha depois da lista" (para o ajuste-auto)</UseDoNotBreakAfterList>
-    <MicrosoftBingTranslator>Tradutor Microsoft Bing</MicrosoftBingTranslator>
+    <UseDoNotBreakAfterList>Utilizar "não quebrar linha depois da lista"</UseDoNotBreakAfterList>
+    <BreakEarlyForLineEnding>Quebrar linha no penúltimo ponto (.!?)</BreakEarlyForLineEnding>
+    <BreakByPixelWidth>Quebrar linha pela largura do pixel</BreakByPixelWidth>
+    <BreakPreferBottomHeavy>Preferir tamanho desproporcional</BreakPreferBottomHeavy>
+    <BreakEarlyForDashDialog>Quebrar linha no penúltimo travessão</BreakEarlyForDashDialog>
+    <BreakEarlyForComma>Quebrar linha na penúltima vírgula</BreakEarlyForComma>
+    <GoogleTranslate>Tradutor Google</GoogleTranslate>
+    <GoogleTranslateApiKey>Chave API</GoogleTranslateApiKey>
+    <MicrosoftBingTranslator>Tradutor Microsoft</MicrosoftBingTranslator>
     <HowToSignUp>Como efectuar o registo</HowToSignUp>
-	<GoogleTranslateUrl>Endereço do tradutor do Google</GoogleTranslateUrl>
     <MicrosoftTranslateApiKey>Chave</MicrosoftTranslateApiKey>
+    <MicrosoftTranslateTokenEndpoint>Terminal Token</MicrosoftTranslateTokenEndpoint>
     <FontNote>Nota: Estas configurações do tipo de letra são apenas para a Interface da edição de legendas.
 Definir um tipo de letra para uma legenda normalmente é feito no leitor de vídeo,
 mas também pode ser feito ao usar um formato de legenda com informações do tipo de letra incorporadas
 como "Advanced Sub Station Alpha" ou por via de exportação para formatos baseados em imagens.</FontNote>
+    <RestoreDefaultSettings>Repor as predefinições</RestoreDefaultSettings>
+    <RestoreDefaultSettingsMsg>Todas as configurações serão repostas para os valores predefinidos
+
+Continuar?</RestoreDefaultSettingsMsg>
   </Settings>
   <SettingsMpv>
     <Title>Definições do mpv</Title>
@@ -2059,22 +2164,27 @@ como "Advanced Sub Station Alpha" ou por via de exportação para formatos basea
     <EditWholeText>Editar todo o texto</EditWholeText>
     <EditWordOnly>Só editar palavra</EditWordOnly>
     <AddXToNames>Adicionar '{0}' à lista de nomes</AddXToNames>
-	<AddXToUserDictionary>Adicionar '{0}' ao dicionário do utilizador</AddXToUserDictionary>
+    <AddXToUserDictionary>Adicionar '{0}' ao dicionário do utilizador</AddXToUserDictionary>
     <AutoFixNames>Corrigir automaticamente formato de nomes</AutoFixNames>
     <CheckOneLetterWords>Solicitar uma letra para uma palavra desconhecida</CheckOneLetterWords>
     <TreatINQuoteAsING>Considerar a palavra final " in' " como " ing " (apenas em Inglês)</TreatINQuoteAsING>
+    <RememberUseAlwaysList>Lembrar "Usar sempre" a lista</RememberUseAlwaysList>
     <ImageText>Imagem de texto</ImageText>
     <SpellCheckCompleted>Verificação ortográfica terminada</SpellCheckCompleted>
     <SpellCheckAborted>Verificação ortográfica cancelada</SpellCheckAborted>
-	<SpacesNotAllowed>Espaços não permitidos numa única palavra!</SpacesNotAllowed>
+    <SpacesNotAllowed>Espaços não permitidos numa única palavra!</SpacesNotAllowed>
     <UndoX>Anular: {0}</UndoX>
   </SpellCheck>
   <NetflixQualityCheck>
     <GlyphCheckReport>Caracter inválido {0} encontrado na coluna {1}</GlyphCheckReport>
     <WhiteSpaceCheckReport>Foi encontrado um espaço em branco inválido na coluna {0}.</WhiteSpaceCheckReport>
     <ReportPrompt>Ver o relatório completo aqui: {0}.</ReportPrompt>
-    <FoundXIssues>Verificação de qualidade encontrou {0} problemas.</FoundXIssues>
-    <CheckOk>Verificação de qualidade Netflix OK :)</CheckOk>
+    <OpenReportInFolder>Abrir relatório na pasta</OpenReportInFolder>
+    <FoundXIssues>Verificação de qualidade Netflix {0:#,###} problemas encontrados.</FoundXIssues>
+    <CheckOk>Controlo de qualidade Netflix OK :)</CheckOk>
+    <MaximumXCharsPerSecond>Máximo {0} de caracteres por segundo (sem espaços em branco)</MaximumXCharsPerSecond>
+    <MaximumLineLength>Comprimento máximo da linha ({0})</MaximumLineLength>
+    <MinimumDuration>Duração mínima: 5/6 segundo (833 ms)</MinimumDuration>
   </NetflixQualityCheck>
   <Split>
     <Title>Divisão</Title>
@@ -2132,7 +2242,7 @@ como "Advanced Sub Station Alpha" ou por via de exportação para formatos basea
     <NumberOfLinesX>Número de linhas da legenda: {0:#,###}</NumberOfLinesX>
     <LengthInFormatXinCharactersY>Número de caracteres como {0}: {1:#,###,##0}</LengthInFormatXinCharactersY>
     <NumberOfCharactersInTextOnly>Número de caracteres só no texto: {0:#,###,##0}</NumberOfCharactersInTextOnly>
-	<TotalDuration>Duração total de todas as linhas: {0}</TotalDuration>
+    <TotalDuration>Duração total de todas as linhas: {0}</TotalDuration>
     <TotalCharsPerSecond>Total de caracteres/segundo: {0:0.0} segundos</TotalCharsPerSecond>
     <TotalWords>Total de palavras na legenda: {0}</TotalWords>
     <NumberOfItalicTags>Número de etiquetas itálicas: {0}</NumberOfItalicTags>
@@ -2214,8 +2324,8 @@ como "Advanced Sub Station Alpha" ou por via de exportação para formatos basea
     <CopyOfY>Cópia de {0}</CopyOfY>
     <CopyXOfY>Cópia {0} de {1}</CopyXOfY>
     <New>Novo</New>
-    <Remove>Remover</Remove>
-    <RemoveAll>Remover tudo</RemoveAll>
+    <Remove>Eliminar</Remove>
+    <RemoveAll>Eliminar tudo</RemoveAll>
     <ImportStyleFromFile>Importar estilo do ficheiro...</ImportStyleFromFile>
     <ExportStyleToFile>Exportar estilo para ficheiro... (adiciona o estilo se já existir o ficheiro)</ExportStyleToFile>
     <ChooseStyle>Escolha o estilo para importar</ChooseStyle>
@@ -2228,19 +2338,21 @@ como "Advanced Sub Station Alpha" ou por via de exportação para formatos basea
     <TitleViaOtherSubtitle>Ponto de sincronia através de outra legenda</TitleViaOtherSubtitle>
     <SyncHelp>Estabelecer pelo menos dois pontos para sincronia bruta</SyncHelp>
     <SetSyncPoint>Definir ponto de sincronia</SetSyncPoint>
-    <RemoveSyncPoint>Remover ponto de sincronia</RemoveSyncPoint>
+    <RemoveSyncPoint>Eliminar ponto de sincronia</RemoveSyncPoint>
     <SyncPointsX>Pontos de sincronia: {0}</SyncPointsX>
     <Info>Um ponto de sincronia ajustará a posição, dois ou mais pontos ajustam a posição e a velocidade</Info>
     <ApplySync>Aplicar</ApplySync>
   </PointSync>
   <TransportStreamSubtitleChooser>
     <Title>Fluxo de transporte da legenda indicado - {0}</Title>
-    <PidLine>Transporte identificador do pacote (PID) = {0}, número de legendas = {1}</PidLine>
+    <PidLineImage>Imagens - Transporte identificador do pacote (PID) = {0}, idioma = {1}, número de legendas = {2}</PidLineImage>
+    <PidLineTeletext>Teletexto - Transporte identificador do pacote (PID) = {1}, página {0}, idioma = {2}, número de legendas = {3}</PidLineTeletext>
     <SubLine>{0}: {1} -&gt; {2}, {3} imagem(s)</SubLine>
   </TransportStreamSubtitleChooser>
   <UnknownSubtitle>
     <Title>Tipo de legenda desconhecido</Title>
     <Message>Se desejar corrigir isto, por favor envie para:mailto: niksedk@gmail.com e inclua uma cópia da legenda.</Message>
+    <ImportAsPlainText>Importar como texto sem formatação...</ImportAsPlainText>
   </UnknownSubtitle>
   <VisualSync>
     <Title>Sincronia visual</Title>
@@ -2318,19 +2430,22 @@ Manter as alterações?</KeepChangesMessage>
     <SaveAllSubtitleImagesAsBdnXml>Guardar todas as imagens (png/bdn xml)...</SaveAllSubtitleImagesAsBdnXml>
     <SaveAllSubtitleImagesWithHtml>Guardar todas as imagens com índice HTML...</SaveAllSubtitleImagesWithHtml>
     <XImagesSavedInY>{0} imagens guardadas em {1}</XImagesSavedInY>
-    <TryModiForUnknownWords>Tentar o Microsoft MODI OCR para palavras desconhecidas</TryModiForUnknownWords>
     <DictionaryX>Dicionário: {0}</DictionaryX>
     <RightToLeft>Direita para esquerda</RightToLeft>
     <ShowOnlyForcedSubtitles>Mostrar somente legendas forçadas</ShowOnlyForcedSubtitles>
     <UseTimeCodesFromIdx>Usar os tempos do ficheiro (.idx)</UseTimeCodesFromIdx>
     <NoMatch>&lt;Sem correspondências&gt;</NoMatch>
     <AutoTransparentBackground>Fundo auto transparente</AutoTransparentBackground>
+    <CaptureTopAlign>Capturar alinhamento superior</CaptureTopAlign>
     <InspectCompareMatchesForCurrentImage>Inspeccionar correspondências na imagem actual...</InspectCompareMatchesForCurrentImage>
     <EditLastAdditions>Editar última imagem comparando com as adicionadas...</EditLastAdditions>
     <SetUnitalicFactor>Definir um factor itálico...</SetUnitalicFactor>
     <DiscardTitle>Rejeitar as alterações feitas no OCR?</DiscardTitle>
     <DiscardText>Deseja rejeitar as alterações feitas na sessão corrente de OCR?</DiscardText>
-	<MinLineSplitHeight>Altura mínima da linha (dividida)</MinLineSplitHeight>
+    <MinLineSplitHeight>Altura mínima da linha (dividida)</MinLineSplitHeight>
+    <FallbackToX>Voltar para {0}</FallbackToX>
+    <ImagePreProcessing>Pré-processamento de imagem...</ImagePreProcessing>
+    <EditImageDb>Editar imagem db</EditImageDb>
   </VobSubOcr>
   <VobSubOcrCharacter>
     <Title>VobSub - Imagem para texto manualmente</Title>
@@ -2362,6 +2477,20 @@ Manter as alterações?</KeepChangesMessage>
     <Title>Definir um factor itálico</Title>
     <Description>Ajustar o valor até que o estilo do texto seja normal e não itálico. Note-se que a imagem original deve ser itálico.</Description>
   </VobSubOcrSetItalicFactor>
+  <OcrPreprocessing>
+    <Title>Pré-processamento de imagens OCR</Title>
+    <Colors>Cores</Colors>
+    <AdjustAlpha>Ajustar o valor até que o texto seja mostrado claramente (normalmente valores entre 200 e 300)</AdjustAlpha>
+    <OriginalImage>Imagem original</OriginalImage>
+    <PostImage>Imagem após pré-processamento</PostImage>
+    <BinaryThreshold>Imagem binária comparar limiar</BinaryThreshold>
+    <InvertColors>Inverter cores</InvertColors>
+    <YellowToWhite>Amarelo para branco</YellowToWhite>
+    <ColorToWhite>Cor para branco</ColorToWhite>
+    <ColorToRemove>Cor a excluir</ColorToRemove>
+    <Cropping>Cortar</Cropping>
+    <CropTransparentColors>Cortar cores transparentes</CropTransparentColors>
+  </OcrPreprocessing>
   <Watermark>
     <Title>Marca d'água</Title>
     <WatermarkX>Marca d'água: {0}</WatermarkX>
@@ -2369,7 +2498,7 @@ Manter as alterações?</KeepChangesMessage>
     <SpreadOverEntireSubtitle>Distribuir por toda a legenda</SpreadOverEntireSubtitle>
     <CurrentLineOnlyX>Apenas na linha actual: {0}</CurrentLineOnlyX>
     <Generate>Gerar</Generate>
-    <Remove>Remover</Remove>
+    <Remove>Eliminar</Remove>
     <BeforeWatermark>Antes da marca d'água</BeforeWatermark>
     <ErrorUnicodeEncodingOnly>A marca d'água só funciona em ficheiros com codificação Unicode.</ErrorUnicodeEncodingOnly>
   </Watermark>
@@ -2381,6 +2510,7 @@ Manter as alterações?</KeepChangesMessage>
     <ZoomOut>Diminuir</ZoomOut>
     <AddParagraphHere>Adicionar texto aqui</AddParagraphHere>
     <AddParagraphHereAndPasteText>Adicionar texto da área de tranferência aqui</AddParagraphHereAndPasteText>
+    <SetParagraphAsSelection>Definir a actual como nova selecção</SetParagraphAsSelection>
     <FocusTextBox>Destacar a caixa de texto</FocusTextBox>
     <DeleteParagraph>Eliminar texto</DeleteParagraph>
     <Split>Dividir</Split>
@@ -2406,8 +2536,8 @@ Manter as alterações?</KeepChangesMessage>
     <Beginning>Início</Beginning>
     <DeleteLines>Eliminar linhas</DeleteLines>
     <FromCurrentVideoPosition>Da posição actual do vídeo</FromCurrentVideoPosition>
-    <DetectOptions>Eliminar opções</DetectOptions>
-    <ScanBlocksOfMs>Examinar blocos de milissegundos</ScanBlocksOfMs>
+    <DetectOptions>Detectar opções</DetectOptions>
+    <ScanBlocksOfMs>Procurar blocos de milissegundos</ScanBlocksOfMs>
     <BlockAverageVolMin1>O volume médio do bloco deve ser mais alto</BlockAverageVolMin1>
     <BlockAverageVolMin2>% do volume médio total</BlockAverageVolMin2>
     <BlockAverageVolMax1>O volume médio do bloco deve ser mais baixo</BlockAverageVolMax1>

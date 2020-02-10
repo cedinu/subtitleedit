@@ -2,7 +2,7 @@
 <Language Name="brezhoneg">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.6</Version>
+    <Version>3.5.13</Version>
     <TranslatedBy>Troet gant WaniBzh29.</TranslatedBy>
     <CultureName>br-FR</CultureName>
     <HelpFile />
@@ -179,7 +179,6 @@ Notenn: Gwiriekit spas an disk vak.</WaveFileMalformed>
     <SplitLongLines>Rannañ hirder al linennoù</SplitLongLines>
     <AutoBalance>Emgempouezañ al linennoù</AutoBalance>
     <ScanFolder>Skan an Teul...</ScanFolder>
-    <ScanningFolder>O skaniñ {0} hag an isteulioù evit restroù istitl...</ScanningFolder>
     <Recursive>Enderc'hel an isteulioù</Recursive>
     <SetMinMsBetweenSubtitles>Termeniñ ar mini mili-seg. etre an istitloù</SetMinMsBetweenSubtitles>
     <PlainText>Testenn diaoz</PlainText>
@@ -626,7 +625,7 @@ Notenn: Gwiriekit spas an disk vak.</WaveFileMalformed>
   <GetDictionaries>
     <Title>Geriadurioù ho peus ezhomm ?</Title>
     <DescriptionLine1>Reizher reizhskrivadurel Subtitle Edit a zo diazezet war ar c'heflusker</DescriptionLine1>
-    <DescriptionLine2>NHunspell a implij geriadurioù Open Office.</DescriptionLine2>
+    <DescriptionLine2>NHunspell a implij geriadurioù LibreOffice.</DescriptionLine2>
     <GetDictionariesHere>Kavit ar geriadurioù amañ :</GetDictionariesHere>
     <ChooseLanguageAndClickDownload>Dibabit ho yezh ha klikit war pellgargañ</ChooseLanguageAndClickDownload>
     <OpenDictionariesFolder>Digeriñ an teul 'Dictionaries'</OpenDictionariesFolder>
@@ -718,7 +717,6 @@ Notenn: Gwiriekit spas an disk vak.</WaveFileMalformed>
     <FileName>Anv ar Restr</FileName>
     <Join>Stagañ</Join>
     <TotalNumberOfLinesX>Niver al linennoù en holl: {0:#,###,###}</TotalNumberOfLinesX>
-    <Note>Notenn: ar restroù a rank kaout amzergodoù mat</Note>
   </JoinSubtitles>
   <LanguageNames>
     <NotSpecified>Nann spisaet</NotSpecified>
@@ -1801,7 +1799,7 @@ meur a zen ar memes restr istitloù (kenlabour)</Information>
     <CopyTextOnly>Eilañ an destenn e-barzh ar golvar (linennoù diuzet)</CopyTextOnly>
     <CopyTextOnlyFromOriginalToCurrent>Eilañ an destenn orin e-barzh ar istitl red</CopyTextOnlyFromOriginalToCurrent>
     <AutoDurationSelectedLines>Padelezh emgefreek (linennoù diuzet)</AutoDurationSelectedLines>
-    <ReverseStartAndEndingForRTL>Adsevel RTL Start/Stop</ReverseStartAndEndingForRTL>
+    <ReverseStartAndEndingForRtl>Adsevel RTL Start/Stop</ReverseStartAndEndingForRtl>
     <VerticalZoom>Zoom plom war-raok</VerticalZoom>
     <VerticalZoomOut>Zoom plomm war-gil</VerticalZoomOut>
     <WaveformSeekSilenceForward>Klask a-raok an didrouz</WaveformSeekSilenceForward>

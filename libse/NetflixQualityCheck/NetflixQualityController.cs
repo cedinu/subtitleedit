@@ -22,10 +22,6 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
             {
                 if (!string.IsNullOrEmpty(Language))
                 {
-                    if (Language == "ar") // Arabic
-                    {
-                        return 20;
-                    }
                     if (Language == "ko") // Korean
                     {
                         return 12;
@@ -35,7 +31,7 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
                         return 9;
                     }
                 }
-                return 17;
+                return 20;
             }
         }
 
@@ -47,7 +43,7 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
                 {
                     if (Language == "ja") // Japanese
                     {
-                        return 13;
+                        return 23;
                     }
                     if (Language == "ko") // Korean
                     {
@@ -76,12 +72,16 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
                     {
                         return false;
                     }
+                    if (Language == "ar") // Arabic
+                    {
+                        return false;
+                    }
                 }
                 return true;
             }
         }
 
-        public bool DualSpeakersHasHypenAndNoSplace
+        public bool DualSpeakersHasHyphenAndNoSpace
         {
             get
             {
@@ -106,7 +106,7 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
 
         public class Record
         {
-            public string Timecode { get; set; }
+            public string TimeCode { get; set; }
             public string Context { get; set; }
             public string Comment { get; set; }
             public Paragraph OriginalParagraph { get; set; }
@@ -114,21 +114,21 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
 
             public Record()
             {
-                Timecode = string.Empty;
+                TimeCode = string.Empty;
                 Context = string.Empty;
                 Comment = string.Empty;
             }
 
-            public Record(string timecode, string context, string comment)
+            public Record(string timeCode, string context, string comment)
             {
-                Timecode = timecode;
+                TimeCode = timeCode;
                 Context = context;
                 Comment = comment;
             }
 
             public string ToCsvRow()
             {
-                return $"{Timecode},{CsvTextEncode(Context)},{CsvTextEncode(Comment)}";
+                return $"{TimeCode},{CsvTextEncode(Context)},{CsvTextEncode(Comment)}";
             }
 
             private static string CsvTextEncode(string s)
@@ -147,9 +147,9 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
             Records = new List<Record>();
         }
 
-        public void AddRecord(Paragraph originalParagraph, string timecod, string context, string comment)
+        public void AddRecord(Paragraph originalParagraph, string timeCode, string context, string comment)
         {
-            Records.Add(new Record(timecod, context, comment) { OriginalParagraph = originalParagraph });
+            Records.Add(new Record(timeCode, context, comment) { OriginalParagraph = originalParagraph });
         }
 
         public void AddRecord(Paragraph originalParagraph, string comment)
@@ -158,7 +158,7 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
             {
                 Comment = comment,
                 OriginalParagraph = originalParagraph,
-                Timecode = originalParagraph.StartTime.ToDisplayString()
+                TimeCode = originalParagraph.StartTime.ToDisplayString()
             });
         }
         public void AddRecord(Paragraph originalParagraph, Paragraph fixedParagraph, string comment, string context = "")
@@ -169,7 +169,7 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
                 Context = context,
                 OriginalParagraph = originalParagraph,
                 FixedParagraph = fixedParagraph,
-                Timecode = originalParagraph.StartTime.ToDisplayString()
+                TimeCode = originalParagraph?.StartTime.ToDisplayString()
             });
         }
 
@@ -201,11 +201,12 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
             return str.Substring(beginPos, length);
         }
 
-        private List<INetflixQualityChecker> GetAllCheckers()
+        private static List<INetflixQualityChecker> GetAllCheckers()
         {
             return new List<INetflixQualityChecker>
             {
-                new NetflixCheckDialogeHyphenSpace(),
+                new NetflixCheckTimedTextFrameRate(),
+                new NetflixCheckDialogHyphenSpace(),
                 new NetflixCheckGlyph(),
                 new NetflixCheckMaxCps(),
                 new NetflixCheckMaxLineLength(),
@@ -221,15 +222,19 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
             };
         }
 
-        public void CheckAll(Subtitle subtitle)
+        public void RunChecks(Subtitle subtitle)
+        {
+            RunChecks(subtitle, GetAllCheckers());
+        }
+
+        public void RunChecks(Subtitle subtitle, List<INetflixQualityChecker> checks)
         {
             Records = new List<Record>();
-            foreach (var checker in GetAllCheckers())
+            foreach (var checker in checks)
             {
                 checker.Check(subtitle, this);
             }
-            Records = Records.OrderBy(p => p.OriginalParagraph.Number).ToList();
+            Records = Records.OrderBy(p => p.OriginalParagraph?.Number ?? 0).ToList();
         }
-
     }
 }

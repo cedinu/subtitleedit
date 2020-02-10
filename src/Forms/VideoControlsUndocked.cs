@@ -7,22 +7,15 @@ namespace Nikse.SubtitleEdit.Forms
 {
     public partial class VideoControlsUndocked : PositionAndSizeForm
     {
-        private Main _mainForm = null;
-        private Keys _redockKeys;
+        private readonly Main _mainForm;
+        private readonly Keys _redockKeys;
 
-        public Panel PanelContainer
-        {
-            get
-            {
-                return panelContainer;
-            }
-        }
+        public Panel PanelContainer => panelContainer;
 
         public VideoControlsUndocked(Main mainForm)
-        {            
-            AutoScaleMode = AutoScaleMode.Dpi; // UiUtil.PreInitialize(this);
+        {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
-            //UiUtil.FixFonts(this);
             _mainForm = mainForm;
             Icon = (Icon)mainForm.Icon.Clone();
             _redockKeys = UiUtil.GetKeys(Configuration.Settings.Shortcuts.MainVideoToggleVideoControls);
@@ -30,7 +23,6 @@ namespace Nikse.SubtitleEdit.Forms
 
         public VideoControlsUndocked()
         {
-            // TODO: Complete member initialization
         }
 
         private void VideoControlsUndocked_FormClosing(object sender, FormClosingEventArgs e)
@@ -52,9 +44,13 @@ namespace Nikse.SubtitleEdit.Forms
         private void VideoControlsUndocked_KeyDown(object sender, KeyEventArgs e)
         {
             if (_redockKeys == e.KeyData)
+            {
                 _mainForm.RedockVideoControlsToolStripMenuItemClick(null, null);
+            }
             else
+            {
                 _mainForm.MainKeyDown(sender, e);
+            }
         }
     }
 }

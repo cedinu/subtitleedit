@@ -2,7 +2,7 @@
 <Language Name="italiano">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.6</Version>
+    <Version>3.5.13</Version>
     <TranslatedBy>Traduzione Italiana SilverDrake (giurdi@katamail.com)</TranslatedBy>
     <CultureName>it-IT</CultureName>
     <HelpFile />
@@ -175,7 +175,6 @@ Nota: Controlla lo spazio libero sul disco.</WaveFileMalformed>
     <SplitLongLines>Dividi linee lunghe</SplitLongLines>
     <AutoBalance>Blianciamento automatico linee</AutoBalance>
     <ScanFolder>Scansiona cartella...</ScanFolder>
-    <ScanningFolder>Scansiona {0} e sottocartelle per file di sottotitoli...</ScanningFolder>
     <Recursive>Includi sottocartelle</Recursive>
     <SetMinMsBetweenSubtitles>Imposta millisec. minimi tra i sottotitoli</SetMinMsBetweenSubtitles>
     <PlainText>Testo normale</PlainText>
@@ -619,7 +618,7 @@ Nota: Controlla lo spazio libero sul disco.</WaveFileMalformed>
   <GetDictionaries>
     <Title>Servono dizionari?</Title>
     <DescriptionLine1>Il controllo ortografico di Subtitle Edit è basato sul motore NHunspell</DescriptionLine1>
-    <DescriptionLine2>che utilizza i dizionari di controllo ortografico di Open Office.</DescriptionLine2>
+    <DescriptionLine2>che utilizza i dizionari di controllo ortografico di LibreOffice.</DescriptionLine2>
     <GetDictionariesHere>Scarica i dizionari qui:</GetDictionariesHere>
     <ChooseLanguageAndClickDownload>Scegli la tua lingua e clicca su scarica</ChooseLanguageAndClickDownload>
     <OpenDictionariesFolder>Apri cartella 'Dizionari'</OpenDictionariesFolder>
@@ -709,7 +708,6 @@ Nota: Controlla lo spazio libero sul disco.</WaveFileMalformed>
     <FileName>Nome file</FileName>
     <Join>Unisci</Join>
     <TotalNumberOfLinesX>Numero di linee totale: {0:#,###,###}</TotalNumberOfLinesX>
-    <Note>Nota: I file devono già avere i time code corretti</Note>
   </JoinSubtitles>
   <LanguageNames>
     <aaName>afar</aaName>
@@ -1787,7 +1785,7 @@ modificare lo stesso file di sottotitolo (collaborazione)</Information>
     <CopyTextOnly>Copia il testo negli appunti (linee selezionate)</CopyTextOnly>
     <CopyTextOnlyFromOriginalToCurrent>Copia il testo dall'originale al corrente</CopyTextOnlyFromOriginalToCurrent>
     <AutoDurationSelectedLines>Durata automatica (linee selezionate)</AutoDurationSelectedLines>
-    <ReverseStartAndEndingForRTL>Inverti DTS inizio/fine</ReverseStartAndEndingForRTL>
+    <ReverseStartAndEndingForRtl>Inverti DTS inizio/fine</ReverseStartAndEndingForRtl>
     <VerticalZoom>Zoom verticale in</VerticalZoom>
     <VerticalZoomOut>Zoom verticale out</VerticalZoomOut>
     <WaveformSeekSilenceForward>Cerca silenzio avanti</WaveformSeekSilenceForward>

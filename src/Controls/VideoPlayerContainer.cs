@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Nikse.SubtitleEdit.Core.SubtitleFormats;
+using Nikse.SubtitleEdit.Logic;
 
 namespace Nikse.SubtitleEdit.Controls
 {
@@ -27,8 +28,16 @@ namespace Nikse.SubtitleEdit.Controls
 
             protected override void WndProc(ref Message m)
             {
-                if (m.Msg == 0x204) return; // WM_RBUTTONDOWN
-                if (m.Msg == 0x205) return; // WM_RBUTTONUP
+                if (m.Msg == 0x204)
+                {
+                    return; // WM_RBUTTONDOWN
+                }
+
+                if (m.Msg == 0x205)
+                {
+                    return; // WM_RBUTTONUP
+                }
+
                 base.WndProc(ref m);
             }
         }
@@ -45,12 +54,15 @@ namespace Nikse.SubtitleEdit.Controls
 
         public VideoPlayer VideoPlayer
         {
-            get { return _videoPlayer; }
+            get => _videoPlayer;
             set
             {
                 _videoPlayer = value;
                 if (_videoPlayer != null)
+                {
                     SetPlayerName(_videoPlayer.PlayerName);
+                }
+
                 if (_videoPlayer is LibMpvDynamic && Configuration.Settings.General.MpvHandlesPreviewText)
                 {
                     _subtitlesHeight = 0;
@@ -76,7 +88,7 @@ namespace Nikse.SubtitleEdit.Controls
         private const int OriginalSubtitlesHeight = 57;
         private int _subtitlesHeight = OriginalSubtitlesHeight;
         private readonly Color _backgroundColor = Color.FromArgb(18, 18, 18);
-        private Panel _panelcontrols;
+        private Panel _panelControls;
 
         private PictureBox _pictureBoxBackground;
         private PictureBox _pictureBoxReverse;
@@ -109,7 +121,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         public RightToLeft TextRightToLeft
         {
-            get { return _subtitleTextBox.RightToLeft; }
+            get => _subtitleTextBox.RightToLeft;
             set
             {
                 _subtitleTextBox.RightToLeft = value;
@@ -120,12 +132,13 @@ namespace Nikse.SubtitleEdit.Controls
 
         public bool ShowStopButton
         {
-            get { return _pictureBoxStop.Visible || _pictureBoxStopOver.Visible || _pictureBoxStopDown.Visible; }
+            get => _pictureBoxStop.Visible || _pictureBoxStopOver.Visible || _pictureBoxStopDown.Visible;
             set
             {
                 if (value)
                 {
                     _pictureBoxStop.Visible = true;
+                    _pictureBoxStop.BringToFront();
                 }
                 else
                 {
@@ -136,12 +149,13 @@ namespace Nikse.SubtitleEdit.Controls
 
         public bool ShowMuteButton
         {
-            get { return _pictureBoxMute.Visible || _pictureBoxMuteOver.Visible || _pictureBoxMuteDown.Visible; }
+            get => _pictureBoxMute.Visible || _pictureBoxMuteOver.Visible || _pictureBoxMuteDown.Visible;
             set
             {
                 if (value)
                 {
                     _pictureBoxMute.Visible = true;
+                    _pictureBoxMute.BringToFront();
                 }
                 else
                 {
@@ -152,12 +166,13 @@ namespace Nikse.SubtitleEdit.Controls
 
         public bool ShowFullscreenButton
         {
-            get { return _pictureBoxFullscreen.Visible || _pictureBoxFullscreenOver.Visible || _pictureBoxFullscreenDown.Visible; }
+            get => _pictureBoxFullscreen.Visible || _pictureBoxFullscreenOver.Visible || _pictureBoxFullscreenDown.Visible;
             set
             {
                 if (value)
                 {
                     _pictureBoxFullscreen.Visible = true;
+                    _pictureBoxFullscreen.BringToFront();
                 }
                 else
                 {
@@ -176,8 +191,39 @@ namespace Nikse.SubtitleEdit.Controls
             Controls.Add(MakePlayerPanel());
             Controls.Add(MakeSubtitlesPanel());
             Controls.Add(MakeControlsPanel());
-            _panelcontrols.BringToFront();
+            _panelControls.BringToFront();
+            _pictureBoxProgressBar.Width = 0;
 
+            ShowAllControls();
+            if (Configuration.IsRunningOnLinux)
+            {
+                System.Threading.SynchronizationContext.Current.Post(TimeSpan.FromMilliseconds(1500), () =>
+                {
+                    if (string.IsNullOrEmpty(_labelVideoPlayerName.Text))
+                    {
+                        _labelVideoPlayerName.Text = "...";
+                    }
+                    FontSizeFactor = 1.0F;
+                    SetSubtitleFont();
+                    _labelTimeCode.Text = $"{new TimeCode().ToDisplayString()} / ?";
+                    ShowAllControls();
+                    VideoPlayerContainerResize(this, null);
+                    ShowAllControls();
+                    Invalidate();
+                    Refresh();
+                });
+            }
+
+            VideoPlayerContainerResize(this, null);
+            Resize += VideoPlayerContainerResize;
+            PanelPlayer.MouseDown += PanelPlayerMouseDown;
+
+            PictureBoxFastForwardMouseEnter(null, null);
+            PictureBoxFastForwardOverMouseLeave(null, null);
+        }
+
+        private void ShowAllControls()
+        {
             HideAllPlayImages();
             HideAllPauseImages();
             _pictureBoxPlay.Visible = true;
@@ -185,25 +231,35 @@ namespace Nikse.SubtitleEdit.Controls
 
             HideAllStopImages();
             _pictureBoxStop.Visible = true;
+            _pictureBoxStop.BringToFront();
+
+            HideAllStopImages();
+            _pictureBoxStop.Visible = true;
+            _pictureBoxStop.BringToFront();
 
             HideAllFullscreenImages();
             _pictureBoxFullscreen.Visible = true;
+            _pictureBoxFullscreen.BringToFront();
 
             HideAllMuteImages();
             _pictureBoxMute.Visible = true;
+            _pictureBoxMute.BringToFront();
 
             HideAllReverseImages();
             _pictureBoxReverse.Visible = true;
+            _pictureBoxReverse.BringToFront();
 
             HideAllFastForwardImages();
             _pictureBoxFastForward.Visible = true;
+            _pictureBoxFastForward.BringToFront();
 
-            VideoPlayerContainerResize(this, null);
-            Resize += VideoPlayerContainerResize;
+            _pictureBoxProgressbarBackground.Visible = true;
+            _pictureBoxProgressbarBackground.BringToFront();
+            _pictureBoxProgressBar.Visible = true;
+            _pictureBoxProgressBar.BringToFront();
 
-            _pictureBoxProgressBar.Width = 0;
-
-            PanelPlayer.MouseDown += PanelPlayerMouseDown;
+            _labelTimeCode.Visible = true;
+            _labelTimeCode.BringToFront();
         }
 
         public void EnableMouseWheelStep()
@@ -234,17 +290,24 @@ namespace Nikse.SubtitleEdit.Controls
         {
             control.MouseWheel += ControlMouseWheel;
             foreach (Control ctrl in control.Controls)
+            {
                 AddMouseWheelEvent(ctrl);
+            }
         }
 
         private void ControlMouseWheel(object sender, MouseEventArgs e)
         {
             int delta = e.Delta;
-            double newPosition = CurrentPosition - (delta / 256.0);
+            double newPosition = CurrentPosition - delta / 256.0;
             if (newPosition < 0)
+            {
                 newPosition = 0;
+            }
             else if (newPosition > Duration)
+            {
                 newPosition = Duration;
+            }
+
             CurrentPosition = newPosition;
         }
 
@@ -265,11 +328,19 @@ namespace Nikse.SubtitleEdit.Controls
         {
             var gs = Configuration.Settings.General;
             if (string.IsNullOrEmpty(gs.SubtitleFontName))
+            {
                 gs.SubtitleFontName = "Tahoma";
+            }
+
             if (gs.VideoPlayerPreviewFontBold)
+            {
                 _subtitleTextBox.Font = new Font(gs.SubtitleFontName, gs.VideoPlayerPreviewFontSize * FontSizeFactor, FontStyle.Bold);
+            }
             else
+            {
                 _subtitleTextBox.Font = new Font(gs.SubtitleFontName, gs.VideoPlayerPreviewFontSize * FontSizeFactor, FontStyle.Regular);
+            }
+
             SubtitleText = _subtitleText;
         }
 
@@ -294,7 +365,9 @@ namespace Nikse.SubtitleEdit.Controls
                 _subtitleText = text;
                 RefreshMpv(mpv, subtitle);
                 if (_subtitleTextBox.Text.Length > 0)
+                {
                     _subtitleTextBox.Text = string.Empty;
+                }
             }
             else
             {
@@ -311,44 +384,73 @@ namespace Nikse.SubtitleEdit.Controls
         }
 
         private Subtitle _subtitlePrev;
-        private static string _mpvTextOld = string.Empty;
+        private string _mpvTextOld = string.Empty;
         private string _mpvTextFileName;
         private int _retryCount = 3;
         private void RefreshMpv(LibMpvDynamic mpv, Subtitle subtitle)
         {
             if (subtitle == null)
+            {
                 return;
+            }
 
             try
             {
-                SubtitleFormat format = new AdvancedSubStationAlpha();
-                if (subtitle.Header == null || !subtitle.Header.Contains("[V4+ Styles]"))
+                var format = new AdvancedSubStationAlpha();
+                string text;
+
+                if (subtitle.Header != null && subtitle.Header.Contains("lang=\"ja\"", StringComparison.Ordinal) && subtitle.Header.Contains("bouten-", StringComparison.Ordinal))
                 {
-                    subtitle = new Subtitle(subtitle);
-                    if (_subtitleTextBox.RightToLeft == RightToLeft.Yes && LanguageAutoDetect.CouldBeRightToLeftLanguge(subtitle))
+                    text = NetflixImsc11JapaneseToAss.Convert(subtitle, 1280, 720);
+                }
+                else
+                {
+                    if (subtitle.Header == null || !subtitle.Header.Contains("[V4+ Styles]"))
                     {
-                        foreach (var paragraph in subtitle.Paragraphs)
+                        var oldSub = subtitle;
+                        subtitle = new Subtitle(subtitle);
+                        if (_subtitleTextBox.RightToLeft == RightToLeft.Yes && LanguageAutoDetect.CouldBeRightToLeftLanguage(subtitle))
                         {
-                            paragraph.Text = "\u200F" + paragraph.Text.Replace(Environment.NewLine, "\u200F" + Environment.NewLine + "\u200F") + "\u200F"; // RTL control character
+                            for (var index = 0; index < subtitle.Paragraphs.Count; index++)
+                            {
+                                var paragraph = subtitle.Paragraphs[index];
+                                paragraph.Text = "\u200F" + paragraph.Text.Replace(Environment.NewLine, "\u200F" + Environment.NewLine + "\u200F") + "\u200F"; // RTL control character
+                            }
+                        }
+                        var oldFontSize = Configuration.Settings.SubtitleSettings.SsaFontSize;
+                        var oldFontBold = Configuration.Settings.SubtitleSettings.SsaFontBold;
+                        Configuration.Settings.SubtitleSettings.SsaFontSize = Configuration.Settings.General.VideoPlayerPreviewFontSize;
+                        Configuration.Settings.SubtitleSettings.SsaFontBold = Configuration.Settings.General.VideoPlayerPreviewFontBold;
+                        subtitle.Header = AdvancedSubStationAlpha.DefaultHeader;
+                        Configuration.Settings.SubtitleSettings.SsaFontSize = oldFontSize;
+                        Configuration.Settings.SubtitleSettings.SsaFontBold = oldFontBold;
+
+                        if (oldSub.Header != null && oldSub.Header.Length > 20 && oldSub.Header.Substring(3, 3) == "STL")
+                        {
+                            subtitle.Header = subtitle.Header.Replace("Style: Default,", "Style: Box,arial,20,&H00FFFFFF,&H0300FFFF,&H00000000,&H02000000,0,0,0,0,100,100,0,0,3,2,0,2,10,10,10,1" +
+                                                                       Environment.NewLine + "Style: Default,");
+                            for (var index = 0; index < subtitle.Paragraphs.Count; index++)
+                            {
+                                var p = subtitle.Paragraphs[index];
+                                if (p.Text.Contains("<box>"))
+                                {
+                                    p.Extra = "Box";
+                                    p.Text = p.Text.Replace("<box>", string.Empty).Replace("</box>", string.Empty);
+                                }
+                            }
                         }
                     }
-                    var oldFontSize = Configuration.Settings.SubtitleSettings.SsaFontSize;
-                    var oldFontBold = Configuration.Settings.SubtitleSettings.SsaFontBold;
-                    Configuration.Settings.SubtitleSettings.SsaFontSize = Configuration.Settings.General.VideoPlayerPreviewFontSize;
-                    Configuration.Settings.SubtitleSettings.SsaFontBold = Configuration.Settings.General.VideoPlayerPreviewFontBold;
-                    subtitle.Header = AdvancedSubStationAlpha.DefaultHeader;
-                    Configuration.Settings.SubtitleSettings.SsaFontSize = oldFontSize;
-                    Configuration.Settings.SubtitleSettings.SsaFontBold = oldFontBold;
+                    text = subtitle.ToText(format);
                 }
 
-                string text = subtitle.ToText(format);
+
                 if (text != _mpvTextOld || _mpvTextFileName == null || _retryCount > 0)
                 {
                     if (_retryCount >= 0 || string.IsNullOrEmpty(_mpvTextFileName) || _subtitlePrev == null || _subtitlePrev.FileName != subtitle.FileName || !_mpvTextFileName.EndsWith(format.Extension, StringComparison.Ordinal))
                     {
                         mpv.RemoveSubtitle();
                         DeleteTempMpvFileName();
-                        _mpvTextFileName = Path.GetTempFileName() + format.Extension;
+                        _mpvTextFileName = FileUtil.GetTempFileName(format.Extension);
                         File.WriteAllText(_mpvTextFileName, text);
                         mpv.LoadSubtitle(_mpvTextFileName);
                         _retryCount--;
@@ -379,13 +481,13 @@ namespace Nikse.SubtitleEdit.Controls
             }
             catch
             {
-                // ignored                
+                // ignored
             }
         }
 
         public string SubtitleText
         {
-            get { return _subtitleText; }
+            get => _subtitleText;
             set
             {
                 _subtitleText = value;
@@ -482,7 +584,7 @@ namespace Nikse.SubtitleEdit.Controls
                         if (end > 0)
                         {
                             string f = s.Substring(0, end);
-                            int colorStart = f.IndexOf(" color=", StringComparison.Ordinal);
+                            int colorStart = f.IndexOf(" color=", StringComparison.OrdinalIgnoreCase);
 
                             if (colorStart > 0)
                             {
@@ -493,9 +595,14 @@ namespace Nikse.SubtitleEdit.Controls
                                     if (colorEnd > 0 || colorEnd == -1)
                                     {
                                         if (colorEnd == -1)
+                                        {
                                             s = f.Substring(colorStart);
+                                        }
                                         else
+                                        {
                                             s = f.Substring(colorStart, colorEnd - colorStart);
+                                        }
+
                                         s = s.Remove(0, " color=".Length);
                                         s = s.Trim('"');
                                         s = s.Trim('\'');
@@ -557,11 +664,19 @@ namespace Nikse.SubtitleEdit.Controls
                     {
                         var idx = _subtitleTextBox.TextLength + sb.Length;
                         if (isBold)
+                        {
                             styleLookups[idx] |= FontStyle.Bold;
+                        }
+
                         if (isItalic)
+                        {
                             styleLookups[idx] |= FontStyle.Italic;
+                        }
+
                         if (isUnderline)
+                        {
                             styleLookups[idx] |= FontStyle.Underline;
+                        }
 
                         sb.Append(text[i]);
                         letterCount++;
@@ -572,11 +687,17 @@ namespace Nikse.SubtitleEdit.Controls
                 _subtitleTextBox.SelectAll();
 
                 if (alignLeft)
+                {
                     _subtitleTextBox.SelectionAlignment = HorizontalAlignment.Left;
+                }
                 else if (alignRight)
+                {
                     _subtitleTextBox.SelectionAlignment = HorizontalAlignment.Right;
+                }
                 else
+                {
                     _subtitleTextBox.SelectionAlignment = HorizontalAlignment.Center;
+                }
 
                 _subtitleTextBox.DeselectAll();
 
@@ -602,7 +723,9 @@ namespace Nikse.SubtitleEdit.Controls
         private void PanelPlayerMouseDown(object sender, MouseEventArgs e)
         {
             if (VideoPlayer == null)
+            {
                 OnEmptyPlayerClicked?.Invoke(sender, e);
+            }
 
             TogglePlayPause();
         }
@@ -619,21 +742,25 @@ namespace Nikse.SubtitleEdit.Controls
             return PanelPlayer;
         }
 
-        public void HideControls()
+        public void HideControls(bool hideCursor)
         {
-            if (_panelcontrols.Visible)
+            if (_panelControls.Visible)
             {
                 _panelSubtitle.Height = _panelSubtitle.Height + _controlsHeight;
-                _panelcontrols.Visible = false;
+                _panelControls.Visible = false;
             }
-            HideCursor();
+            if (hideCursor)
+            {
+                HideCursor();
+            }
         }
 
         public void ShowControls()
         {
-            if (!_panelcontrols.Visible)
+            if (!_panelControls.Visible)
             {
-                _panelcontrols.Visible = true;
+                _panelControls.Visible = true;
+                _panelControls.BringToFront();
                 _panelSubtitle.Height = _panelSubtitle.Height - _controlsHeight;
             }
             ShowCursor();
@@ -642,7 +769,9 @@ namespace Nikse.SubtitleEdit.Controls
         public void HideCursor()
         {
             if (_cursorStatus < 0)
+            {
                 return;
+            }
 
             _cursorStatus--;
             if (VideoPlayer != null)
@@ -653,12 +782,14 @@ namespace Nikse.SubtitleEdit.Controls
             Cursor.Hide();
         }
 
-        private int _cursorStatus = 0;
+        private int _cursorStatus;
 
         public void ShowCursor()
         {
             if (_cursorStatus >= 0)
+            {
                 return;
+            }
 
             _cursorStatus++;
             if (VideoPlayer != null)
@@ -671,7 +802,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         private Control MakeControlsPanel()
         {
-            _panelcontrols = new Panel { Left = 0, Height = _controlsHeight };
+            _panelControls = new Panel { Left = 0, Height = _controlsHeight };
 
             _pictureBoxBackground = new PictureBox
             {
@@ -682,7 +813,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxBackground);
+            _panelControls.Controls.Add(_pictureBoxBackground);
 
             _pictureBoxPlay = new PictureBox
             {
@@ -694,7 +825,7 @@ namespace Nikse.SubtitleEdit.Controls
                 TabStop = false
             };
             _pictureBoxPlay.MouseEnter += PictureBoxPlayMouseEnter;
-            _panelcontrols.Controls.Add(_pictureBoxPlay);
+            _panelControls.Controls.Add(_pictureBoxPlay);
 
             _pictureBoxPlayDown = new PictureBox
             {
@@ -705,7 +836,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxPlayDown);
+            _panelControls.Controls.Add(_pictureBoxPlayDown);
 
             _pictureBoxPlayOver = new PictureBox
             {
@@ -719,7 +850,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxPlayOver.MouseLeave += PictureBoxPlayOverMouseLeave;
             _pictureBoxPlayOver.MouseDown += PictureBoxPlayOverMouseDown;
             _pictureBoxPlayOver.MouseUp += PictureBoxPlayOverMouseUp;
-            _panelcontrols.Controls.Add(_pictureBoxPlayOver);
+            _panelControls.Controls.Add(_pictureBoxPlayOver);
 
             _pictureBoxPause.Image = (Image)_resources.GetObject("pictureBoxPause.Image");
             _pictureBoxPause.Location = new Point(23, 126 - 113);
@@ -728,7 +859,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxPause.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxPause.TabStop = false;
             _pictureBoxPause.MouseEnter += PictureBoxPauseMouseEnter;
-            _panelcontrols.Controls.Add(_pictureBoxPause);
+            _panelControls.Controls.Add(_pictureBoxPause);
 
             _pictureBoxPauseDown.Image = (Image)_resources.GetObject("pictureBoxPauseDown.Image");
             _pictureBoxPauseDown.Location = new Point(22, 127 - 113);
@@ -736,7 +867,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxPauseDown.Size = new Size(29, 29);
             _pictureBoxPauseDown.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxPauseDown.TabStop = false;
-            _panelcontrols.Controls.Add(_pictureBoxPauseDown);
+            _panelControls.Controls.Add(_pictureBoxPauseDown);
 
             _pictureBoxPauseOver.Image = (Image)_resources.GetObject("pictureBoxPauseOver.Image");
             _pictureBoxPauseOver.Location = new Point(22, 127 - 113);
@@ -747,7 +878,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxPauseOver.MouseLeave += PictureBoxPauseOverMouseLeave;
             _pictureBoxPauseOver.MouseDown += PictureBoxPauseOverMouseDown;
             _pictureBoxPauseOver.MouseUp += PictureBoxPauseOverMouseUp;
-            _panelcontrols.Controls.Add(_pictureBoxPauseOver);
+            _panelControls.Controls.Add(_pictureBoxPauseOver);
 
             _pictureBoxStop.Image = (Image)_resources.GetObject("pictureBoxStop.Image");
             _pictureBoxStop.Location = new Point(52, 130 - 113);
@@ -756,7 +887,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxStop.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxStop.TabStop = false;
             _pictureBoxStop.MouseEnter += PictureBoxStopMouseEnter;
-            _panelcontrols.Controls.Add(_pictureBoxStop);
+            _panelControls.Controls.Add(_pictureBoxStop);
 
             _pictureBoxStopDown.Image = (Image)_resources.GetObject("pictureBoxStopDown.Image");
             _pictureBoxStopDown.Location = new Point(52, 130 - 113);
@@ -764,7 +895,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxStopDown.Size = new Size(20, 20);
             _pictureBoxStopDown.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxStopDown.TabStop = false;
-            _panelcontrols.Controls.Add(_pictureBoxStopDown);
+            _panelControls.Controls.Add(_pictureBoxStopDown);
 
             _pictureBoxStopOver.Image = (Image)_resources.GetObject("pictureBoxStopOver.Image");
             _pictureBoxStopOver.Location = new Point(52, 130 - 113);
@@ -775,7 +906,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxStopOver.MouseLeave += PictureBoxStopOverMouseLeave;
             _pictureBoxStopOver.MouseDown += PictureBoxStopOverMouseDown;
             _pictureBoxStopOver.MouseUp += PictureBoxStopOverMouseUp;
-            _panelcontrols.Controls.Add(_pictureBoxStopOver);
+            _panelControls.Controls.Add(_pictureBoxStopOver);
 
             _pictureBoxFullscreen.Image = (Image)_resources.GetObject("pictureBoxFS.Image");
             _pictureBoxFullscreen.Location = new Point(95, 130 - 113);
@@ -784,7 +915,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxFullscreen.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxFullscreen.TabStop = false;
             _pictureBoxFullscreen.MouseEnter += PictureBoxFullscreenMouseEnter;
-            _panelcontrols.Controls.Add(_pictureBoxFullscreen);
+            _panelControls.Controls.Add(_pictureBoxFullscreen);
 
             _pictureBoxFullscreenDown.Image = (Image)_resources.GetObject("pictureBoxFSDown.Image");
             _pictureBoxFullscreenDown.Location = new Point(95, 130 - 113);
@@ -792,7 +923,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxFullscreenDown.Size = new Size(20, 20);
             _pictureBoxFullscreenDown.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxFullscreenDown.TabStop = false;
-            _panelcontrols.Controls.Add(_pictureBoxFullscreenDown);
+            _panelControls.Controls.Add(_pictureBoxFullscreenDown);
 
             _pictureBoxFullscreenOver.Image = (Image)_resources.GetObject("pictureBoxFSOver.Image");
             _pictureBoxFullscreenOver.Location = new Point(95, 130 - 113);
@@ -803,7 +934,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxFullscreenOver.MouseLeave += PictureBoxFullscreenOverMouseLeave;
             _pictureBoxFullscreenOver.MouseDown += PictureBoxFullscreenOverMouseDown;
             _pictureBoxFullscreenOver.MouseUp += PictureBoxFullscreenOverMouseUp;
-            _panelcontrols.Controls.Add(_pictureBoxFullscreenOver);
+            _panelControls.Controls.Add(_pictureBoxFullscreenOver);
 
             _pictureBoxProgressbarBackground.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             _pictureBoxProgressbarBackground.BackColor = Color.Transparent;
@@ -815,7 +946,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxProgressbarBackground.SizeMode = PictureBoxSizeMode.StretchImage;
             _pictureBoxProgressbarBackground.TabStop = false;
             _pictureBoxProgressbarBackground.MouseDown += PictureBoxProgressbarBackgroundMouseDown;
-            _panelcontrols.Controls.Add(_pictureBoxProgressbarBackground);
+            _panelControls.Controls.Add(_pictureBoxProgressbarBackground);
 
             _pictureBoxProgressBar.Image = (Image)_resources.GetObject("pictureBoxProgressBar.Image");
             _pictureBoxProgressBar.Location = new Point(47, 118 - 113);
@@ -824,7 +955,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxProgressBar.SizeMode = PictureBoxSizeMode.StretchImage;
             _pictureBoxProgressBar.TabStop = false;
             _pictureBoxProgressBar.MouseDown += PictureBoxProgressBarMouseDown;
-            _panelcontrols.Controls.Add(_pictureBoxProgressBar);
+            _panelControls.Controls.Add(_pictureBoxProgressBar);
             _pictureBoxProgressBar.BringToFront();
 
             _pictureBoxMute.Image = (Image)_resources.GetObject("pictureBoxMute.Image");
@@ -834,7 +965,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxMute.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxMute.TabStop = false;
             _pictureBoxMute.MouseEnter += PictureBoxMuteMouseEnter;
-            _panelcontrols.Controls.Add(_pictureBoxMute);
+            _panelControls.Controls.Add(_pictureBoxMute);
 
             _pictureBoxMuteDown.Image = (Image)_resources.GetObject("pictureBoxMuteDown.Image");
             _pictureBoxMuteDown.Location = new Point(75, 131 - 113);
@@ -843,7 +974,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxMuteDown.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxMuteDown.TabStop = false;
             _pictureBoxMuteDown.Click += PictureBoxMuteDownClick;
-            _panelcontrols.Controls.Add(_pictureBoxMuteDown);
+            _panelControls.Controls.Add(_pictureBoxMuteDown);
 
             _pictureBoxMuteOver.Image = (Image)_resources.GetObject("pictureBoxMuteOver.Image");
             _pictureBoxMuteOver.Location = new Point(75, 131 - 113);
@@ -854,7 +985,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxMuteOver.MouseLeave += PictureBoxMuteOverMouseLeave;
             _pictureBoxMuteOver.MouseDown += PictureBoxMuteOverMouseDown;
             _pictureBoxMuteOver.MouseUp += PictureBoxMuteOverMouseUp;
-            _panelcontrols.Controls.Add(_pictureBoxMuteOver);
+            _panelControls.Controls.Add(_pictureBoxMuteOver);
 
             _pictureBoxVolumeBarBackground.Image = (Image)_resources.GetObject("pictureBoxVolumeBarBackground.Image");
             _pictureBoxVolumeBarBackground.Location = new Point(111, 135 - 113);
@@ -863,7 +994,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxVolumeBarBackground.SizeMode = PictureBoxSizeMode.AutoSize;
             _pictureBoxVolumeBarBackground.TabStop = false;
             _pictureBoxVolumeBarBackground.MouseDown += PictureBoxVolumeBarBackgroundMouseDown;
-            _panelcontrols.Controls.Add(_pictureBoxVolumeBarBackground);
+            _panelControls.Controls.Add(_pictureBoxVolumeBarBackground);
 
             _pictureBoxVolumeBar.Image = (Image)_resources.GetObject("pictureBoxVolumeBar.Image");
             _pictureBoxVolumeBar.Location = new Point(120, 139 - 113);
@@ -872,7 +1003,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxVolumeBar.SizeMode = PictureBoxSizeMode.StretchImage;
             _pictureBoxVolumeBar.TabStop = false;
             _pictureBoxVolumeBar.MouseDown += PictureBoxVolumeBarMouseDown;
-            _panelcontrols.Controls.Add(_pictureBoxVolumeBar);
+            _panelControls.Controls.Add(_pictureBoxVolumeBar);
             _pictureBoxVolumeBar.BringToFront();
 
             _pictureBoxReverse = new PictureBox
@@ -884,7 +1015,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxReverse);
+            _panelControls.Controls.Add(_pictureBoxReverse);
             _pictureBoxReverse.MouseEnter += PictureBoxReverseMouseEnter;
 
             _pictureBoxReverseOver = new PictureBox
@@ -896,7 +1027,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxReverseOver);
+            _panelControls.Controls.Add(_pictureBoxReverseOver);
             _pictureBoxReverseOver.MouseLeave += PictureBoxReverseOverMouseLeave;
             _pictureBoxReverseOver.MouseDown += PictureBoxReverseOverMouseDown;
             _pictureBoxReverseOver.MouseUp += PictureBoxReverseOverMouseUp;
@@ -910,7 +1041,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxReverseDown);
+            _panelControls.Controls.Add(_pictureBoxReverseDown);
 
             _pictureBoxFastForward = new PictureBox
             {
@@ -921,7 +1052,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxFastForward);
+            _panelControls.Controls.Add(_pictureBoxFastForward);
             _pictureBoxFastForward.MouseEnter += PictureBoxFastForwardMouseEnter;
 
             _pictureBoxFastForwardOver = new PictureBox
@@ -933,7 +1064,7 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxFastForwardOver);
+            _panelControls.Controls.Add(_pictureBoxFastForwardOver);
             _pictureBoxFastForwardOver.MouseLeave += PictureBoxFastForwardOverMouseLeave;
             _pictureBoxFastForwardOver.MouseDown += PictureBoxFastForwardOverMouseDown;
             _pictureBoxFastForwardOver.MouseUp += PictureBoxFastForwardOverMouseUp;
@@ -947,13 +1078,13 @@ namespace Nikse.SubtitleEdit.Controls
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 TabStop = false
             };
-            _panelcontrols.Controls.Add(_pictureBoxFastForwardDown);
+            _panelControls.Controls.Add(_pictureBoxFastForwardDown);
 
             _labelTimeCode.Location = new Point(280, 28);
             _labelTimeCode.ForeColor = Color.Gray;
             _labelTimeCode.Font = new Font(_labelTimeCode.Font.FontFamily, 8);
             _labelTimeCode.AutoSize = true;
-            _panelcontrols.Controls.Add(_labelTimeCode);
+            _panelControls.Controls.Add(_labelTimeCode);
 
             _labelVideoPlayerName.Location = new Point(282, 17);
             _labelVideoPlayerName.ForeColor = Color.Gray;
@@ -961,20 +1092,20 @@ namespace Nikse.SubtitleEdit.Controls
             _labelVideoPlayerName.AutoSize = true;
             _labelVideoPlayerName.Font = new Font(_labelTimeCode.Font.FontFamily, 6);
 
-            _panelcontrols.Controls.Add(_labelVideoPlayerName);
+            _panelControls.Controls.Add(_labelVideoPlayerName);
 
             _pictureBoxBackground.SendToBack();
-            _pictureBoxFastForward.BringToFront();
             _pictureBoxFastForwardDown.BringToFront();
             _pictureBoxFastForwardOver.BringToFront();
+            _pictureBoxFastForward.BringToFront();
             _pictureBoxPlay.BringToFront();
 
-            _panelcontrols.BackColor = _backgroundColor;
-            _pictureBoxPlay.BringToFront();
+            _panelControls.BackColor = _backgroundColor;
             _pictureBoxPlayDown.BringToFront();
             _pictureBoxPlayOver.BringToFront();
+            _pictureBoxPlay.BringToFront();
             _labelTimeCode.BringToFront();
-            return _panelcontrols;
+            return _panelControls;
         }
 
         public void VideoPlayerContainerResize(object sender, EventArgs e)
@@ -987,15 +1118,34 @@ namespace Nikse.SubtitleEdit.Controls
             _panelSubtitle.Top = Height - (_controlsHeight + _subtitlesHeight);
             _panelSubtitle.Width = Width;
 
-            _panelcontrols.Top = Height - _controlsHeight + 2;
-            _panelcontrols.Width = Width;
+            _panelControls.Top = Height - _controlsHeight + 2;
+            _panelControls.Width = Width;
             _pictureBoxBackground.Width = Width;
             _pictureBoxProgressbarBackground.Width = Width - (_pictureBoxProgressbarBackground.Left * 2);
             _pictureBoxFastForward.Left = Width - 48;
             _pictureBoxFastForwardDown.Left = _pictureBoxFastForward.Left;
             _pictureBoxFastForwardOver.Left = _pictureBoxFastForward.Left;
 
-            _labelTimeCode.Left = Width - 170;
+            if (string.IsNullOrEmpty(_labelTimeCode.Text))
+            {
+                var span = TimeCode.FromSeconds(1);
+                _labelTimeCode.Text = $"{span.ToDisplayString()} / {span.ToDisplayString()}{(SmpteMode ? " SMPTE" : string.Empty)}";
+                _labelTimeCode.Left = Width - _labelTimeCode.Width - 9;
+                if (_labelTimeCode.Top + _labelTimeCode.Height >= _panelControls.Height - 4)
+                {
+                    _labelTimeCode.Font = new Font(_labelTimeCode.Font.Name, _labelTimeCode.Font.Size - 1);
+                }
+                _labelTimeCode.Text = string.Empty;
+            }
+            else
+            {
+                _labelTimeCode.Left = Width - _labelTimeCode.Width - 9;
+                if (_labelTimeCode.Top + _labelTimeCode.Height >= _panelControls.Height - 4)
+                {
+                    _labelTimeCode.Font = new Font(_labelTimeCode.Font.Name, _labelTimeCode.Font.Size - 1);
+                }
+            }
+
             _labelVideoPlayerName.Left = Width - _labelVideoPlayerName.Width - 3;
             _mpvTextFileName = null;
         }
@@ -1085,6 +1235,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllPauseImages();
                 _pictureBoxPauseOver.Visible = true;
+                _pictureBoxPauseOver.BringToFront();
             }
         }
 
@@ -1104,6 +1255,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllPauseImages();
                 _pictureBoxPauseDown.Visible = true;
+                _pictureBoxPauseDown.BringToFront();
             }
             OnButtonClicked?.Invoke(sender, e);
         }
@@ -1112,6 +1264,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllPauseImages();
             _pictureBoxPlay.Visible = true;
+            _pictureBoxPlay.BringToFront();
             Pause();
         }
 
@@ -1130,6 +1283,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllStopImages();
             _pictureBoxStopOver.Visible = true;
+            _pictureBoxStopOver.BringToFront();
         }
 
         private void PictureBoxStopOverMouseLeave(object sender, EventArgs e)
@@ -1138,6 +1292,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllStopImages();
                 _pictureBoxStop.Visible = true;
+                _pictureBoxStop.BringToFront();
             }
         }
 
@@ -1147,6 +1302,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllStopImages();
                 _pictureBoxStopDown.Visible = true;
+                _pictureBoxStopDown.BringToFront();
             }
             OnButtonClicked?.Invoke(sender, e);
         }
@@ -1155,6 +1311,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllStopImages();
             _pictureBoxStop.Visible = true;
+            _pictureBoxStop.BringToFront();
             Stop();
         }
 
@@ -1187,6 +1344,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllFullscreenImages();
             _pictureBoxFullscreenOver.Visible = true;
+            _pictureBoxFullscreenOver.BringToFront();
         }
 
         private void PictureBoxFullscreenOverMouseLeave(object sender, EventArgs e)
@@ -1195,6 +1353,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllFullscreenImages();
                 _pictureBoxFullscreen.Visible = true;
+                _pictureBoxFullscreen.BringToFront();
             }
         }
 
@@ -1208,6 +1367,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllFullscreenImages();
             _pictureBoxFullscreen.Visible = true;
+            _pictureBoxFullscreen.BringToFront();
         }
 
         #endregion FullscreenButtons
@@ -1225,9 +1385,15 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllMuteImages();
             if (Mute)
+            {
                 _pictureBoxMuteDown.Visible = true;
+                _pictureBoxMuteDown.BringToFront();
+            }
             else
+            {
                 _pictureBoxMuteOver.Visible = true;
+                _pictureBoxMuteOver.BringToFront();
+            }
         }
 
         private void PictureBoxMuteOverMouseLeave(object sender, EventArgs e)
@@ -1236,6 +1402,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllMuteImages();
                 _pictureBoxMute.Visible = true;
+                _pictureBoxMute.BringToFront();
             }
         }
 
@@ -1245,6 +1412,7 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 HideAllMuteImages();
                 _pictureBoxMuteDown.Visible = true;
+                _pictureBoxMuteDown.BringToFront();
             }
             OnButtonClicked?.Invoke(sender, e);
         }
@@ -1254,6 +1422,7 @@ namespace Nikse.SubtitleEdit.Controls
             HideAllMuteImages();
             Mute = true;
             _pictureBoxMuteDown.Visible = true;
+            _pictureBoxMuteDown.BringToFront();
         }
 
         private void PictureBoxMuteDownClick(object sender, EventArgs e)
@@ -1261,6 +1430,7 @@ namespace Nikse.SubtitleEdit.Controls
             Mute = false;
             HideAllMuteImages();
             _pictureBoxMute.Visible = true;
+            _pictureBoxMute.BringToFront();
             OnButtonClicked?.Invoke(sender, e);
         }
 
@@ -1279,23 +1449,29 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllReverseImages();
             _pictureBoxReverseOver.Visible = true;
+            _pictureBoxReverseOver.BringToFront();
         }
 
         private void PictureBoxReverseOverMouseLeave(object sender, EventArgs e)
         {
             HideAllReverseImages();
             _pictureBoxReverse.Visible = true;
+            _pictureBoxReverse.BringToFront();
         }
 
         private void PictureBoxReverseOverMouseDown(object sender, MouseEventArgs e)
         {
             HideAllReverseImages();
             _pictureBoxReverseDown.Visible = true;
+            _pictureBoxReverseDown.BringToFront();
             if (VideoPlayer != null)
             {
                 var newPosition = CurrentPosition - 3.0;
                 if (newPosition < 0)
+                {
                     newPosition = 0;
+                }
+
                 CurrentPosition = newPosition;
             }
         }
@@ -1304,6 +1480,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllReverseImages();
             _pictureBoxReverse.Visible = true;
+            _pictureBoxReverse.BringToFront();
         }
 
         #endregion Reverse buttons
@@ -1321,24 +1498,30 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllFastForwardImages();
             _pictureBoxFastForwardOver.Visible = true;
+            _pictureBoxFastForwardOver.BringToFront();
         }
 
         private void PictureBoxFastForwardOverMouseLeave(object sender, EventArgs e)
         {
             HideAllFastForwardImages();
             _pictureBoxFastForward.Visible = true;
+            _pictureBoxFastForward.BringToFront();
         }
 
         private void PictureBoxFastForwardOverMouseDown(object sender, MouseEventArgs e)
         {
             HideAllFastForwardImages();
             _pictureBoxFastForwardDown.Visible = true;
+            _pictureBoxFastForwardDown.BringToFront();
 
             if (VideoPlayer != null)
             {
                 var newPosition = CurrentPosition + 3.0;
                 if (newPosition < 0)
+                {
                     newPosition = 0;
+                }
+
                 CurrentPosition = newPosition;
             }
         }
@@ -1347,6 +1530,7 @@ namespace Nikse.SubtitleEdit.Controls
         {
             HideAllFastForwardImages();
             _pictureBoxFastForward.Visible = true;
+            _pictureBoxFastForward.BringToFront();
         }
 
         #endregion Fast forward buttons
@@ -1357,7 +1541,9 @@ namespace Nikse.SubtitleEdit.Controls
         {
             int max = _pictureBoxProgressbarBackground.Width - 9;
             if (mouseX > max)
+            {
                 mouseX = max;
+            }
 
             double percent = mouseX * 100.0 / max;
             _pictureBoxProgressBar.Width = (int)(max * percent / 100.0);
@@ -1398,11 +1584,15 @@ namespace Nikse.SubtitleEdit.Controls
                 _pictureBoxProgressBar.Width = (int)(max * percent / 100.0);
 
                 if (Convert.ToInt64(Duration) == 0)
+                {
                     return;
+                }
 
                 var pos = CurrentPosition;
                 if (pos > 1000000)
+                {
                     pos = 0;
+                }
 
                 var dur = TimeCode.FromSeconds(Duration + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
                 if (SmpteMode)
@@ -1424,12 +1614,17 @@ namespace Nikse.SubtitleEdit.Controls
         {
             int max = _pictureBoxVolumeBarBackground.Width - 18;
             if (mouseX > max)
+            {
                 mouseX = max;
+            }
 
             double percent = (mouseX * 100.0) / max;
             _pictureBoxVolumeBar.Width = (int)(max * percent / 100.0);
             if (_videoPlayer != null)
+            {
                 _videoPlayer.Volume = (int)percent;
+            }
+
             Configuration.Settings.General.VideoPlayerDefaultVolume = (int)percent;
         }
 
@@ -1483,6 +1678,7 @@ namespace Nikse.SubtitleEdit.Controls
                 VideoPlayer.CurrentPosition = 0;
                 HideAllPauseImages();
                 _pictureBoxPlay.Visible = true;
+                _pictureBoxPlay.BringToFront();
                 RefreshProgressBar();
             }
             OnButtonClicked?.Invoke(null, null);
@@ -1495,6 +1691,7 @@ namespace Nikse.SubtitleEdit.Controls
                 VideoPlayer.Pause();
                 HideAllPauseImages();
                 _pictureBoxPlay.Visible = true;
+                _pictureBoxPlay.BringToFront();
                 RefreshProgressBar();
             }
         }
@@ -1504,9 +1701,13 @@ namespace Nikse.SubtitleEdit.Controls
             if (VideoPlayer != null)
             {
                 if (VideoPlayer.IsPaused)
+                {
                     Play();
+                }
                 else
+                {
                     Pause();
+                }
             }
         }
 
@@ -1517,7 +1718,10 @@ namespace Nikse.SubtitleEdit.Controls
             get
             {
                 if (VideoPlayer != null)
+                {
                     return VideoPlayer.Volume;
+                }
+
                 return 0;
             }
             set
@@ -1525,14 +1729,22 @@ namespace Nikse.SubtitleEdit.Controls
                 if (VideoPlayer != null)
                 {
                     if (value > 0)
+                    {
                         _muteOldVolume = null;
+                    }
 
                     if (value > 100)
+                    {
                         VideoPlayer.Volume = 100;
+                    }
                     else if (value < 0)
+                    {
                         VideoPlayer.Volume = 0;
+                    }
                     else
+                    {
                         VideoPlayer.Volume = (int)value;
+                    }
 
                     RefreshVolumeBar();
                 }
@@ -1587,7 +1799,10 @@ namespace Nikse.SubtitleEdit.Controls
             get
             {
                 if (VideoPlayer != null)
+                {
                     return VideoPlayer.Duration;
+                }
+
                 return 0;
             }
         }
@@ -1632,15 +1847,25 @@ namespace Nikse.SubtitleEdit.Controls
 
         public void PauseAndDisposePlayer()
         {
+            PanelPlayer.Hide();
             Pause();
             SubtitleText = string.Empty;
-            VideoPlayer.DisposeVideoPlayer();
+            var temp = VideoPlayer;
             VideoPlayer = null;
+            Application.DoEvents();
+            temp.DisposeVideoPlayer();
+
+            // to avoid not showing video with libmpv, a new PanelPlayer is made...
+            PanelPlayer.MouseDown -= PanelPlayerMouseDown;
+            Controls.Add(MakePlayerPanel());
+            PanelPlayer.BringToFront();
+            PanelPlayer.MouseDown += PanelPlayerMouseDown;
+            VideoPlayerContainerResize(this, null);
+
             DeleteTempMpvFileName();
             _retryCount = 3;
             SmpteMode = false;
             RefreshProgressBar();
         }
-
     }
 }

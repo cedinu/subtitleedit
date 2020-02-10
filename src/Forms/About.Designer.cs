@@ -43,9 +43,9 @@
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.okButton.Location = new System.Drawing.Point(374, 342);
+            this.okButton.Location = new System.Drawing.Point(381, 337);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(83, 21);
+            this.okButton.Size = new System.Drawing.Size(83, 23);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "&OK";
             this.okButton.Click += new System.EventHandler(this.OkButtonClick);
@@ -54,7 +54,7 @@
             // 
             this.labelProduct.AutoSize = true;
             this.labelProduct.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelProduct.Location = new System.Drawing.Point(11, 16);
+            this.labelProduct.Location = new System.Drawing.Point(13, 16);
             this.labelProduct.Name = "labelProduct";
             this.labelProduct.Size = new System.Drawing.Size(140, 19);
             this.labelProduct.TabIndex = 26;

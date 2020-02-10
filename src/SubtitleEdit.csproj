@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\ILRepack.2.0.15\build\ILRepack.props" Condition="Exists('packages\ILRepack.2.0.15\build\ILRepack.props')" />
+  <Import Project="packages\ILRepack.2.0.18\build\ILRepack.props" Condition="Exists('packages\ILRepack.2.0.18\build\ILRepack.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -86,6 +86,24 @@
     <Compile Include="Controls\AudioVisualizer.Designer.cs">
       <DependentUpon>AudioVisualizer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AlignmentPickerJapanese.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AlignmentPickerJapanese.Designer.cs">
+      <DependentUpon>AlignmentPickerJapanese.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\BatchConvertTsSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BatchConvertTsSettings.Designer.cs">
+      <DependentUpon>BatchConvertTsSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\BookmarkAdd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BookmarkAdd.Designer.cs">
+      <DependentUpon>BookmarkAdd.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AddWaveformBatch.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,6 +116,12 @@
     <Compile Include="Forms\AudioToText.Designer.cs">
       <DependentUpon>AudioToText.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\BookmarksGoTo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BookmarksGoTo.Designer.cs">
+      <DependentUpon>BookmarksGoTo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Cavena890SaveOptions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +133,12 @@
     </Compile>
     <Compile Include="Forms\CheckForUpdates.Designer.cs">
       <DependentUpon>CheckForUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ChooseFontName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseFontName.Designer.cs">
+      <DependentUpon>ChooseFontName.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ColorChooser.cs">
       <SubType>Form</SubType>
@@ -152,11 +182,29 @@
     <Compile Include="Forms\DownloadFfmpeg.Designer.cs">
       <DependentUpon>DownloadFfmpeg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\DvdStudioProProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DvdStudioProProperties.Designer.cs">
+      <DependentUpon>DvdStudioProProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EbuLanguageCode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EbuLanguageCode.Designer.cs">
+      <DependentUpon>EbuLanguageCode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ExportFcpXmlAdvanced.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ExportFcpXmlAdvanced.Designer.cs">
       <DependentUpon>ExportFcpXmlAdvanced.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ExportPngXmlDialogOpenFolder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ExportPngXmlDialogOpenFolder.Designer.cs">
+      <DependentUpon>ExportPngXmlDialogOpenFolder.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ImportFinalDraft.cs">
       <SubType>Form</SubType>
@@ -169,6 +217,12 @@
     </Compile>
     <Compile Include="Forms\MultipleReplaceExportImport.Designer.cs">
       <DependentUpon>MultipleReplaceExportImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetflixFixErrors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetflixFixErrors.Designer.cs">
+      <DependentUpon>NetflixFixErrors.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Ocr\AddBeterMultiMatch.cs">
       <SubType>Form</SubType>
@@ -452,10 +506,10 @@
     <Compile Include="Forms\GetDictionaries.Designer.cs">
       <DependentUpon>GetDictionaries.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\GetTesseractDictionaries.cs">
+    <Compile Include="Forms\Ocr\GetTesseractDictionaries.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\GetTesseractDictionaries.Designer.cs">
+    <Compile Include="Forms\Ocr\GetTesseractDictionaries.Designer.cs">
       <DependentUpon>GetTesseractDictionaries.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\HardSubExtract.cs">
@@ -512,11 +566,35 @@
     <Compile Include="Forms\Networking\NetworkStart.Designer.cs">
       <DependentUpon>NetworkStart.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Ocr\SetForeColorThreshold.cs">
+    <Compile Include="Forms\Ocr\DownloadTesseract4.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Ocr\SetForeColorThreshold.Designer.cs">
-      <DependentUpon>SetForeColorThreshold.cs</DependentUpon>
+    <Compile Include="Forms\Ocr\DownloadTesseract4.Designer.cs">
+      <DependentUpon>DownloadTesseract4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Ocr\DownloadTesseract302.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Ocr\DownloadTesseract302.Designer.cs">
+      <DependentUpon>DownloadTesseract302.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Ocr\GetTesseract302Dictionaries.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Ocr\GetTesseract302Dictionaries.Designer.cs">
+      <DependentUpon>GetTesseract302Dictionaries.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Ocr\OcrPreprocessingT4.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Ocr\OcrPreprocessingT4.Designer.cs">
+      <DependentUpon>OcrPreprocessingT4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Ocr\OcrPreprocessingSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Ocr\OcrPreprocessingSettings.Designer.cs">
+      <DependentUpon>OcrPreprocessingSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\OpenVideoDvd.cs">
       <SubType>Form</SubType>
@@ -545,11 +623,23 @@
     <Compile Include="Forms\PositionAndSizeForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\ProfileChoose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProfileChoose.Designer.cs">
+      <DependentUpon>ProfileChoose.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RestoreAutoBackup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\RestoreAutoBackup.Designer.cs">
       <DependentUpon>RestoreAutoBackup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RubyJapanese.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RubyJapanese.Designer.cs">
+      <DependentUpon>RubyJapanese.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SeekSilence.cs">
       <SubType>Form</SubType>
@@ -640,6 +730,18 @@
     </Compile>
     <Compile Include="Forms\SettingsMpv.Designer.cs">
       <DependentUpon>SettingsMpv.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingsProfile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingsProfile.Designer.cs">
+      <DependentUpon>SettingsProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingsProfileExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingsProfileExport.Designer.cs">
+      <DependentUpon>SettingsProfileExport.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SetVideoOffset.cs">
       <SubType>Form</SubType>
@@ -893,11 +995,15 @@
     <Compile Include="Logic\ColorChooser\ColorChangedEventArgs.cs" />
     <Compile Include="Logic\ColorChooser\ColorHandler.cs" />
     <Compile Include="Logic\ColorChooser\ColorWheel.cs" />
-    <Compile Include="Logic\CommandLineConvert.cs">
+    <Compile Include="Logic\CommandLineConvert\BluRaySupToBluRaySup.cs" />
+    <Compile Include="Logic\CommandLineConvert\CommandLineConverter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Logic\CommandLineConvert\TsToBdnXml.cs" />
+    <Compile Include="Logic\CommandLineConvert\TsToBluRaySup.cs" />
     <Compile Include="Logic\DarkTheme.cs" />
     <Compile Include="Logic\FindReplaceDialogHelper.cs" />
+    <Compile Include="Logic\SceneChangesGenerator.cs" />
     <Compile Include="Logic\ListViewSorter.cs" />
     <Compile Include="Logic\NativeMethods.cs" />
     <Compile Include="Logic\NikseBitmapImageSplitter.cs" />
@@ -909,6 +1015,7 @@
     </Compile>
     <Compile Include="Logic\Ocr\Binary\BinaryOcrBitmap.cs" />
     <Compile Include="Logic\Ocr\Binary\BinaryOcrDb.cs" />
+    <Compile Include="Logic\Ocr\MatchesToItalicStringConverter.cs" />
     <Compile Include="Logic\Ocr\ModiLanguage.cs" />
     <Compile Include="Logic\Ocr\NOcrDb.cs" />
     <Compile Include="Logic\Ocr\OcrAlphabet.cs" />
@@ -917,14 +1024,20 @@
     <Compile Include="Logic\Ocr\OcrFixEngine.cs" />
     <Compile Include="Logic\Ocr\OcrImage.cs" />
     <Compile Include="Logic\Ocr\NOcrPoint.cs" />
+    <Compile Include="Logic\Ocr\PreprocessingSettings.cs" />
     <Compile Include="Logic\Ocr\SpellCheckOcrTextResult.cs" />
+    <Compile Include="Logic\Ocr\Tesseract\TesseractMultiThreadRunner.cs" />
+    <Compile Include="Logic\Ocr\Tesseract\TesseractThreadRunner.cs" />
+    <Compile Include="Logic\Ocr\Tesseract\TesseractRunner.cs" />
+    <Compile Include="Logic\Ocr\Tesseract\TesseractMultiRunner.cs" />
     <Compile Include="Logic\RtfTextConverterRichTextBox.cs" />
+    <Compile Include="Logic\MainShortcuts.cs" />
     <Compile Include="Logic\SpellCheck\Hunspell.cs" />
     <Compile Include="Logic\SpellCheck\LinuxHunspell.cs" />
     <Compile Include="Logic\SpellCheck\MacHunspell.cs" />
     <Compile Include="Logic\SpellCheck\VoikkoSpellCheck.cs" />
     <Compile Include="Logic\SpellCheck\WindowsHunspell.cs" />
-    <Compile Include="Logic\TextEncodingListItem.cs" />
+    <Compile Include="Logic\SyncContextExtensions.cs" />
     <Compile Include="Logic\UiEbuSaveHelper.cs" />
     <Compile Include="Logic\UiGetPacEncoding.cs" />
     <Compile Include="Logic\UiGetYouTubeAnnotationStyles.cs" />
@@ -933,7 +1046,6 @@
     <Compile Include="Logic\VideoPlayers\LibMpvDynamic.cs" />
     <Compile Include="Logic\VideoPlayers\LibVlcDynamic.cs" />
     <Compile Include="Logic\VideoPlayers\LibVlcMono.cs" />
-    <Compile Include="Logic\VideoPlayers\ManagedDirectXPlayer.cs" />
     <Compile Include="Logic\VideoPlayers\MpcHC\MessageHandlerWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -943,10 +1055,8 @@
     <Compile Include="Logic\VideoPlayers\MpcHC\MpcHcCommand.cs" />
     <Compile Include="Logic\VideoPlayers\MpcHC\MpcHc.cs" />
     <Compile Include="Logic\VideoPlayers\MpcHC\NativeMethods.cs" />
-    <Compile Include="Logic\VideoPlayers\MPlayer.cs" />
     <Compile Include="Logic\VideoPlayers\QuartsPlayer.cs" />
     <Compile Include="Logic\VideoPlayers\VideoPlayer.cs" />
-    <Compile Include="Logic\VideoPlayers\WmpPlayer.cs" />
     <Compile Include="Logic\WordSpellChecker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -956,10 +1066,10 @@
     <Compile Include="Forms\SyncPointsSync.Designer.cs">
       <DependentUpon>SyncPointsSync.cs</DependentUpon>
     </Compile>
-    <Compile Include="Web References\MicrosoftTranslationService\Reference.cs">
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Web References\SeNetworkService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -973,17 +1083,32 @@
     <EmbeddedResource Include="Controls\AudioVisualizer.resx">
       <DependentUpon>AudioVisualizer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AlignmentPickerJapanese.resx">
+      <DependentUpon>AlignmentPickerJapanese.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BatchConvertTsSettings.resx">
+      <DependentUpon>BatchConvertTsSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BookmarkAdd.resx">
+      <DependentUpon>BookmarkAdd.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AddWaveformBatch.resx">
       <DependentUpon>AddWaveformBatch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AudioToText.resx">
       <DependentUpon>AudioToText.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BookmarksGoTo.resx">
+      <DependentUpon>BookmarksGoTo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Cavena890SaveOptions.resx">
       <DependentUpon>Cavena890SaveOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CheckForUpdates.resx">
       <DependentUpon>CheckForUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChooseFontName.resx">
+      <DependentUpon>ChooseFontName.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ColorChooser.resx">
       <DependentUpon>ColorChooser.cs</DependentUpon>
@@ -1007,14 +1132,26 @@
     <EmbeddedResource Include="Forms\DownloadFfmpeg.resx">
       <DependentUpon>DownloadFfmpeg.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DvdStudioProProperties.resx">
+      <DependentUpon>DvdStudioProProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EbuLanguageCode.resx">
+      <DependentUpon>EbuLanguageCode.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportFcpXmlAdvanced.resx">
       <DependentUpon>ExportFcpXmlAdvanced.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ExportPngXmlDialogOpenFolder.resx">
+      <DependentUpon>ExportPngXmlDialogOpenFolder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFinalDraft.resx">
       <DependentUpon>ImportFinalDraft.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MultipleReplaceExportImport.resx">
       <DependentUpon>MultipleReplaceExportImport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetflixFixErrors.resx">
+      <DependentUpon>NetflixFixErrors.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Ocr\AddBeterMultiMatch.resx">
       <DependentUpon>AddBeterMultiMatch.cs</DependentUpon>
@@ -1155,7 +1292,7 @@
       <DependentUpon>GetDictionaries.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetTesseractDictionaries.resx">
+    <EmbeddedResource Include="Forms\Ocr\GetTesseractDictionaries.resx">
       <DependentUpon>GetTesseractDictionaries.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HardSubExtract.resx">
@@ -1185,8 +1322,20 @@
     <EmbeddedResource Include="Forms\Networking\NetworkStart.resx">
       <DependentUpon>NetworkStart.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Ocr\SetForeColorThreshold.resx">
-      <DependentUpon>SetForeColorThreshold.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Ocr\DownloadTesseract4.resx">
+      <DependentUpon>DownloadTesseract4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Ocr\DownloadTesseract302.resx">
+      <DependentUpon>DownloadTesseract302.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Ocr\GetTesseract302Dictionaries.resx">
+      <DependentUpon>GetTesseract302Dictionaries.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Ocr\OcrPreprocessingT4.resx">
+      <DependentUpon>OcrPreprocessingT4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Ocr\OcrPreprocessingSettings.resx">
+      <DependentUpon>OcrPreprocessingSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OpenVideoDvd.resx">
       <DependentUpon>OpenVideoDvd.cs</DependentUpon>
@@ -1200,8 +1349,14 @@
     <EmbeddedResource Include="Forms\PluginsGet.resx">
       <DependentUpon>PluginsGet.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProfileChoose.resx">
+      <DependentUpon>ProfileChoose.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\RestoreAutoBackup.resx">
       <DependentUpon>RestoreAutoBackup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RubyJapanese.resx">
+      <DependentUpon>RubyJapanese.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SeekSilence.resx">
       <DependentUpon>SeekSilence.cs</DependentUpon>
@@ -1244,6 +1399,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsMpv.resx">
       <DependentUpon>SettingsMpv.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsProfile.resx">
+      <DependentUpon>SettingsProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsProfileExport.resx">
+      <DependentUpon>SettingsProfileExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetVideoOffset.resx">
       <DependentUpon>SetVideoOffset.cs</DependentUpon>
@@ -1373,18 +1534,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Forms\SyncPointsSync.resx">
       <DependentUpon>SyncPointsSync.cs</DependentUpon>
     </EmbeddedResource>
@@ -1413,30 +1569,10 @@
       <SubType>Designer</SubType>
     </None>
     <EmbeddedResource Include="Resources\SMPTE-428-7-2010-DCST.xsd.gz" />
-    <None Include="Web References\MicrosoftTranslationService\GetTranslationsResponse.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\MicrosoftTranslationService\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\MicrosoftTranslationService\soap.wsdl" />
-    <None Include="Web References\MicrosoftTranslationService\soap.xsd">
+    <None Include="Resources\SMPTE-428-7-2014-DCST.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Web References\MicrosoftTranslationService\soap0.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Web References\MicrosoftTranslationService\soap1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Web References\MicrosoftTranslationService\soap2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Web References\MicrosoftTranslationService\SoapService.wsdl" />
-    <None Include="Web References\MicrosoftTranslationService\TranslateArrayResponse.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
+    <EmbeddedResource Include="Resources\SMPTE-428-7-2014-DCST.xsd.gz" />
     <None Include="Web References\SeNetworkService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
@@ -1453,10 +1589,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Transparent Background.png" />
     <Content Include="DLLs\Voikkox64.dll" />
     <Content Include="DLLs\Voikkox86.dll" />
-    <Content Include="Icons\RemoveTextForHI.png" />
     <Content Include="Languages\ar-EG.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1502,19 +1636,25 @@
     <Content Include="Languages\fr-FR.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Languages\hr-HR.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Languages\hu-HU.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Languages\id-ID.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Languages\it-IT.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Languages\ja-JP.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Languages\ko-KR.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Languages\hr-HR.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Languages\ja-JP.xml">
+    <Content Include="Languages\mk-MK.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Languages\nb-NO.xml">
@@ -1532,6 +1672,12 @@
     <Content Include="Languages\pt-PT.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Languages\ro-RO.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Languages\ru-RU.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Languages\sl-SI.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1541,19 +1687,13 @@
     <Content Include="Languages\sr-Latn-RS.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Languages\sv-SE.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Languages\th-TH.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Languages\tr-TR.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Languages\ro-RO.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Languages\ru-RU.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Languages\sv-SE.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Languages\uk-UA.xml">
@@ -1568,9 +1708,6 @@
     <Content Include="Languages\zh-TW.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\pictureBoxNoFSOver.Image.png" />
-    <None Include="Resources\pictureBoxNoFSDown.Image.png" />
-    <None Include="Resources\pictureBoxNoFS.Image.png" />
     <None Include="Web References\SeNetworkService\SeService.disco" />
     <None Include="DLLs\Interop.QuartzTypeLib.dll" />
     <Content Include="..\Changelog.txt" />
@@ -1623,6 +1760,7 @@
     <Content Include="Icons\Help.png" />
     <Content Include="Icons\New.png" />
     <Content Include="Icons\Open.png" />
+    <Content Include="Icons\RemoveTextForHI.png" />
     <Content Include="Icons\Replace.png" />
     <Content Include="Icons\Save.png" />
     <Content Include="Icons\SaveAs.png" />
@@ -1631,15 +1769,20 @@
     <Content Include="Icons\VideoToggle.png" />
     <Content Include="Icons\VisualSync.png" />
     <Content Include="Icons\WaveformToggle.png" />
+    <None Include="Resources\bookmark22.png" />
     <None Include="Resources\pictureBoxFS.Image.png" />
     <None Include="Resources\pictureBoxFSDown.Image.png" />
     <None Include="Resources\pictureBoxFSOver.Image.png" />
     <None Include="Resources\pictureBoxFastForward.Image.png" />
     <None Include="Resources\pictureBoxFastForwardMouseDown.Image.png" />
     <None Include="Resources\pictureBoxFastForwardMouseOver.Image.png" />
+    <None Include="Resources\pictureBoxNoFS.Image.png" />
+    <None Include="Resources\pictureBoxNoFSDown.Image.png" />
+    <None Include="Resources\pictureBoxNoFSOver.Image.png" />
     <None Include="Resources\pictureBoxReverse.Image.png" />
     <None Include="Resources\pictureBoxReverseMouseDown.Image.png" />
     <None Include="Resources\pictureBoxReverseMouseOver.Image.png" />
+    <None Include="Resources\Transparent Background.png" />
     <Content Include="Resources\TesseractDictionaries.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -1691,17 +1834,6 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://api.microsofttranslator.com/V2/Soap.svc">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\MicrosoftTranslationService\</RelPath>
-      <UpdateFromURL>http://api.microsofttranslator.com/V2/Soap.svc</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>SubtitleEdit_MicrosoftTranslationService_SoapService</CachedSettingsPropName>
-    </WebReferenceUrl>
     <WebReferenceUrl Include="http://localhost:2782/se/SeService.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\SeNetworkService\</RelPath>
@@ -1727,7 +1859,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\ILRepack.2.0.15\build\ILRepack.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ILRepack.2.0.15\build\ILRepack.props'))" />
+    <Error Condition="!Exists('packages\ILRepack.2.0.18\build\ILRepack.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ILRepack.2.0.18\build\ILRepack.props'))" />
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
@@ -1738,6 +1870,7 @@
       <Visible>false</Visible>
     </HunspellAssemblies>
   </ItemGroup>
+  <ItemGroup />
   <Target Name="BeforeCompile">
     <XmlPeek XmlInputPath="$(PackagesConfig)" Query="//package[@id='NHunspell']/@version">
       <Output TaskParameter="Result" PropertyName="HunspellVersion" />

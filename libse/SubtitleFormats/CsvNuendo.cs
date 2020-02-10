@@ -7,9 +7,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 {
     public class CsvNuendo : SubtitleFormat
     {
-        private static readonly Regex CsvLine = new Regex("^.*,[+\\d+:]+,[+\\d+:]+,\".+", RegexOptions.Compiled);
+        private static readonly Regex CsvLine = new Regex("^(\"(.*)\")*,\\d+:\\d+:\\d+:\\d+,\\d+:\\d+:\\d+:\\d+,(\"(.*)\")*", RegexOptions.Compiled);
         private const string LineFormat = "{1}{0}{2}{0}{3}{0}{4}";
-        private static string Header = string.Format(LineFormat, ",", "\"Character\"", "\"Timecode In\"", "\"Timecode Out\"", "\"Dialogue\"");
+        private static readonly string Header = string.Format(LineFormat, ",", "\"Character\"", "\"Timecode In\"", "\"Timecode Out\"", "\"Dialogue\"");
 
         public override string Extension => ".csv";
 
@@ -22,8 +22,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             foreach (string line in lines)
             {
                 sb.Append(line);
-                if (CsvLine.IsMatch(line))
+                if (line.IndexOf(':') > 0 && CsvLine.IsMatch(line))
+                {
                     fine++;
+                }
             }
             return fine > 0 && sb.ToString().Contains(Header);
         }
@@ -52,6 +54,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     string[] parts = line.Split(',');
                     if (parts.Length == 4)
+                    {
                         try
                         {
                             var actor = Utilities.FixQuotes(parts[0]);
@@ -60,7 +63,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             string text = Utilities.FixQuotes(parts[3]);
                             p = new Paragraph(start, end, text);
                             if (!string.IsNullOrEmpty(actor))
+                            {
                                 p.Actor = actor;
+                            }
+
                             subtitle.Paragraphs.Add(p);
                             continuation = parts[3].StartsWith('"') && !parts[3].EndsWith('"');
                         }
@@ -68,13 +74,17 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                         {
                             _errorCount++;
                         }
+                    }
                 }
                 else
                 {
                     if (continuation)
                     {
                         if (p.Text.Length < 300)
+                        {
                             p.Text = (p.Text + Environment.NewLine + line.TrimEnd('"')).Trim();
+                        }
+
                         continuation = !line.TrimEnd().EndsWith('"');
                     }
                     else
@@ -86,9 +96,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             subtitle.Renumber();
         }
 
-        private TimeCode DecodeTime(string s)
+        private static TimeCode DecodeTime(string s)
         {
-            return DecodeTimeCodeFramesFourParts(s.Split(new char[] { ':' }));
+            return DecodeTimeCodeFramesFourParts(s.Split(':'));
         }
     }
 }

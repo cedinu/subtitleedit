@@ -15,7 +15,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private readonly XmlDocument _compareDoc = new XmlDocument();
         private readonly string _directoryPath;
         private List<bool> _italics = new List<bool>();
-        internal List<VobSubOcr.ImageCompareAddition> Additions { get; private set; }
+        internal List<VobSubOcr.ImageCompareAddition> Additions { get; }
         private readonly BinaryOcrDb _binOcrDb;
 
         public XmlDocument ImageCompareDocument => _compareDoc;
@@ -33,7 +33,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             {
                 Additions = new List<VobSubOcr.ImageCompareAddition>();
                 foreach (var a in additions)
+                {
                     Additions.Add(a);
+                }
 
                 const int makeHigher = 40;
                 labelImageCompareFiles.Top = labelImageCompareFiles.Top - makeHigher;
@@ -48,9 +50,13 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
 
             _directoryPath = Configuration.VobSubCompareDirectory + databaseFolderName + Path.DirectorySeparatorChar;
             if (!File.Exists(_directoryPath + "Images.xml"))
+            {
                 _compareDoc.LoadXml("<OcrBitmaps></OcrBitmaps>");
+            }
             else
+            {
                 _compareDoc.Load(_directoryPath + "Images.xml");
+            }
 
             Refill(Additions);
 
@@ -63,6 +69,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             buttonUpdate.Text = Configuration.Settings.Language.VobSubEditCharacters.Update;
             buttonDelete.Text = Configuration.Settings.Language.VobSubEditCharacters.Delete;
             labelDoubleSize.Text = Configuration.Settings.Language.VobSubEditCharacters.ImageDoubleSize;
+            buttonImport.Text = Configuration.Settings.Language.SubStationAlphaStyles.Import;
             buttonOK.Text = Configuration.Settings.Language.General.Ok;
             buttonCancel.Text = Configuration.Settings.Language.General.Cancel;
             UiUtil.FixLargeFonts(this, buttonOK);
@@ -136,7 +143,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             }
 
             if (listBoxFileNames.Items.Count > 0)
+            {
                 listBoxFileNames.SelectedIndex = 0;
+            }
         }
 
         private void FillComboWithUniqueAndSortedTexts()
@@ -150,14 +159,20 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 {
                     string text = bob.Text;
                     if (!texts.Contains(text) && text != null)
+                    {
                         texts.Add(text);
+                    }
+
                     count++;
                 }
                 foreach (BinaryOcrBitmap bob in _binOcrDb.CompareImagesExpanded)
                 {
                     string text = bob.Text;
                     if (!texts.Contains(text) && text != null)
+                    {
                         texts.Add(text);
+                    }
+
                     count++;
                 }
             }
@@ -169,13 +184,16 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                     {
                         string text = node.Attributes["Text"].InnerText;
                         if (!texts.Contains(text))
+                        {
                             texts.Add(text);
+                        }
+
                         count++;
                     }
                 }
             }
             texts.Sort();
-            labelCount.Text = string.Format("{0:#,##0}", count);
+            labelCount.Text = $"{count:#,##0}";
 
             comboBoxTexts.Items.Clear();
             foreach (string text in texts)
@@ -184,7 +202,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             }
 
             if (comboBoxTexts.Items.Count > 0)
+            {
                 comboBoxTexts.SelectedIndex = 0;
+            }
         }
 
         private void ComboBoxTextsSelectedIndexChanged(object sender, EventArgs e)
@@ -232,14 +252,19 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             }
 
             if (listBoxFileNames.Items.Count > 0)
+            {
                 listBoxFileNames.SelectedIndex = 0;
+            }
         }
 
         private string GetSelectedFileName()
         {
             string fileName = listBoxFileNames.SelectedItem.ToString();
             if (fileName.StartsWith('['))
+            {
                 fileName = fileName.Substring(fileName.IndexOf(']') + 1);
+            }
+
             return fileName.Trim();
         }
 
@@ -247,7 +272,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         {
             int idx = listBoxFileNames.SelectedIndex;
             if (idx < 0 || _binOcrDb == null)
+            {
                 return null;
+            }
 
             return listBoxFileNames.Items[idx] as BinaryOcrBitmap;
         }
@@ -256,7 +283,10 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         {
             string fileName = listBoxFileNames.Items[index].ToString();
             if (fileName.StartsWith('['))
+            {
                 fileName = fileName.Substring(fileName.IndexOf(']') + 1);
+            }
+
             return fileName.Trim();
         }
 
@@ -274,15 +304,10 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 if (bob != null)
                 {
                     bmp = bob.ToOldBitmap();
-                    labelImageInfo.Text = string.Format("Top:{0}, {1} colored pixels of {2}", bob.Y, bob.NumberOfColoredPixels, (bob.Width * bob.Height));
-
-                    //bool italicI;
-                    //var isI = bob.IsLowercaseI(out italicI);
-                    //labelImageInfo.Text = string.Format("T:{0} j{1} :{2} i{3}{4} '{5} #{6}/{7}", bob.Y, bob.IsLowercaseJ(), bob.IsColon(), isI, italicI ? "i" : "", bob.IsApostrophe(), bob.NumberOfColoredPixels, (bob.Width * bob.Height));
-
+                    labelImageInfo.Text = $"Top:{bob.Y}, {bob.NumberOfColoredPixels} colored pixels of {(bob.Width * bob.Height)}";
                     if (bob.ExpandCount > 0)
                     {
-                        labelExpandCount.Text = string.Format("Expand count: {0}", bob.ExpandCount);
+                        labelExpandCount.Text = $"Expand count: {bob.ExpandCount}";
                     }
                 }
             }
@@ -291,7 +316,10 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 using (var f = new FileStream(databaseName, FileMode.Open))
                 {
                     if (name.Contains(']'))
+                    {
                         name = name.Substring(name.IndexOf(']') + 1).Trim();
+                    }
+
                     f.Position = Convert.ToInt64(name);
                     bmp = new ManagedBitmap(f).ToOldBitmap();
                 }
@@ -321,7 +349,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                     var bob = GetSelectedBinOcrBitmap();
                     foreach (var a in Additions)
                     {
-                        if (bob != null && bob.Text != null && bob.Key == a.Name)
+                        if (bob?.Text != null && bob.Key == a.Name)
                         {
                             textBoxText.Text = a.Text;
                             checkBoxItalic.Checked = a.Italic;
@@ -347,13 +375,17 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private void VobSubEditCharacters_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void ButtonUpdateClick(object sender, EventArgs e)
         {
             if (listBoxFileNames.Items.Count == 0)
+            {
                 return;
+            }
 
             string target = GetSelectedFileName();
             string newText = textBoxText.Text;
@@ -364,7 +396,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             {
                 var bob = GetSelectedBinOcrBitmap();
                 if (bob == null)
+                {
                     return;
+                }
 
                 string oldText = bob.Text;
                 bob.Text = newText;
@@ -387,9 +421,14 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 if (oldText == newText)
                 {
                     if (oldTextItem >= 0 && oldTextItem < comboBoxTexts.Items.Count)
+                    {
                         comboBoxTexts.SelectedIndex = oldTextItem;
+                    }
+
                     if (oldListBoxFileNamesIndex >= 0 && oldListBoxFileNamesIndex < listBoxFileNames.Items.Count)
+                    {
                         listBoxFileNames.SelectedIndex = oldListBoxFileNamesIndex;
+                    }
                 }
                 else
                 {
@@ -467,7 +506,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                             for (int j = 0; j < listBoxFileNames.Items.Count; j++)
                             {
                                 if (GetFileName(j).StartsWith(target, StringComparison.Ordinal))
+                                {
                                     listBoxFileNames.SelectedIndex = j;
+                                }
                             }
                             return;
                         }
@@ -490,7 +531,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private void ButtonDeleteClick(object sender, EventArgs e)
         {
             if (listBoxFileNames.Items.Count == 0)
+            {
                 return;
+            }
 
             int oldComboBoxIndex = comboBoxTexts.SelectedIndex;
             string target = GetSelectedFileName();
@@ -501,9 +544,13 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 if (bob != null)
                 {
                     if (bob.ExpandCount > 0)
+                    {
                         _binOcrDb.CompareImagesExpanded.Remove(bob);
+                    }
                     else
+                    {
                         _binOcrDb.CompareImages.Remove(bob);
+                    }
 
                     if (Additions != null && Additions.Count > 0)
                     {
@@ -520,7 +567,10 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                     Refill(Additions);
                 }
                 if (oldComboBoxIndex >= 0 && oldComboBoxIndex < comboBoxTexts.Items.Count)
+                {
                     comboBoxTexts.SelectedIndex = oldComboBoxIndex;
+                }
+
                 return;
             }
 
@@ -545,7 +595,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 if (Additions == null || Additions.Count == 0)
                 {
                     if (oldComboBoxIndex < comboBoxTexts.Items.Count)
+                    {
                         comboBoxTexts.SelectedIndex = oldComboBoxIndex;
+                    }
                 }
             }
         }
@@ -564,7 +616,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                             for (int j = 0; j < listBoxFileNames.Items.Count; j++)
                             {
                                 if ((listBoxFileNames.Items[j] as BinaryOcrBitmap).Key == name)
+                                {
                                     listBoxFileNames.SelectedIndex = j;
+                                }
                             }
                         }
                         else
@@ -572,7 +626,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                             for (int j = 0; j < listBoxFileNames.Items.Count; j++)
                             {
                                 if (GetFileName(j).StartsWith(name, StringComparison.Ordinal))
+                                {
                                     listBoxFileNames.SelectedIndex = j;
+                                }
                             }
                         }
                         return;
@@ -618,13 +674,21 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
                 try
                 {
                     if (saveFileDialog1.FilterIndex == 0)
+                    {
                         bmp.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                    }
                     else if (saveFileDialog1.FilterIndex == 1)
+                    {
                         bmp.Save(saveFileDialog1.FileName);
+                    }
                     else if (saveFileDialog1.FilterIndex == 2)
+                    {
                         bmp.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Gif);
+                    }
                     else
+                    {
                         bmp.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Tiff);
+                    }
                 }
                 catch (Exception exception)
                 {

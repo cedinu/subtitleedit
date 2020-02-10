@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Forms;
 
 namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 {
@@ -27,10 +28,6 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate IntPtr libvlc_new(int argc, [MarshalAs(UnmanagedType.LPArray)] string[] argv);
         private libvlc_new _libvlc_new;
-
-        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        //private delegate IntPtr libvlc_get_version();
-        //private libvlc_get_version _libvlc_get_version;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void libvlc_release(IntPtr libVlc);
@@ -108,13 +105,13 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         private delegate void libvlc_media_player_stop(IntPtr mediaPlayer);
         private libvlc_media_player_stop _libvlc_media_player_stop;
 
-        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        //private delegate void libvlc_media_player_pause(IntPtr mediaPlayer);
-        //private libvlc_media_player_pause _libvlc_media_player_pause;
-
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void libvlc_media_player_set_hwnd(IntPtr mediaPlayer, IntPtr windowsHandle);
         private libvlc_media_player_set_hwnd _libvlc_media_player_set_hwnd;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void libvlc_media_player_set_xwindow(IntPtr mediaPlayer, IntPtr windowsHandle);
+        private libvlc_media_player_set_xwindow _libvlc_media_player_set_xwindow;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int libvlc_media_player_is_playing(IntPtr mediaPlayer);
@@ -131,10 +128,6 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void libvlc_media_player_set_time(IntPtr mediaPlayer, Int64 position);
         private libvlc_media_player_set_time _libvlc_media_player_set_time;
-
-        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        //private delegate float libvlc_media_player_get_fps(IntPtr mediaPlayer);
-        //private libvlc_media_player_get_fps _libvlc_media_player_get_fps;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate byte libvlc_media_player_get_state(IntPtr mediaPlayer);
@@ -164,12 +157,6 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         private delegate int libvlc_video_set_spu(IntPtr mediaPlayer, int trackNumber);
         private libvlc_video_set_spu _libvlc_video_set_spu;
 
-        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        //public unsafe delegate void* LockEventHandler(void* opaque, void** plane);
-
-        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        //public unsafe delegate void UnlockEventHandler(void* opaque, void* picture, void** plane);
-
         /// <summary>
         /// Callback prototype to allocate and lock a picture buffer. Whenever a new video frame needs to be decoded, the lock callback is invoked. Depending on the video chroma, one or three pixel planes of adequate dimensions must be returned via the second parameter. Those planes must be aligned on 32-bytes boundaries.
         /// </summary>
@@ -197,7 +184,7 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
         private object GetDllType(Type type, string name)
         {
-            IntPtr address = NativeMethods.GetProcAddress(_libVlcDll, name);
+            var address = NativeMethods.CrossGetProcAddress(_libVlcDll, name);
             if (address != IntPtr.Zero)
             {
                 return Marshal.GetDelegateForFunctionPointer(address, type);
@@ -208,7 +195,6 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         private void LoadLibVlcDynamic()
         {
             _libvlc_new = (libvlc_new)GetDllType(typeof(libvlc_new), "libvlc_new");
-            //_libvlc_get_version = (libvlc_get_version)GetDllType(typeof(libvlc_get_version), "libvlc_get_version");
             _libvlc_release = (libvlc_release)GetDllType(typeof(libvlc_release), "libvlc_release");
 
             _libvlc_media_new_path = (libvlc_media_new_path)GetDllType(typeof(libvlc_media_new_path), "libvlc_media_new_path");
@@ -219,6 +205,11 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
             _libvlc_audio_get_track_count = (libvlc_audio_get_track_count)GetDllType(typeof(libvlc_audio_get_track_count), "libvlc_audio_get_track_count");
             _libvlc_audio_get_track_description = (libvlc_audio_get_track_description)GetDllType(typeof(libvlc_audio_get_track_description), "libvlc_audio_get_track_description");
             _libvlc_track_description_release = (libvlc_track_description_release)GetDllType(typeof(libvlc_track_description_release), "libvlc_track_description_release");
+            if (_libvlc_track_description_release == null)
+            { //TODO: libvlc 4 beta... check when final version is out
+                _libvlc_track_description_release = (libvlc_track_description_release)GetDllType(typeof(libvlc_track_description_release), "libvlc_track_description_list_release");
+            }
+
             _libvlc_audio_get_track = (libvlc_audio_get_track)GetDllType(typeof(libvlc_audio_get_track), "libvlc_audio_get_track");
             _libvlc_audio_set_track = (libvlc_audio_set_track)GetDllType(typeof(libvlc_audio_set_track), "libvlc_audio_set_track");
             _libvlc_video_take_snapshot = (libvlc_video_take_snapshot)GetDllType(typeof(libvlc_video_take_snapshot), "libvlc_video_take_snapshot");
@@ -228,13 +219,17 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
             _libvlc_media_player_play = (libvlc_media_player_play)GetDllType(typeof(libvlc_media_player_play), "libvlc_media_player_play");
             _libvlc_media_player_stop = (libvlc_media_player_stop)GetDllType(typeof(libvlc_media_player_stop), "libvlc_media_player_stop");
-            //_libvlc_media_player_pause = (libvlc_media_player_pause)GetDllType(typeof(libvlc_media_player_pause), "libvlc_media_player_pause");
+            if (_libvlc_media_player_stop == null)
+            { //TODO: libvlc 4 beta... check when final version is out
+                _libvlc_media_player_stop = (libvlc_media_player_stop)GetDllType(typeof(libvlc_media_player_stop), "libvlc_media_player_stop_async");
+            }
+
             _libvlc_media_player_set_hwnd = (libvlc_media_player_set_hwnd)GetDllType(typeof(libvlc_media_player_set_hwnd), "libvlc_media_player_set_hwnd");
+            _libvlc_media_player_set_xwindow = (libvlc_media_player_set_xwindow)GetDllType(typeof(libvlc_media_player_set_xwindow), "libvlc_media_player_set_xwindow");
             _libvlc_media_player_is_playing = (libvlc_media_player_is_playing)GetDllType(typeof(libvlc_media_player_is_playing), "libvlc_media_player_is_playing");
             _libvlc_media_player_set_pause = (libvlc_media_player_set_pause)GetDllType(typeof(libvlc_media_player_set_pause), "libvlc_media_player_set_pause");
             _libvlc_media_player_get_time = (libvlc_media_player_get_time)GetDllType(typeof(libvlc_media_player_get_time), "libvlc_media_player_get_time");
             _libvlc_media_player_set_time = (libvlc_media_player_set_time)GetDllType(typeof(libvlc_media_player_set_time), "libvlc_media_player_set_time");
-            //_libvlc_media_player_get_fps = (libvlc_media_player_get_fps)GetDllType(typeof(libvlc_media_player_get_fps), "libvlc_media_player_get_fps");
             _libvlc_media_player_get_state = (libvlc_media_player_get_state)GetDllType(typeof(libvlc_media_player_get_state), "libvlc_media_player_get_state");
             _libvlc_media_player_get_length = (libvlc_media_player_get_length)GetDllType(typeof(libvlc_media_player_get_length), "libvlc_media_player_get_length");
             _libvlc_media_player_release = (libvlc_media_player_release)GetDllType(typeof(libvlc_media_player_release), "libvlc_media_player_release");
@@ -250,7 +245,6 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         private bool IsAllMethodsLoaded()
         {
             return _libvlc_new != null &&
-                   //_libvlc_get_version != null &&
                    _libvlc_release != null &&
                    _libvlc_media_new_path != null &&
                    _libvlc_media_player_new_from_media != null &&
@@ -260,7 +254,6 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
                    _libvlc_audio_set_volume != null &&
                    _libvlc_media_player_play != null &&
                    _libvlc_media_player_stop != null &&
-                   _libvlc_media_player_set_hwnd != null &&
                    _libvlc_media_player_is_playing != null &&
                    _libvlc_media_player_get_time != null &&
                    _libvlc_media_player_set_time != null &&
@@ -297,7 +290,9 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
             get
             {
                 if (_volume != -1)
+                {
                     return _volume;
+                }
 
                 if (Configuration.Settings.General.AllowVolumeBoost)
                 {
@@ -336,21 +331,23 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
             set
             {
                 if (IsPaused && value <= Duration)
+                {
                     _pausePosition = value;
+                }
+
                 _libvlc_media_player_set_time(_mediaPlayer, (long)(value * TimeCode.BaseUnit + 0.5));
             }
         }
 
         public override double PlayRate
         {
-            get
-            {
-                return _libvlc_media_player_get_rate(_mediaPlayer);
-            }
+            get => _libvlc_media_player_get_rate(_mediaPlayer);
             set
             {
                 if (value >= 0 && value <= 2.0)
+                {
                     _libvlc_media_player_set_rate(_mediaPlayer, (float)value);
+                }
             }
         }
 
@@ -369,6 +366,11 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
         public override void Pause()
         {
+            if (_mediaPlayer == IntPtr.Zero)
+            {
+                return;
+            }
+
             _libvlc_media_player_set_pause(_mediaPlayer, 1);
             WaitUntilReady();
             _libvlc_media_player_set_pause(_mediaPlayer, 1);
@@ -459,10 +461,7 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
                 var x = _libvlc_audio_get_track(_mediaPlayer);
                 return x;
             }
-            set
-            {
-                _libvlc_audio_set_track(_mediaPlayer, value);
-            }
+            set => _libvlc_audio_set_track(_mediaPlayer, value);
         }
 
         /// <summary>
@@ -479,7 +478,9 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         {
             var newVlc = new LibVlcDynamic { _libVlc = _libVlc, _libVlcDll = _libVlcDll, _ownerControl = ownerControl };
             if (ownerControl != null)
+            {
                 newVlc._parentForm = ownerControl.FindForm();
+            }
 
             newVlc.LoadLibVlcDynamic();
 
@@ -488,14 +489,14 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
             if (!string.IsNullOrEmpty(videoFileName))
             {
-                IntPtr media = _libvlc_media_new_path(_libVlc, Encoding.UTF8.GetBytes(videoFileName + "\0"));
+                var media = _libvlc_media_new_path(_libVlc, Encoding.UTF8.GetBytes(videoFileName + "\0"));
                 newVlc._mediaPlayer = _libvlc_media_player_new_from_media(media);
                 _libvlc_media_release(media);
 
-                //  Linux: libvlc_media_player_set_xdrawable (_mediaPlayer, xdrawable);
-                //  Mac: libvlc_media_player_set_nsobject (_mediaPlayer, view);
                 if (ownerControl != null)
-                    _libvlc_media_player_set_hwnd(newVlc._mediaPlayer, ownerControl.Handle); // windows
+                {
+                    SetDrawableHandle(newVlc._mediaPlayer, ownerControl);
+                }
 
                 if (onVideoEnded != null)
                 {
@@ -532,100 +533,154 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
         public static string GetVlcPath(string fileName)
         {
-            if (Configuration.IsRunningOnLinux() || Configuration.IsRunningOnMac())
-                return null;
-
-            var path = Path.Combine(Configuration.BaseDirectory, @"VLC\" + fileName);
-            if (File.Exists(path))
-                return path;
-
-            if (!string.IsNullOrEmpty(Configuration.Settings.General.VlcLocation))
+            if (Configuration.IsRunningOnWindows)
             {
-                try
+                var path = Path.Combine(Configuration.BaseDirectory, "VLC", fileName);
+                if (File.Exists(path))
                 {
-                    if (Configuration.Settings.General.VlcLocation.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-                        Configuration.Settings.General.VlcLocation = Path.GetDirectoryName(Configuration.Settings.General.VlcLocation);
-
-                    if (!string.IsNullOrEmpty(Configuration.Settings.General.VlcLocation))
-                    {
-                        path = Path.Combine(Configuration.Settings.General.VlcLocation, fileName);
-                        if (File.Exists(path))
-                            return path;
-                    }
+                    return path;
                 }
-                catch
-                {
-                    // ignored
-                }
-            }
 
-            if (!string.IsNullOrEmpty(Configuration.Settings.General.VlcLocationRelative))
-            {
-                try
+                if (!string.IsNullOrEmpty(Configuration.Settings.General.VlcLocation))
                 {
-                    path = Configuration.Settings.General.VlcLocationRelative;
-                    if (path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-                        path = Path.GetDirectoryName(path);
-
-                    if (path != null)
+                    try
                     {
-                        path = Path.Combine(path, fileName);
-                        string path2 = Path.GetFullPath(path);
-                        if (File.Exists(path2))
-                            return path2;
-
-                        while (path.StartsWith(".."))
+                        if (Configuration.Settings.General.VlcLocation.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                         {
-                            path = path.Remove(0, 3);
-                            path2 = Path.GetFullPath(path);
-                            if (File.Exists(path2))
-                                return path2;
+                            Configuration.Settings.General.VlcLocation = Path.GetDirectoryName(Configuration.Settings.General.VlcLocation);
+                        }
+
+                        if (!string.IsNullOrEmpty(Configuration.Settings.General.VlcLocation))
+                        {
+                            path = Path.Combine(Configuration.Settings.General.VlcLocation, fileName);
+                            if (File.Exists(path))
+                            {
+                                return path;
+                            }
                         }
                     }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
-                catch
+
+                if (!string.IsNullOrEmpty(Configuration.Settings.General.VlcLocationRelative))
                 {
-                    // ignored
+                    try
+                    {
+                        path = Configuration.Settings.General.VlcLocationRelative;
+                        if (path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            path = Path.GetDirectoryName(path);
+                        }
+
+                        if (path != null)
+                        {
+                            path = Path.Combine(path, fileName);
+                            var fullPath = Path.GetFullPath(path);
+                            if (File.Exists(fullPath))
+                            {
+                                return fullPath;
+                            }
+
+                            while (path.StartsWith("..", StringComparison.Ordinal))
+                            {
+                                path = path.Remove(0, 3);
+                                fullPath = Path.GetFullPath(path);
+                                if (File.Exists(fullPath))
+                                {
+                                    return fullPath;
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+
+                // XP via registry path
+                path = RegistryUtil.GetValue(@"SOFTWARE\VideoLAN\VLC", "InstallDir");
+                if (path != null && Directory.Exists(path))
+                {
+                    path = Path.Combine(path, fileName);
+                }
+
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+
+                // Windows 7 via registry path
+                path = RegistryUtil.GetValue(@"SOFTWARE\Wow6432Node\VideoLAN\VLC", "InstallDir");
+                if (path != null && Directory.Exists(path))
+                {
+                    path = Path.Combine(path, fileName);
+                }
+
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+
+                path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var p = Path.Combine(path, "VideoLAN", "VLC", fileName);
+                    if (File.Exists(p))
+                    {
+                        return p;
+                    }
+
+                    p = Path.Combine(path, "VLC", fileName);
+                    if (File.Exists(p))
+                    {
+                        return p;
+                    }
+                }
+
+                path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var p = Path.Combine(path, "VideoLAN", "VLC", fileName);
+                    if (File.Exists(p))
+                    {
+                        return p;
+                    }
+
+                    p = Path.Combine(path, "VLC", fileName);
+                    if (File.Exists(p))
+                    {
+                        return p;
+                    }
+                }
+
+                path = Path.Combine(@"C:\Program Files (x86)\VideoLAN\VLC", fileName);
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+
+                path = Path.Combine(@"C:\Program Files\VideoLAN\VLC", fileName);
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+
+                path = Path.Combine(@"C:\Program Files (x86)\VLC", fileName);
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+
+                path = Path.Combine(@"C:\Program Files\VLC", fileName);
+                if (File.Exists(path))
+                {
+                    return path;
                 }
             }
-
-            // XP via registry path
-            path = RegistryUtil.GetValue(@"SOFTWARE\VideoLAN\VLC", "InstallDir");
-            if (path != null && Directory.Exists(path))
-                path = Path.Combine(path, fileName);
-            if (File.Exists(path))
-                return path;
-
-            // Winows 7 via registry path
-            path = RegistryUtil.GetValue(@"SOFTWARE\Wow6432Node\VideoLAN\VLC", "InstallDir");
-            if (path != null && Directory.Exists(path))
-                path = Path.Combine(path, fileName);
-            if (File.Exists(path))
-                return path;
-
-            path = Path.Combine(@"C:\Program Files (x86)\VideoLAN\VLC", fileName);
-            if (File.Exists(path))
-                return path;
-
-            path = Path.Combine(@"C:\Program Files\VideoLAN\VLC", fileName);
-            if (File.Exists(path))
-                return path;
-
-            path = Path.Combine(@"C:\Program Files (x86)\VLC", fileName);
-            if (File.Exists(path))
-                return path;
-
-            path = Path.Combine(@"C:\Program Files\VLC", fileName);
-            if (File.Exists(path))
-                return path;
-
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"VideoLAN\VLC\" + fileName);
-            if (File.Exists(path))
-                return path;
-
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"VLC\" + fileName);
-            if (File.Exists(path))
-                return path;
 
             return null;
         }
@@ -639,12 +694,17 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         {
             string dllFile = GetVlcPath("libvlc.dll");
             if (!File.Exists(dllFile) || string.IsNullOrEmpty(videoFileName))
+            {
                 return false;
+            }
 
             var dir = Path.GetDirectoryName(dllFile);
             if (dir != null)
+            {
                 Directory.SetCurrentDirectory(dir);
-            _libVlcDll = NativeMethods.LoadLibrary(dllFile);
+            }
+
+            _libVlcDll = NativeMethods.CrossLoadLibrary(dllFile);
             LoadLibVlcDynamic();
             string[] initParameters = { "--no-skip-frames" };
             _libVlc = _libvlc_new(initParameters.Length, initParameters);
@@ -662,20 +722,29 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
         {
             _ownerControl = ownerControl;
             if (ownerControl != null)
-                _parentForm = ownerControl.FindForm();
-            string dllFile = GetVlcPath("libvlc.dll");
-            if (File.Exists(dllFile))
             {
-                var dir = Path.GetDirectoryName(dllFile);
-                if (dir != null)
-                    Directory.SetCurrentDirectory(dir);
-                _libVlcDll = NativeMethods.LoadLibrary(dllFile);
-                LoadLibVlcDynamic();
+                _parentForm = ownerControl.FindForm();
             }
-            else if (!Directory.Exists(videoFileName))
+
+            var dllFile = "libvlc.so";
+            if (Configuration.IsRunningOnWindows)
+            {
+                dllFile = GetVlcPath("libvlc.dll");
+                if (File.Exists(dllFile))
+                {
+                    var dir = Path.GetDirectoryName(dllFile);
+                    if (dir != null)
+                    {
+                        Directory.SetCurrentDirectory(dir);
+                    }
+                }
+            }
+            _libVlcDll = NativeMethods.CrossLoadLibrary(dllFile);
+            if (_libVlcDll == IntPtr.Zero)
             {
                 return;
             }
+            LoadLibVlcDynamic();
 
             OnVideoLoaded = onVideoLoaded;
             OnVideoEnded = onVideoEnded;
@@ -693,15 +762,7 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
                 if (ownerControl != null)
                 {
-                    _libvlc_media_player_set_hwnd(_mediaPlayer, ownerControl.Handle); // windows
-
-                    //hack: sometimes vlc opens in it's own windows - this code seems to prevent this
-                    for (int j = 0; j < 50; j++)
-                    {
-                        System.Threading.Thread.Sleep(10);
-                        Application.DoEvents();
-                    }
-                    _libvlc_media_player_set_hwnd(_mediaPlayer, ownerControl.Handle); // windows
+                    SetDrawableHandle(_mediaPlayer, ownerControl);
                 }
 
                 if (onVideoEnded != null)
@@ -722,22 +783,48 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
             }
         }
 
+        private void SetDrawableHandle(IntPtr mediaPlayer, Control ownerControl)
+        {
+            if (Configuration.IsRunningOnWindows)
+            {
+                _libvlc_media_player_set_hwnd(mediaPlayer, ownerControl.Handle); // windows
+
+                //hack: sometimes vlc opens in it's own windows - this code seems to prevent this
+                for (int j = 0; j < 50; j++)
+                {
+                    System.Threading.Thread.Sleep(10);
+                    Application.DoEvents();
+                }
+
+                _libvlc_media_player_set_hwnd(mediaPlayer, ownerControl.Handle); // windows
+            }
+            else
+            {
+                _libvlc_media_player_set_xwindow(mediaPlayer, ownerControl.Handle); // linux
+            }
+        }
+
         public static bool IsLeftMouseButtonDown()
         {
-            const int KEY_PRESSED = 0x8000;
-            const int VK_LBUTTON = 0x1;
-            return Convert.ToBoolean(NativeMethods.GetKeyState(VK_LBUTTON) & KEY_PRESSED);
+            if (Configuration.IsRunningOnWindows)
+            {
+                const int KEY_PRESSED = 0x8000;
+                const int VK_LBUTTON = 0x1;
+                return Convert.ToBoolean(NativeMethods.GetKeyState(VK_LBUTTON) & KEY_PRESSED);
+            }
+            return false;
         }
 
         private void MouseTimerTick(object sender, EventArgs e)
         {
             if (_mouseTimer == null)
+            {
                 return;
+            }
 
             _mouseTimer.Stop();
 
-            var mainForm = _parentForm as Forms.Main;
-            if (mainForm == null || !mainForm.IsMenuOpen)
+            if (!(_parentForm is Main mainForm) || !mainForm.IsMenuOpen)
             {
                 if (_parentForm != null && _ownerControl != null && _ownerControl.Visible && _parentForm.ContainsFocus && IsLeftMouseButtonDown())
                 {
@@ -745,9 +832,14 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
                     if (p.X > 0 && p.X < _ownerControl.Width && p.Y > 0 && p.Y < _ownerControl.Height)
                     {
                         if (IsPlaying)
+                        {
                             Pause();
+                        }
                         else
+                        {
                             Play();
+                        }
+
                         int i = 0;
                         while (IsLeftMouseButtonDown() && i < 200)
                         {
@@ -764,16 +856,26 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
         private void VideoEndTimerTick(object sender, EventArgs e)
         {
-            const int ended = 6;
-            int state = _libvlc_media_player_get_state(_mediaPlayer);
-            if (state != ended)
-                return;
+            lock (DisposeLock)
+            {
+                if (_mediaPlayer == IntPtr.Zero)
+                {
+                    return;
+                }
 
-            // hack to make sure VLC is in ready state
-            Stop();
-            Play();
-            Pause();
-            OnVideoEnded?.Invoke(_mediaPlayer, new EventArgs());
+                const int ended = 6;
+                int state = _libvlc_media_player_get_state(_mediaPlayer);
+                if (state != ended)
+                {
+                    return;
+                }
+
+                // hack to make sure VLC is in ready state
+                Stop();
+                Play();
+                Pause();
+                OnVideoEnded?.Invoke(_mediaPlayer, new EventArgs());
+            }
         }
 
         public override void DisposeVideoPlayer()
@@ -785,7 +887,7 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
         public override event EventHandler OnVideoEnded;
 
-        private void ReleaseUnmangedResources()
+        private void ReleaseUnmanagedResources()
         {
             try
             {
@@ -799,7 +901,7 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
                         _mediaPlayer = IntPtr.Zero;
                     }
 
-                    if (_parentForm is Forms.Main)
+                    if (_parentForm is Main)
                     {
                         if (_libvlc_release != null && _libVlc != IntPtr.Zero)
                         {
@@ -809,7 +911,7 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
 
                         if (_libVlcDll != IntPtr.Zero)
                         {
-                            NativeMethods.FreeLibrary(_libVlcDll);  // CRASHES in visual sync / point sync?
+                            NativeMethods.CrossFreeLibrary(_libVlcDll);  // CRASHES in visual sync / point sync?
                             _libVlcDll = IntPtr.Zero;
                         }
                     }
@@ -838,11 +940,13 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
             {
                 if (_videoLoadedTimer != null)
                 {
+                    _videoLoadedTimer.Stop();
                     _videoLoadedTimer.Dispose();
                     _videoLoadedTimer = null;
                 }
                 if (_videoEndTimer != null)
                 {
+                    _videoEndTimer.Stop();
                     _videoEndTimer.Dispose();
                     _videoEndTimer = null;
                 }
@@ -851,8 +955,9 @@ namespace Nikse.SubtitleEdit.Logic.VideoPlayers
                     _mouseTimer.Dispose();
                     _mouseTimer = null;
                 }
+                Application.DoEvents();
             }
-            ReleaseUnmangedResources();
+            ReleaseUnmanagedResources();
         }
 
     }

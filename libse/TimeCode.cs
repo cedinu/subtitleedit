@@ -6,18 +6,12 @@ namespace Nikse.SubtitleEdit.Core
 {
     public class TimeCode
     {
-        public static readonly TimeCode MaxTime = new TimeCode(99, 59, 59, 999);
-
+        private static readonly char[] TimeSplitChars = { ':', ',', '.' };
         public const double BaseUnit = 1000.0; // Base unit of time
         private double _totalMilliseconds;
 
-        public bool IsMaxTime
-        {
-            get
-            {
-                return Math.Abs(_totalMilliseconds - MaxTime.TotalMilliseconds) < 0.01;
-            }
-        }
+        public bool IsMaxTime => Math.Abs(_totalMilliseconds - MaxTimeTotalMilliseconds) < 0.01;
+        public const double MaxTimeTotalMilliseconds = 359999999; // new TimeCode(99, 59, 59, 999).TotalMilliseconds
 
         public static TimeCode FromSeconds(double seconds)
         {
@@ -26,14 +20,10 @@ namespace Nikse.SubtitleEdit.Core
 
         public static double ParseToMilliseconds(string text)
         {
-            string[] parts = text.Split(new[] { ':', ',', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = text.Split(TimeSplitChars, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 4)
             {
-                int hours;
-                int minutes;
-                int seconds;
-                int milliseconds;
-                if (int.TryParse(parts[0], out hours) && int.TryParse(parts[1], out minutes) && int.TryParse(parts[2], out seconds) && int.TryParse(parts[3], out milliseconds))
+                if (int.TryParse(parts[0], out var hours) && int.TryParse(parts[1], out var minutes) && int.TryParse(parts[2], out var seconds) && int.TryParse(parts[3], out var milliseconds))
                 {
                     return new TimeSpan(0, hours, minutes, seconds, milliseconds).TotalMilliseconds;
                 }
@@ -43,14 +33,10 @@ namespace Nikse.SubtitleEdit.Core
 
         public static double ParseHHMMSSFFToMilliseconds(string text)
         {
-            string[] parts = text.Split(new[] { ':', ',', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = text.Split(TimeSplitChars, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 4)
             {
-                int hours;
-                int minutes;
-                int seconds;
-                int frames;
-                if (int.TryParse(parts[0], out hours) && int.TryParse(parts[1], out minutes) && int.TryParse(parts[2], out seconds) && int.TryParse(parts[3], out frames))
+                if (int.TryParse(parts[0], out var hours) && int.TryParse(parts[1], out var minutes) && int.TryParse(parts[2], out var seconds) && int.TryParse(parts[3], out var frames))
                 {
                     return new TimeCode(hours, minutes, seconds, SubtitleFormat.FramesToMillisecondsMax999(frames)).TotalMilliseconds;
                 }
@@ -93,10 +79,7 @@ namespace Nikse.SubtitleEdit.Core
 
         public int Minutes
         {
-            get
-            {
-                return TimeSpan.Minutes;
-            }
+            get => TimeSpan.Minutes;
             set
             {
                 var ts = TimeSpan;
@@ -106,10 +89,7 @@ namespace Nikse.SubtitleEdit.Core
 
         public int Seconds
         {
-            get
-            {
-                return TimeSpan.Seconds;
-            }
+            get => TimeSpan.Seconds;
             set
             {
                 var ts = TimeSpan;
@@ -119,10 +99,7 @@ namespace Nikse.SubtitleEdit.Core
 
         public int Milliseconds
         {
-            get
-            {
-                return TimeSpan.Milliseconds;
-            }
+            get => TimeSpan.Milliseconds;
             set
             {
                 var ts = TimeSpan;
@@ -132,26 +109,20 @@ namespace Nikse.SubtitleEdit.Core
 
         public double TotalMilliseconds
         {
-            get { return _totalMilliseconds; }
-            set { _totalMilliseconds = value; }
+            get => _totalMilliseconds;
+            set => _totalMilliseconds = value;
         }
 
         public double TotalSeconds
         {
-            get { return _totalMilliseconds / BaseUnit; }
-            set { _totalMilliseconds = value * BaseUnit; }
+            get => _totalMilliseconds / BaseUnit;
+            set => _totalMilliseconds = value * BaseUnit;
         }
 
         public TimeSpan TimeSpan
         {
-            get
-            {
-                return TimeSpan.FromMilliseconds(_totalMilliseconds);
-            }
-            set
-            {
-                _totalMilliseconds = value.TotalMilliseconds;
-            }
+            get => TimeSpan.FromMilliseconds(_totalMilliseconds);
+            set => _totalMilliseconds = value.TotalMilliseconds;
         }
 
         public override string ToString() => ToString(false);
@@ -160,11 +131,9 @@ namespace Nikse.SubtitleEdit.Core
         {
             var ts = TimeSpan;
             string decimalSeparator = localize ? CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator : ",";
-            string s = string.Format("{0:00}:{1:00}:{2:00}{3}{4:000}", ts.Hours + ts.Days * 24, ts.Minutes, ts.Seconds, decimalSeparator, ts.Milliseconds);
+            string s = $"{ts.Hours + ts.Days * 24:00}:{ts.Minutes:00}:{ts.Seconds:00}{decimalSeparator}{ts.Milliseconds:000}";
 
-            if (TotalMilliseconds >= 0)
-                return s;
-            return "-" + s.RemoveChar('-');
+            return PrefixSign(s);
         }
 
         public string ToShortString(bool localize = false)
@@ -173,15 +142,18 @@ namespace Nikse.SubtitleEdit.Core
             string decimalSeparator = localize ? CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator : ",";
             string s;
             if (ts.Minutes == 0 && ts.Hours == 0 && ts.Days == 0)
-                s = string.Format("{0:0}{1}{2:000}", ts.Seconds, decimalSeparator, ts.Milliseconds);
+            {
+                s = $"{ts.Seconds:0}{decimalSeparator}{ts.Milliseconds:000}";
+            }
             else if (ts.Hours == 0 && ts.Days == 0)
-                s = string.Format("{0:0}:{1:00}{2}{3:000}", ts.Minutes, ts.Seconds, decimalSeparator, ts.Milliseconds);
+            {
+                s = $"{ts.Minutes:0}:{ts.Seconds:00}{decimalSeparator}{ts.Milliseconds:000}";
+            }
             else
-                s = string.Format("{0:0}:{1:00}:{2:00}{3}{4:000}", ts.Hours + ts.Days * 24, ts.Minutes, ts.Seconds, decimalSeparator, ts.Milliseconds);
-
-            if (TotalMilliseconds >= 0)
-                return s;
-            return "-" + s.RemoveChar('-');
+            {
+                s = $"{ts.Hours + ts.Days * 24:0}:{ts.Minutes:00}:{ts.Seconds:00}{decimalSeparator}{ts.Milliseconds:000}";
+            }
+            return PrefixSign(s);
         }
 
         public string ToShortStringHHMMSSFF()
@@ -209,13 +181,16 @@ namespace Nikse.SubtitleEdit.Core
             var ts = TimeSpan;
             var frames = Math.Round(ts.Milliseconds / (BaseUnit / Configuration.Settings.General.CurrentFrameRate));
             if (frames >= Configuration.Settings.General.CurrentFrameRate - 0.001)
-                s = string.Format("{0:00}:{1:00}:{2:00}:{3:00}", ts.Days * 24 + ts.Hours, ts.Minutes, ts.Seconds + 1, 0);
+            {
+                var newTs = new TimeSpan(ts.Ticks);
+                newTs = newTs.Add(new TimeSpan(0, 0, 1));
+                s = $"{newTs.Days * 24 + newTs.Hours:00}:{newTs.Minutes:00}:{newTs.Seconds:00}:{0:00}";
+            }
             else
-                s = string.Format("{0:00}:{1:00}:{2:00}:{3:00}", ts.Days * 24 + ts.Hours, ts.Minutes, ts.Seconds, SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds));
-
-            if (TotalMilliseconds >= 0)
-                return s;
-            return "-" + s.RemoveChar('-');
+            {
+                s = $"{ts.Days * 24 + ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}:{SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds):00}";
+            }
+            return PrefixSign(s);
         }
 
         public string ToSSFF()
@@ -224,13 +199,14 @@ namespace Nikse.SubtitleEdit.Core
             var ts = TimeSpan;
             var frames = Math.Round(ts.Milliseconds / (BaseUnit / Configuration.Settings.General.CurrentFrameRate));
             if (frames >= Configuration.Settings.General.CurrentFrameRate - 0.001)
-                s = string.Format("{0:00}:{1:00}", ts.Seconds + 1, 0);
+            {
+                s = $"{ts.Seconds + 1:00}:{0:00}";
+            }
             else
-                s = string.Format("{0:00}:{1:00}", ts.Seconds, SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds));
-
-            if (TotalMilliseconds >= 0)
-                return s;
-            return "-" + s.RemoveChar('-');
+            {
+                s = $"{ts.Seconds:00}:{SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds):00}";
+            }
+            return PrefixSign(s);
         }
 
         public string ToHHMMSSPeriodFF()
@@ -239,22 +215,32 @@ namespace Nikse.SubtitleEdit.Core
             var ts = TimeSpan;
             var frames = Math.Round(ts.Milliseconds / (BaseUnit / Configuration.Settings.General.CurrentFrameRate));
             if (frames >= Configuration.Settings.General.CurrentFrameRate - 0.001)
-                s = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Days * 24 + ts.Hours, ts.Minutes, ts.Seconds + 1, 0);
+            {
+                var newTs = new TimeSpan(ts.Ticks);
+                newTs = newTs.Add(new TimeSpan(0, 0, 1));
+                s = $"{newTs.Days * 24 + newTs.Hours:00}:{newTs.Minutes:00}:{newTs.Seconds:00}.{0:00}";
+            }
             else
-                s = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Days * 24 + ts.Hours, ts.Minutes, ts.Seconds, SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds));
+            {
+                s = $"{ts.Days * 24 + ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds):00}";
+            }
 
-            if (TotalMilliseconds >= 0)
-                return s;
-            return "-" + s.RemoveChar('-');
+            return PrefixSign(s);
         }
+
+        private string PrefixSign(string time) => TotalMilliseconds >= 0 ? time : $"-{time.RemoveChar('-')}";
 
         public string ToDisplayString()
         {
             if (IsMaxTime)
+            {
                 return "-";
+            }
 
             if (Configuration.Settings?.General.UseTimeFormatHHMMSSFF == true)
+            {
                 return ToHHMMSSFF();
+            }
 
             return ToString(true);
         }
@@ -262,10 +248,14 @@ namespace Nikse.SubtitleEdit.Core
         public string ToShortDisplayString()
         {
             if (IsMaxTime)
+            {
                 return "-";
+            }
 
             if (Configuration.Settings?.General.UseTimeFormatHHMMSSFF == true)
+            {
                 return ToShortStringHHMMSSFF();
+            }
 
             return ToShortString(true);
         }
