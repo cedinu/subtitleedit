@@ -85,6 +85,8 @@
             public string DeleteCurrentLine { get; set; }
             public string Width { get; set; }
             public string Height { get; set; }
+            public string Collapse { get; set; }
+            public string ShortcutX { get; set; }
         }
 
         public class About
@@ -232,6 +234,7 @@
             public string TransportStreamFileNameEnding { get; set; }
             public string TransportStreamSettingsButton { get; set; }
             public string RemoveLineBreaks { get; set; }
+            public string TryToUseSourceEncoding { get; set; }
         }
 
         public class Beamer
@@ -677,10 +680,10 @@
             public string FixSpanishInvertedQuestionAndExclamationMarks { get; set; }
             public string AddMissingQuote { get; set; }
             public string AddMissingQuotes { get; set; }
-            public string FixHyphens { get; set; }
-            public string FixHyphensAdd { get; set; }
-            public string FixHyphen { get; set; }
-            public string XHyphensFixed { get; set; }
+            public string RemoveHyphensSingleLine { get; set; }
+            public string XHyphensSingleLineRemoved { get; set; }
+            public string FixHyphensInDialogs { get; set; }
+            public string XHyphensInDialogsFixed { get; set; }
             public string AddMissingQuotesExample { get; set; }
             public string XMissingQuotesAdded { get; set; }
             public string Fix3PlusLines { get; set; }
@@ -857,6 +860,7 @@
             public string RemoveEmptyLines { get; set; }
             public string RemoveLinesWithoutLetters { get; set; }
             public string GenerateTimeCodes { get; set; }
+            public string TakeTimeFromFileName { get; set; }
             public string GapBetweenSubtitles { get; set; }
             public string Auto { get; set; }
             public string Fixed { get; set; }
@@ -1254,6 +1258,7 @@
             public string LineNumberXErrorReadingFromSourceLineY { get; set; }
             public string LineNumberXErrorReadingTimeCodeFromSourceLineY { get; set; }
             public string LineNumberXExpectedNumberFromSourceLineY { get; set; }
+            public string LineNumberXExpectedEmptyLine { get; set; }
             public string BeforeGuessingTimeCodes { get; set; }
             public string BeforeAutoDuration { get; set; }
             public string BeforeColumnPaste { get; set; }
@@ -1380,7 +1385,7 @@
                     public string Title { get; set; }
                     public string AdjustDisplayDuration { get; set; }
                     public string ApplyDurationLimits { get; set; }
-                    public string DurationsBridgeGap { get; set; }
+                    public string SubtitlesBridgeGaps { get; set; }
                     public string FixCommonErrors { get; set; }
                     public string StartNumberingFrom { get; set; }
                     public string RemoveTextForHearingImpaired { get; set; }
@@ -2104,6 +2109,11 @@
             public string FixCommonerrors { get; set; }
             public string RemoveTextForHi { get; set; }
             public string MergeLinesShorterThan { get; set; }
+            public string DialogStyle { get; set; }
+            public string DialogStyleDashBothLinesWithSpace { get; set; }
+            public string DialogStyleDashBothLinesWithoutSpace { get; set; }
+            public string DialogStyleDashSecondLineWithSpace { get; set; }
+            public string DialogStyleDashSecondLineWithoutSpace { get; set; }
             public string MusicSymbol { get; set; }
             public string MusicSymbolsReplace { get; set; }
             public string FixCommonOcrErrorsUseHardcodedRules { get; set; }
@@ -2177,6 +2187,7 @@
             public string WaveformGoToPreviousSceneChange { get; set; }
             public string WaveformGoToNextSceneChange { get; set; }
             public string WaveformToggleSceneChange { get; set; }
+            public string WaveformGuessStart { get; set; }
             public string GoBack1Frame { get; set; }
             public string GoForward1Frame { get; set; }
             public string GoBack1FrameWithPlay { get; set; }
@@ -2189,9 +2200,14 @@
             public string GoForward1Second { get; set; }
             public string GoBack5Seconds { get; set; }
             public string GoForward5Seconds { get; set; }
+            public string GoBack3Second { get; set; }
+            public string GoToStartCurrent { get; set; }
+            public string ToggleStartEndCurrent { get; set; }
+            public string PlayCurrent { get; set; }
+            
             public string WaveformGoToPrevSubtitle { get; set; }
             public string WaveformGoToNextSubtitle { get; set; }
-
+            public string WaveformSelectNextSubtitle { get; set; }
             public string TogglePlayPause { get; set; }
             public string Pause { get; set; }
             public string Fullscreen { get; set; }
@@ -2267,6 +2283,7 @@
             public string FontNote { get; set; }
             public string RestoreDefaultSettings { get; set; }
             public string RestoreDefaultSettingsMsg { get; set; }
+            public string RemoveTimeCodes { get; set; }
         }
 
         public class SettingsMpv

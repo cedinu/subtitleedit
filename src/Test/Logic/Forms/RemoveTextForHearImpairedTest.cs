@@ -2,6 +2,7 @@
 using Nikse.SubtitleEdit.Core.Forms;
 using System;
 using Nikse.SubtitleEdit.Core;
+using Nikse.SubtitleEdit.Core.Enums;
 
 namespace Test.Logic.Forms
 {
@@ -1311,9 +1312,12 @@ namespace Test.Logic.Forms
             target.Settings.CustomStart = "♪";
             target.Settings.CustomEnd = "♪";
             target.Settings.RemoveTextBetweenBrackets = true;
+            Configuration.Settings.General.DialogStyle = DialogType.DashBothLinesWithSpace;
             string text = "The meal is ready. Let's go!" + Environment.NewLine + "<i>- [Nick]</i> J. T. Lancer!";
-            string expected = "The meal is ready. Let's go!" + Environment.NewLine + "- J. T. Lancer!";
-            string actual = target.RemoveTextFromHearImpaired(text);
+            string expected = "- The meal is ready. Let's go!" + Environment.NewLine + "- J. T. Lancer!";
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph(text, 0, 2000));
+            string actual = target.RemoveTextFromHearImpaired(text, sub, 0);
             Assert.AreEqual(expected, actual);
         }
 
@@ -1822,6 +1826,28 @@ namespace Test.Logic.Forms
             target.Settings.RemoveTextBetweenBrackets = true;
             string actual = target.RemoveTextFromHearImpaired("Spoken text." + Environment.NewLine + "<i>- [hearing impaired text] Spoken text.</i>");
             Assert.AreEqual("- Spoken text." + Environment.NewLine + "<i>- Spoken text.</i>", actual);
+        }
+
+        [TestMethod]
+        public void RemoveTextForHiSecondLineDifficult()
+        {
+            var target = GetRemoveTextForHiLib();
+            target.Settings.RemoveTextBeforeColon = true;
+            target.Settings.RemoveTextBeforeColonOnlyUppercase = true;
+            target.Settings.RemoveInterjections = false;
+            string actual = target.RemoveTextFromHearImpaired("- [chuckles]" + Environment.NewLine + "- MRS. TRYON: Mr. Wylie!");
+            Assert.AreEqual("Mr. Wylie!", actual);
+        }
+
+        [TestMethod]
+        public void RemoveTextForHiSecondLineDifficult2()
+        {
+            var target = GetRemoveTextForHiLib();
+            target.Settings.RemoveTextBeforeColon = true;
+            target.Settings.RemoveTextBeforeColonOnlyUppercase = false;
+            target.Settings.RemoveInterjections = false;
+            string actual = target.RemoveTextFromHearImpaired("- [chuckles]" + Environment.NewLine + "- MRS. TRYON: Mr. Wylie!");
+            Assert.AreEqual("Mr. Wylie!", actual);
         }
 
 

@@ -12,7 +12,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
         private static readonly Regex FixMissingSpacesReQuestionMark = new Regex(@"[^\s\d]\?[a-zA-Z\d]", RegexOptions.Compiled);
         private static readonly Regex FixMissingSpacesReExclamation = new Regex(@"[^\s\d]\![a-zA-Z\d]", RegexOptions.Compiled);
         private static readonly Regex FixMissingSpacesReColon = new Regex(@"[^\s\d]\:[a-zA-Z]", RegexOptions.Compiled);
-        private static readonly Regex FixMissingSpacesReColonWithAfter = new Regex(@"[^\s\d]\:[a-zA-Z]+", RegexOptions.Compiled);
+        private static readonly Regex FixMissingSpacesReColonWithAfter = new Regex(@"[^\s\d]\:[a-zäöåA-ZÄÖÅ]+", RegexOptions.Compiled);
         private static readonly Regex Url = new Regex(@"\w\.(?:com|net|org)\b", RegexOptions.Compiled);
 
         public void Fix(Subtitle subtitle, IFixCallbacks callbacks)
@@ -21,6 +21,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             string languageCode = callbacks.Language;
             string fixAction = language.FixMissingSpace;
             int missingSpaces = 0;
+            var dialogHelper = new DialogSplitMerge { DialogStyle = Configuration.Settings.General.DialogStyle };
             const string expectedChars = @"""”<.";
             for (int i = 0; i < subtitle.Paragraphs.Count; i++)
             {
@@ -157,81 +158,13 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
 
                 if (!p.Text.StartsWith("--", StringComparison.Ordinal))
                 {
-                    var arr = p.Text.SplitToLines();
-                    if (arr.Count == 2 && arr[0].Length > 1 && arr[1].Length > 1)
+                    var newText = dialogHelper.AddSpaces(p.Text);
+                    if (newText != p.Text && callbacks.AllowFix(p, fixAction))
                     {
-                        if (arr[0][0] == '-' && arr[0][1] != ' ')
-                        {
-                            arr[0] = arr[0].Insert(1, " ");
-                        }
-
-                        if (arr[0].Length > 6 && arr[0].StartsWith("<i>-", StringComparison.OrdinalIgnoreCase) && arr[0][4] != ' ')
-                        {
-                            arr[0] = arr[0].Insert(4, " ");
-                        }
-
-                        if (arr[1][0] == '-' && arr[1][1] != ' ' && arr[1][1] != '-')
-                        {
-                            arr[1] = arr[1].Insert(1, " ");
-                        }
-
-                        if (arr[1].Length > 6 && arr[1].StartsWith("<i>-", StringComparison.OrdinalIgnoreCase) && arr[1][4] != ' ')
-                        {
-                            arr[1] = arr[1].Insert(4, " ");
-                        }
-
-                        string newText = arr[0] + Environment.NewLine + arr[1];
-                        if (newText != p.Text && callbacks.AllowFix(p, fixAction))
-                        {
-                            missingSpaces++;
-                            string oldText = p.Text;
-                            p.Text = newText;
-                            callbacks.AddFixToListView(p, fixAction, oldText, p.Text);
-                        }
-                    }
-                    else if (arr.Count == 3 && arr[0].Length > 1 && arr[1].Length > 1 && arr[2].Length > 1)
-                    {
-                        if (arr[0].StartsWith("-", StringComparison.Ordinal) &&
-                            !"!.?".Contains(arr[0][arr[0].Length - 1]) &&
-                            "!.?".Contains(arr[1][arr[1].Length - 1]) &&
-                            arr[2].StartsWith("-", StringComparison.Ordinal) &&
-                            "!.?".Contains(arr[2][arr[2].Length - 1]))
-                        {
-                            if (char.IsLetterOrDigit(arr[0][1]))
-                            {
-                                arr[0] = arr[0].Insert(1, " ");
-                            }
-                            if (char.IsLetterOrDigit(arr[2][1]))
-                            {
-                                arr[2] = arr[2].Insert(1, " ");
-                            }
-                        }
-
-                        if (arr[0].StartsWith("-", StringComparison.Ordinal) &&
-                           "!.?".Contains(arr[0][arr[0].Length - 1]) &&
-                           arr[1].StartsWith("-", StringComparison.Ordinal) &&
-                           !"!.?".Contains(arr[1][arr[1].Length - 1]) &&
-                           !arr[2].StartsWith("-", StringComparison.Ordinal) &&
-                           "!.?".Contains(arr[2][arr[2].Length - 1]))
-                        {
-                            if (char.IsLetterOrDigit(arr[0][1]))
-                            {
-                                arr[0] = arr[0].Insert(1, " ");
-                            }
-                            if (char.IsLetterOrDigit(arr[1][1]))
-                            {
-                                arr[1] = arr[1].Insert(1, " ");
-                            }
-                        }
-
-                        string newText = arr[0] + Environment.NewLine + arr[1] + Environment.NewLine + arr[2];
-                        if (newText != p.Text && callbacks.AllowFix(p, fixAction))
-                        {
-                            missingSpaces++;
-                            string oldText = p.Text;
-                            p.Text = newText;
-                            callbacks.AddFixToListView(p, fixAction, oldText, p.Text);
-                        }
+                        missingSpaces++;
+                        string oldText = p.Text;
+                        p.Text = newText;
+                        callbacks.AddFixToListView(p, fixAction, oldText, p.Text);
                     }
                 }
 
@@ -279,12 +212,19 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     var lines = p.Text.SplitToLines();
                     for (var lineIndex = 0; lineIndex < lines.Count; lineIndex++)
                     {
-                        foreach (var musicSymbol in musicSymbols)
+                        var lineNoHtmlAndMusicTags = HtmlUtil.RemoveHtmlTags(lines[lineIndex], true)
+                            .RemoveChar('#')
+                            .RemoveChar('♪')
+                            .RemoveChar('♫');
+                        if (lineNoHtmlAndMusicTags.Length > 1)
                         {
-                            var fix = !(musicSymbol == '#' && Utilities.CountTagInText(lines[lineIndex], musicSymbol) == 1 && !lines[lineIndex].EndsWith(musicSymbol));
-                            if (fix)
+                            foreach (var musicSymbol in musicSymbols)
                             {
-                                lines[lineIndex] = FixMissingSpaceBeforeAfterMusicQuotes(lines[lineIndex], musicSymbol);
+                                var fix = !(musicSymbol == '#' && Utilities.CountTagInText(lines[lineIndex], musicSymbol) == 1 && !lines[lineIndex].EndsWith(musicSymbol));
+                                if (fix)
+                                {
+                                    lines[lineIndex] = FixMissingSpaceBeforeAfterMusicQuotes(lines[lineIndex], musicSymbol);
+                                }
                             }
                         }
                     }
@@ -409,7 +349,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             {
                 text = text.Insert(1, " ");
             }
-            else if (text.Length > 4 && text.StartsWith("<i>" + musicSymbol, StringComparison.Ordinal) && !" \r\n#♪♫".Contains(text[4]))
+            else if (text.Length > 4 && text.StartsWith("<i>" + musicSymbol, StringComparison.Ordinal) && !" \r\n#♪♫<".Contains(text[4]))
             {
                 text = text.Insert(4, " ");
             }
@@ -419,7 +359,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             {
                 text = text.Insert(text.Length - 1, " ");
             }
-            if (text.Length > 5 && text.EndsWith(musicSymbol + "</i>", StringComparison.Ordinal) && !" \r\n#♪♫".Contains(text[text.Length - 6]))
+            if (text.Length > 5 && text.EndsWith(musicSymbol + "</i>", StringComparison.Ordinal) && !" \r\n#♪♫>".Contains(text[text.Length - 6]))
             {
                 text = text.Insert(text.Length - 5, " ");
             }

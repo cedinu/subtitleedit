@@ -2,7 +2,7 @@
 <Language Name="فارسي">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>ترجمه توسط:سید مهدی حسینی، نیما</TranslatedBy>
     <CultureName>fa-IR</CultureName>
     <HelpFile />
@@ -1007,7 +1007,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
         <Title>ابزار</Title>
         <AdjustDisplayDuration>تنظیم مدت زمان</AdjustDisplayDuration>
         <ApplyDurationLimits>اعمال محدودیت های طول...</ApplyDurationLimits>
-        <DurationsBridgeGap>اتصال فاصله طول زمان</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>اتصال فاصله طول زمان</SubtitlesBridgeGaps>
         <FixCommonErrors>اشتباهات رایج و ثابت</FixCommonErrors>
         <StartNumberingFrom>شروع شماره از</StartNumberingFrom>
         <RemoveTextForHearingImpaired>گزارش متن برای ناشنوایان</RemoveTextForHearingImpaired>

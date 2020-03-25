@@ -335,6 +335,10 @@ namespace Nikse.SubtitleEdit.Logic.CommandLineConvert
                         {
                             pacCodePage = Pac.CodePageJapanese;
                         }
+                        else if (pcp.Equals("Turkish", StringComparison.OrdinalIgnoreCase))
+                        {
+                            pacCodePage = Pac.CodePageLatinTurkish;
+                        }
                         else if (!int.TryParse(pcp, out pacCodePage) || !Pac.IsValidCodePage(pacCodePage))
                         {
                             throw new FormatException($"The /pac-codepage value '{pcp}' is invalid.");
@@ -1113,7 +1117,7 @@ namespace Nikse.SubtitleEdit.Logic.CommandLineConvert
                                 var hiLib = new Core.Forms.RemoveTextForHI(hiSettings);
                                 foreach (var p in sub.Paragraphs)
                                 {
-                                    p.Text = hiLib.RemoveTextFromHearImpaired(p.Text);
+                                    p.Text = hiLib.RemoveTextFromHearImpaired(p.Text, sub, sub.Paragraphs.IndexOf(p));
                                 }
                                 break;
                             case BatchAction.RemoveFormatting:

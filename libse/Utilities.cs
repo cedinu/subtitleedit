@@ -25,9 +25,9 @@ namespace Nikse.SubtitleEdit.Core
         /// </summary>
         public static readonly char[] NewLineChars = { '\r', '\n' };
 
-        // TODO: Change to IReadonlyList in .net >= 4.5
-        public static ICollection<string> VideoFileExtensions { get; } = new List<string>
-        { ".avi", ".mkv", ".wmv", ".mpg", ".mpeg", ".divx", ".mp4", ".asf", ".flv",".mov", ".m4v", ".vob", ".ogv", ".webm", ".ts", ".m2ts", ".avs", ".mxf" };
+        private static readonly Regex NumberSeparatorNumberRegEx = new Regex(@"\b\d+[\.:;] \d+\b", RegexOptions.Compiled);
+
+        public static string[] VideoFileExtensions { get; } = { ".avi", ".mkv", ".wmv", ".mpg", ".mpeg", ".divx", ".mp4", ".asf", ".flv", ".mov", ".m4v", ".vob", ".ogv", ".webm", ".ts", ".m2ts", ".mts", ".avs", ".mxf" };
 
         public static string GetVideoFileFilter(bool includeAudioFiles)
         {
@@ -77,7 +77,7 @@ namespace Nikse.SubtitleEdit.Core
 
         public static SubtitleFormat GetSubtitleFormatByFriendlyName(string friendlyName)
         {
-            foreach (SubtitleFormat format in SubtitleFormat.AllSubtitleFormats)
+            foreach (var format in SubtitleFormat.AllSubtitleFormats)
             {
                 if (format.FriendlyName == friendlyName || format.Name == friendlyName)
                 {
@@ -105,6 +105,43 @@ namespace Nikse.SubtitleEdit.Core
             }
 
             return $"{(float)fileSize / (1024 * 1024 * 1024):0.0} gb";
+        }
+
+        public static long DisplayFileSizeToBytes(string displayFileSize)
+        {
+            if (displayFileSize.Contains("bytes"))
+            {
+                if (double.TryParse(displayFileSize.Replace("bytes", string.Empty).Trim(), NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out var n))
+                {
+                    return (int)Math.Round(n);
+                }
+            }
+
+            if (displayFileSize.Contains("kb"))
+            {
+                if (double.TryParse(displayFileSize.Replace("kb", string.Empty).Trim(), NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out var n))
+                {
+                    return (int)Math.Round(n * 1024);
+                }
+            }
+
+            if (displayFileSize.Contains("mb"))
+            {
+                if (double.TryParse(displayFileSize.Replace("mb", string.Empty).Trim(), NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out var n))
+                {
+                    return (int)Math.Round(n * 1024 * 1024);
+                }
+            }
+
+            if (displayFileSize.Contains("gb"))
+            {
+                if (double.TryParse(displayFileSize.Replace("gb", string.Empty).Trim(), NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out var n))
+                {
+                    return (int)Math.Round(n * 1024 * 1024 * 1024);
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -471,19 +508,27 @@ namespace Nikse.SubtitleEdit.Core
                     var arr0 = noTagLines[0].Trim().TrimEnd('"', '\'').TrimEnd();
                     if (language == "ar")
                     {
-                        if (arr0.EndsWith('-') && noTagLines[1].TrimStart().EndsWith('-') && arr0.Length > 1 && (".?!)]".Contains(arr0[0]) || arr0.StartsWith("--", StringComparison.Ordinal) || arr0.StartsWith('–')))
+                        if (arr0.EndsWith('-') && noTagLines[1].TrimStart().EndsWith('-') && arr0.Length > 1 && (".?!)]♪".Contains(arr0[0]) || arr0.StartsWith("--", StringComparison.Ordinal) || arr0.StartsWith('–')))
                         {
                             return text;
                         }
                     }
                     else
                     {
-                        if (arr0.StartsWith('-') && noTagLines[1].TrimStart().StartsWith('-') && arr0.Length > 1 && (".?!)]".Contains(arr0[arr0.Length - 1]) || arr0.EndsWith("--", StringComparison.Ordinal) || arr0.EndsWith('–')))
+                        if (arr0.StartsWith('-') && noTagLines[1].TrimStart().StartsWith('-') && arr0.Length > 1 && (".?!)]♪".Contains(arr0[arr0.Length - 1]) || arr0.EndsWith("--", StringComparison.Ordinal) || arr0.EndsWith('–')))
                         {
                             return text;
                         }
                     }
                     if (noTagLines[0].StartsWith('♪') && noTagLines[0].EndsWith('♪') || noTagLines[1].StartsWith('♪') && noTagLines[0].EndsWith('♪'))
+                    {
+                        return text;
+                    }
+                    if (noTagLines[0].StartsWith('[') && noTagLines[0].Length > 1 && (".?!)]♪".Contains(arr0[arr0.Length - 1]) && (noTagLines[1].StartsWith('-') || noTagLines[1].StartsWith('['))))
+                    {
+                        return text;
+                    }
+                    if (noTagLines[0].StartsWith('-') && noTagLines[0].Length > 1 && (".?!)]♪".Contains(arr0[arr0.Length - 1]) && (noTagLines[1].StartsWith('-') || noTagLines[1].StartsWith('['))))
                     {
                         return text;
                     }
@@ -784,7 +829,20 @@ namespace Nikse.SubtitleEdit.Core
                 optimalCharactersPerSecond = 14.7;
             }
 
-            double duration = (HtmlUtil.RemoveHtmlTags(text, true).Length / optimalCharactersPerSecond) * TimeCode.BaseUnit;
+            var duration = text.CountCharacters(Configuration.Settings.General.CharactersPerSecondsIgnoreWhiteSpace) / optimalCharactersPerSecond * TimeCode.BaseUnit;
+        
+            if (duration < 1400)
+            {
+                duration *= 1.2;
+            }
+            else if (duration < 1400 * 1.2)
+            {
+                duration = 1400 * 1.2;
+            }
+            else if (duration > 2900)
+            {
+                duration = Math.Max(2900, duration * 0.96);
+            }
 
             if (duration < Configuration.Settings.General.SubtitleMinimumDisplayMilliseconds)
             {
@@ -1191,22 +1249,29 @@ namespace Nikse.SubtitleEdit.Core
                 return originalParagraphs[index];
             }
 
-            foreach (Paragraph p in originalParagraphs)
+            if (paragraph.StartTime.IsMaxTime && index < originalParagraphs.Count && originalParagraphs[index].StartTime.IsMaxTime)
             {
-                if (Math.Abs(p.StartTime.TotalMilliseconds - paragraph.StartTime.TotalMilliseconds) < 0.01)
+                return originalParagraphs[index];
+            }
+
+            foreach (var p in originalParagraphs)
+            {
+                if (!p.StartTime.IsMaxTime && Math.Abs(p.StartTime.TotalMilliseconds - paragraph.StartTime.TotalMilliseconds) < 0.01)
                 {
                     return p;
                 }
             }
 
-            foreach (Paragraph p in originalParagraphs)
+            foreach (var p in originalParagraphs)
             {
-                if (p.StartTime.TotalMilliseconds > paragraph.StartTime.TotalMilliseconds - 200 &&
+                if (!p.StartTime.IsMaxTime &&
+                    p.StartTime.TotalMilliseconds > paragraph.StartTime.TotalMilliseconds - 200 &&
                     p.StartTime.TotalMilliseconds < paragraph.StartTime.TotalMilliseconds + TimeCode.BaseUnit)
                 {
                     return p;
                 }
             }
+
             return null;
         }
 
@@ -2069,8 +2134,11 @@ namespace Nikse.SubtitleEdit.Core
             text = text.Trim();
             text = text.Replace(Environment.NewLine + " ", Environment.NewLine);
 
-            if (text.Contains("- ") && text.Length > 5)
+            if (text.Contains("-") && text.Length > 2 && !text.StartsWith("--", StringComparison.Ordinal))
             {
+                var dialogHelper = new DialogSplitMerge { DialogStyle = Configuration.Settings.General.DialogStyle };
+                text = dialogHelper.RemoveSpaces(text);
+
                 int idx = text.IndexOf("- ", 2, StringComparison.Ordinal);
                 if (text.StartsWith("<i>", StringComparison.OrdinalIgnoreCase))
                 {
@@ -2208,6 +2276,14 @@ namespace Nikse.SubtitleEdit.Core
             while (text.Contains(" . "))
             {
                 text = text.Replace(" . ", ". ");
+            }
+
+            var numberSeparatorNumberMatch = NumberSeparatorNumberRegEx.Match(text);
+            while (numberSeparatorNumberMatch.Success)
+            {
+                var spaceIdx = text.IndexOf(' ', numberSeparatorNumberMatch.Index);
+                text = text.Remove(spaceIdx, 1);
+                numberSeparatorNumberMatch = NumberSeparatorNumberRegEx.Match(text);
             }
 
             return text;

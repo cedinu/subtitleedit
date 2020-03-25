@@ -2,9 +2,9 @@
 <Language Name="Български">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>Превод на български: Ivo Ivanov и JJD
-Допълнения и последваща обработка: KalinM (Email: mailto:kalinm@gbg.bg)</TranslatedBy>
+Допълнения и последваща обработка: KalinM</TranslatedBy>
     <CultureName>bg-BG</CultureName>
     <HelpFile />
     <Ok>&amp;OK</Ok>
@@ -20,7 +20,7 @@
     <OpenSubtitle>Отваряне на файлове със субтитри...</OpenSubtitle>
     <OpenVideoFile>Отваряне видео файл...</OpenVideoFile>
     <OpenVideoFileTitle>Отваряне на видео файл...</OpenVideoFileTitle>
-    <NoVideoLoaded>Не е заредено видео</NoVideoLoaded>
+    <NoVideoLoaded>Няма заредено видео</NoVideoLoaded>
     <VideoInformation>Информация за видеото (Видео файла)</VideoInformation>
     <StartTime>Начално време</StartTime>
     <EndTime>Крайно време</EndTime>
@@ -82,6 +82,7 @@
     <DeleteCurrentLine>Изтриване на текущия ред</DeleteCurrentLine>
     <Width>Широчина</Width>
     <Height>Височина</Height>
+    <Collapse>Свиване</Collapse>
   </General>
   <About>
     <Title>Относно Subtitle Edit</Title>
@@ -224,6 +225,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <TransportStreamFileNameEnding>Край на името на файла</TransportStreamFileNameEnding>
     <TransportStreamSettingsButton>Настройки на TS...</TransportStreamSettingsButton>
     <RemoveLineBreaks>Премахване прекъсвания на редове</RemoveLineBreaks>
+    <TryToUseSourceEncoding>Опитайте да използвате изходната кодова таблица</TryToUseSourceEncoding>
   </BatchConvert>
   <Beamer>
     <Title>Проектор</Title>
@@ -611,10 +613,10 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <FixSpanishInvertedQuestionAndExclamationMarks>Поправяне на испански обърнати "?" и "!"</FixSpanishInvertedQuestionAndExclamationMarks>
     <AddMissingQuote>Добавяне на липсваща кавичка (")</AddMissingQuote>
     <AddMissingQuotes>Добавяне на липсващи кавички (")</AddMissingQuotes>
-    <FixHyphens>Премахване на тире (-) в редове започващи с тирета (-)</FixHyphens>
-    <FixHyphensAdd>Добавяне на тире (-) в редове започващи с тирета (-)</FixHyphensAdd>
-    <FixHyphen>Поправяне на редове започващи с тире (-)</FixHyphen>
-    <XHyphensFixed>Поправени тирета: {0}</XHyphensFixed>
+    <RemoveHyphensSingleLine>Премахване на диалоговите тирета в единични редове</RemoveHyphensSingleLine>
+    <XHyphensSingleLineRemoved>Премахнато е диалогово тире в единични редове: {0}</XHyphensSingleLineRemoved>
+    <FixHyphensInDialogs>Поправяне на тире в диалозите чрез стил: {0}</FixHyphensInDialogs>
+    <XHyphensInDialogsFixed>Поправени тирета: {0}</XHyphensInDialogsFixed>
     <AddMissingQuotesExample>"Как си? -&gt; "Как си?"</AddMissingQuotesExample>
     <XMissingQuotesAdded>Добавени липсващи кавички: {0}</XMissingQuotesAdded>
     <Fix3PlusLines>Поправяне на субтитри с повече от два реда</Fix3PlusLines>
@@ -781,6 +783,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <RemoveEmptyLines>Изтриване на празни редове</RemoveEmptyLines>
     <RemoveLinesWithoutLetters>Изтриване на редове без букви</RemoveLinesWithoutLetters>
     <GenerateTimeCodes>Генериране на тайм кодове</GenerateTimeCodes>
+    <TakeTimeFromFileName>Отделете времето от името на файла</TakeTimeFromFileName>
     <GapBetweenSubtitles>Интервал между субтитрите (милисек.)</GapBetweenSubtitles>
     <Auto>Автоматично</Auto>
     <Fixed>Настрой</Fixed>
@@ -1031,7 +1034,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
         <Title>Инструменти</Title>
         <AdjustDisplayDuration>Настройка на времетраенето...</AdjustDisplayDuration>
         <ApplyDurationLimits>Прилагане на ограничения във времетраенето...</ApplyDurationLimits>
-        <DurationsBridgeGap>Преодоляване на различия във времетраенето...</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>Преодоляване на различия във времетраенето...</SubtitlesBridgeGaps>
         <FixCommonErrors>Поправяне на грешки...</FixCommonErrors>
         <StartNumberingFrom>Начално номериране...</StartNumberingFrom>
         <RemoveTextForHearingImpaired>Изтриване на текст за увредени със слуха...</RemoveTextForHearingImpaired>
@@ -1504,6 +1507,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
 във файла със субитрите (Ред {0})
 </LineNumberXErrorReadingTimeCodeFromSourceLineY>
     <LineNumberXExpectedNumberFromSourceLineY>Предполагаема грешка във файла със субитрите [Ред {0}]: {1}</LineNumberXExpectedNumberFromSourceLineY>
+    <LineNumberXExpectedEmptyLine>Ред {0} - очакван празен ред, но е намерен номер + времеви код (брой пропуснати): {1}</LineNumberXExpectedEmptyLine>
     <BeforeGuessingTimeCodes>Преди налучването на времевия код</BeforeGuessingTimeCodes>
     <BeforeAutoDuration>Преди авт. времетраене за избраните редове</BeforeAutoDuration>
     <BeforeColumnPaste>Преди поставянето на колона</BeforeColumnPaste>
@@ -1511,7 +1515,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <BeforeColumnImportText>Преди колоната импорт на текст</BeforeColumnImportText>
     <BeforeColumnShiftCellsDown>Преди местенето на клетка надолу</BeforeColumnShiftCellsDown>
     <BeforeX>Преди: {0}</BeforeX>
-    <LinesUpdatedX>Обновени линии: {0} </LinesUpdatedX>
+    <LinesUpdatedX>Обновени редове: {0} </LinesUpdatedX>
     <ErrorLoadingPluginXErrorY>Грешка в зареждането на приставка (Plugins): {0}: {1}</ErrorLoadingPluginXErrorY>
     <BeforeRunningPluginXVersionY>Преди стартирането на приставка (Plugins): {0}: {1}</BeforeRunningPluginXVersionY>
     <UnableToReadPluginResult>Не може да се прочетат субтитрите, в резултат от приставката!</UnableToReadPluginResult>
@@ -1823,7 +1827,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <SubtitleFontSize>Размер на шрифта</SubtitleFontSize>
     <SubtitleBold>Удебелен</SubtitleBold>
     <VideoAutoOpen>Автоматично отваряне на видео файл при отваряне на субтитри</VideoAutoOpen>
-    <AllowVolumeBoost>Позволява увеличаване на звука</AllowVolumeBoost>
+    <AllowVolumeBoost>Разрешено е увеличаване силата на звука</AllowVolumeBoost>
     <SubtitleCenter>По средата</SubtitleCenter>
     <SubtitleFontColor>Цвят на шрифта на субтитрите</SubtitleFontColor>
     <SubtitleBackgroundColor>Цвят на фона на субтитрите</SubtitleBackgroundColor>
@@ -1882,7 +1886,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <CustomSearchTextAndUrl>URL адрес за търсене на текст</CustomSearchTextAndUrl>
     <WaveformAppearance>Изглед на формата на звуковия сигнал</WaveformAppearance>
     <WaveformGridColor>Цвят на мрежата</WaveformGridColor>
-    <WaveformShowGridLines>Показване линиите на мрежата</WaveformShowGridLines>
+    <WaveformShowGridLines>Показване линиите на мрежата (като решетка)</WaveformShowGridLines>
     <WaveformShowCps>Показване симв./сек.</WaveformShowCps>
     <WaveformShowWpm>Показване думи/мин.</WaveformShowWpm>
     <ReverseMouseWheelScrollDirection>Обръщане посоката на превъртане на скрул бутона на мишката</ReverseMouseWheelScrollDirection>
@@ -1946,7 +1950,12 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <FixCommonerrors>Попр. на грешки</FixCommonerrors>
     <RemoveTextForHi>Премахване на текста
 за хора с увреден слух</RemoveTextForHi>
-    <MergeLinesShorterThan>Обедин. редове по-малки от(бр.симв)</MergeLinesShorterThan>
+    <MergeLinesShorterThan>Обедин.редове по-малки от(бр.симв)</MergeLinesShorterThan>
+    <DialogStyle>Диалогов стил</DialogStyle>
+    <DialogStyleDashBothLinesWithSpace>Тире и на двата реда с интервал</DialogStyleDashBothLinesWithSpace>
+    <DialogStyleDashBothLinesWithoutSpace>Тире и на двата реда без интервал</DialogStyleDashBothLinesWithoutSpace>
+    <DialogStyleDashSecondLineWithSpace>Тире на втория ред с интервал</DialogStyleDashSecondLineWithSpace>
+    <DialogStyleDashSecondLineWithoutSpace>Тире на втория ред без интервал</DialogStyleDashSecondLineWithoutSpace>
     <MusicSymbol>Замени с музикален символ</MusicSymbol>
     <MusicSymbolsReplace>Музикални символи за замяна (разделени със запетая)</MusicSymbolsReplace>
     <FixCommonOcrErrorsUseHardcodedRules>Поправяне на някои OCR грешки</FixCommonOcrErrorsUseHardcodedRules>
@@ -2020,6 +2029,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <WaveformGoToPreviousSceneChange>Преминете към предишната промяна на сцената</WaveformGoToPreviousSceneChange>
     <WaveformGoToNextSceneChange>Преминаване към следващата промяна на сцена</WaveformGoToNextSceneChange>
     <WaveformToggleSceneChange>Превключване промяна на сцените</WaveformToggleSceneChange>
+    <WaveformGuessStart>Авт. настройване на старта чрез промяна силата на звука/сцената</WaveformGuessStart>
     <GoBack1Frame>1 кадър назад</GoBack1Frame>
     <GoForward1Frame>1 кадър напред</GoForward1Frame>
     <GoBack1FrameWithPlay>1 кадр назад (с възпроизвеждане)</GoBack1FrameWithPlay>
@@ -2032,6 +2042,10 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <GoForward1Second>1 сек. напред</GoForward1Second>
     <GoBack5Seconds>5 сек. назад</GoBack5Seconds>
     <GoForward5Seconds>5 сек. напред</GoForward5Seconds>
+    <GoBack3Second>Три секунди назад</GoBack3Second>
+    <GoToStartCurrent>Задаване на видео поз за старт на текущия субтитър</GoToStartCurrent>
+    <ToggleStartEndCurrent>Превключване на видео поз между начало/край на текущия субтитър</ToggleStartEndCurrent>
+    <PlayCurrent>Възпроизвеждане на текущия субтитър</PlayCurrent>
     <WaveformGoToPrevSubtitle>Към предишните субтитри (от видео позиция)</WaveformGoToPrevSubtitle>
     <WaveformGoToNextSubtitle>Преминаване към следващия субтитър (от позицията на видеото)</WaveformGoToNextSubtitle>
     <TogglePlayPause>Превключване Пусни/Пауза</TogglePlayPause>
@@ -2057,12 +2071,12 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <GoToFirstSelectedLine>Преминаване на първия избран ред</GoToFirstSelectedLine>
     <GoToNextEmptyLine>Преминаване на следващия празен ред</GoToNextEmptyLine>
     <MergeSelectedLines>Обединяване на избраните редове</MergeSelectedLines>
-    <MergeSelectedLinesAndAutoBreak>Обединяване на избраните линии и автоматично прекъсване</MergeSelectedLinesAndAutoBreak>
-    <MergeSelectedLinesAndUnbreak>Обединяване на избраните линии и разрушаване</MergeSelectedLinesAndUnbreak>
-    <MergeSelectedLinesAndUnbreakCjk>Обединяване на избраните линии и разрушаване без интервал (CJK)</MergeSelectedLinesAndUnbreakCjk>
+    <MergeSelectedLinesAndAutoBreak>Обединяване на избраните редове и авт. прекъсване</MergeSelectedLinesAndAutoBreak>
+    <MergeSelectedLinesAndUnbreak>Обединяване на избраните редове и прекъсване</MergeSelectedLinesAndUnbreak>
+    <MergeSelectedLinesAndUnbreakCjk>Обединяване на избраните редове и прекъсване без интервал (CJK)</MergeSelectedLinesAndUnbreakCjk>
     <MergeSelectedLinesOnlyFirstText>Обединяване на избраните редове, запазване само на първия не празен текст</MergeSelectedLinesOnlyFirstText>
-    <MergeSelectedLinesBilingual>Обединяване на избраните редове двуезични</MergeSelectedLinesBilingual>
-    <SplitSelectedLineBilingual>Разделяне избраната линия двуезична</SplitSelectedLineBilingual>
+    <MergeSelectedLinesBilingual>Обединяване на избраните двуезични редове</MergeSelectedLinesBilingual>
+    <SplitSelectedLineBilingual>Разделяне на избрания двуезичен ред</SplitSelectedLineBilingual>
     <ToggleTranslationMode>Превключване режима на превода Вкл/Изкл</ToggleTranslationMode>
     <SwitchOriginalAndTranslation>Превключване оригинален/преведен</SwitchOriginalAndTranslation>
     <MergeOriginalAndTranslation>Обединяване на оригинален и преводен</MergeOriginalAndTranslation>
@@ -2114,6 +2128,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <RestoreDefaultSettingsMsg>Всички настройки ще бъдат възстановени до стойностите по подразбиране
 
 Ще продължите ли?</RestoreDefaultSettingsMsg>
+    <RemoveTimeCodes>Премахване на времеви кодове</RemoveTimeCodes>
   </Settings>
   <SettingsMpv>
     <Title>Настройки за mpv</Title>
@@ -2396,11 +2411,16 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <Title>Внасяне на OCR VobSub (sub/idx) субтитри</Title>
     <TitleBluRay>Внасяне/OCR Blu-ray (.sup) субтитри</TitleBluRay>
     <OcrMethod>OCR метод</OcrMethod>
-    <OcrViaModi>OCR чрез Microsoft Office Document Imaging (MODI). Необходим е Microsoft Office</OcrViaModi>
-    <OcrViaTesseract>OCR чрез Tesseract</OcrViaTesseract>
-    <OcrViaNOCR>OCR чрез nOCR</OcrViaNOCR>
-    <Language>Език</Language>
+    <OcrViaTesseractVersionX>Tesseract {0}</OcrViaTesseractVersionX>
     <OcrViaImageCompare>OCR чрез сравняване на изображение</OcrViaImageCompare>
+    <OcrViaModi>OCR чрез Microsoft Office Document Imaging (MODI). Необходим е Microsoft Office</OcrViaModi>
+    <OcrViaNOCR>OCR чрез nOCR</OcrViaNOCR>
+    <TesseractEngineMode>Режим на машината</TesseractEngineMode>
+    <TesseractEngineModeLegacy>Само оригинален Tesseract (може да открие наклонен)</TesseractEngineModeLegacy>
+    <TesseractEngineModeNeural>Само невронни мрежи LSTM</TesseractEngineModeNeural>
+    <TesseractEngineModeBoth>Tesseract + LSTM</TesseractEngineModeBoth>
+    <TesseractEngineModeDefault>По подразбиране, въз основа на наличното</TesseractEngineModeDefault>
+    <Language>Език</Language>
     <ImageDatabase>База данни с изображения</ImageDatabase>
     <NoOfPixelsIsSpace>Количество пиксели</NoOfPixelsIsSpace>
     <MaxErrorPercent>Макс. грешки%</MaxErrorPercent>
@@ -2429,6 +2449,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <AllFixes>Всички поправки</AllFixes>
     <GuessesUsed>Използвани подсказки</GuessesUsed>
     <UnknownWords>Непознати думи</UnknownWords>
+    <UnknownWordToGuessInLine>{0} ⇒ {1} чрез „OCRFixReplaceList.xml“ на ред: {2}</UnknownWordToGuessInLine>
     <OcrAutoCorrectionSpellChecking>OCR авт. корекция / проверка правопис</OcrAutoCorrectionSpellChecking>
     <FixOcrErrors>Поправяне на OCR грешки</FixOcrErrors>
     <ImportTextWithMatchingTimeCodes>Импорт на текст със съответните времеви кодове...</ImportTextWithMatchingTimeCodes>

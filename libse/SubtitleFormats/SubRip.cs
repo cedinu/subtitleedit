@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 {
@@ -24,14 +23,14 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         private Paragraph _paragraph;
         private Paragraph _lastParagraph;
         private ExpectingLine _expecting = ExpectingLine.Number;
-        private static readonly Regex RegexTimeCodes = new Regex(@"^-?\d+:-?\d+:-?\d+[:,]-?\d+\s*-->\s*-?\d+:-?\d+:-?\d+[:,]-?\d+$", RegexOptions.Compiled);
-        private static readonly Regex RegexTimeCodes2 = new Regex(@"^\d+:\d+:\d+,\d+\s*-->\s*\d+:\d+:\d+,\d+$", RegexOptions.Compiled);
 
         public override string Extension => ".srt";
 
         public const string NameOfFormat = "SubRip";
 
         public override string Name => NameOfFormat;
+
+        public override List<string> AlternateExtensions => new List<string> { ".wsrt" };
 
         public override bool IsMine(List<string> lines, string fileName)
         {
@@ -51,7 +50,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             const string paragraphWriteFormat = "{0}{4}{1} --> {2}{4}{3}{4}{4}";
 
             var sb = new StringBuilder();
-            foreach (Paragraph p in subtitle.Paragraphs)
+            foreach (var p in subtitle.Paragraphs)
             {
                 sb.AppendFormat(paragraphWriteFormat, p.Number, p.StartTime, p.EndTime, p.Text, Environment.NewLine);
             }
@@ -133,7 +132,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 subtitle.Renumber();
             }
 
-            foreach (Paragraph p in subtitle.Paragraphs)
+            foreach (var p in subtitle.Paragraphs)
             {
                 if (_isMsFrames)
                 {
@@ -190,8 +189,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     }
                     break;
                 case ExpectingLine.Text:
-                    if (Utilities.IsInteger(line) && TryReadTimeCodesLine(next, _paragraph, false) && line.Trim() == GetLastNumber(_paragraph))
+                    if (Utilities.IsInteger(line) && (TryReadTimeCodesLine(next, null, false) || string.IsNullOrEmpty(next) && TryReadTimeCodesLine(nextNext, null, false)))
                     {
+                        // line is integer and time code follows - could loose a number from text...
                         subtitle.Paragraphs.Add(_paragraph);
                         _lastParagraph = _paragraph;
                         _paragraph = new Paragraph();
@@ -200,11 +200,15 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                         {
                             _paragraph.Number = n;
                         }
+                        if (_errors.Length < 2000 && line.Trim() != GetLastNumber(_paragraph))
+                        {
+                            _errors.AppendLine(string.Format(Configuration.Settings.Language.Main.LineNumberXExpectedEmptyLine, _lineNumber, line));
+                        }
                     }
                     else if (TryReadTimeCodesLine(line, null, false))
                     {
                         if (_paragraph != null && _paragraph.EndTime.TotalMilliseconds > 0 ||
-                            !string.IsNullOrEmpty(_paragraph.Text))
+                            _paragraph != null && !string.IsNullOrEmpty(_paragraph.Text))
                         {
                             subtitle.Paragraphs.Add(_paragraph);
                             _lastParagraph = _paragraph;
@@ -298,7 +302,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 .Replace(" ---> ", defaultSeparator)
                 .Replace(": ", ":").Trim();
 
-            // Removed stuff after timecodes - like subtitle position
+            // Removed stuff after time codes - like subtitle position
             //  - example of position info: 00:02:26,407 --> 00:02:31,356  X1:100 X2:100 Y1:100 Y2:100
             if (line.Length > 30 && line[29] == ' ')
             {
@@ -320,7 +324,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 line = line.Substring(0, 25) + ',' + line.Substring(25 + 1);
             }
 
-            if (RegexTimeCodes.IsMatch(line.RemoveChar(' ')) || RegexTimeCodes2.IsMatch(line.RemoveChar(' ')))
+            if (IsValidTimeCode(line))
             {
                 string[] parts = line.Replace("-->", ":").RemoveChar(' ').Split(':', ',');
                 try
@@ -370,6 +374,109 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             return false;
         }
 
-        public override List<string> AlternateExtensions => new List<string> { ".wsrt" };
+        /// <summary>
+        /// Optimized validation of time codes
+        /// Old Regex was:
+        ///  - ^-?\d+:-?\d+:-?\d+[:,]-?\d+\s*-->\s*-?\d+:-?\d+:-?\d+[:,]-?\d+$
+        ///  - ^\d+:\d+:\d+,\d+\s*-->\s*\d+:\d+:\d+,\d+$
+        /// <returns>True if valid srt time code</returns>
+        /// </summary>
+        private static bool IsValidTimeCode(string line)
+        {
+            int step = 0;
+            var max = line.Length;
+            for (int i = 0; i < max; i++)
+            {
+                var ch = line[i];
+                if (char.IsWhiteSpace(ch))
+                {
+                    continue;
+                }
+
+                if (step == 0 || step == 2 || step == 4 || step == 9 || step == 11) // start numbers
+                {
+                    if (ch == '-' || char.IsDigit(ch))
+                    {
+                        step++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (step == 1 || step == 3 || step == 10 || step == 12) // number
+                {
+                    if (char.IsDigit(ch))
+                    {
+                        // ok
+                    }
+                    else if (ch == ':')
+                    {
+                        step++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (step == 5 || step == 13) // seconds
+                {
+                    if (char.IsDigit(ch))
+                    {
+                        // ok
+                    }
+                    else if (ch == ',' || ch == ':')
+                    {
+                        step++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (step == 6 || step == 14) // milliseconds
+                {
+                    if (char.IsDigit(ch))
+                    {
+                        // ok
+                    }
+                    else if (ch == '-')
+                    {
+                        step++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (step == 7) // separator char 2
+                {
+                    if (ch == '-')
+                    {
+                        step++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (step == 8) // separator char 3
+                {
+                    if (ch == '>')
+                    {
+                        step++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (step > 14)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

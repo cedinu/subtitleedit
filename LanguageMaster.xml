@@ -2,7 +2,7 @@
 <Language Name="English">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>Translated by Nikse</TranslatedBy>
     <CultureName>en-US</CultureName>
     <HelpFile />
@@ -81,6 +81,8 @@
     <DeleteCurrentLine>Delete current line</DeleteCurrentLine>
     <Width>Width</Width>
     <Height>Height</Height>
+    <Collapse>Collapse</Collapse>
+    <ShortcutX>Shortcut: {0}</ShortcutX>
   </General>
   <About>
     <Title>About Subtitle Edit</Title>
@@ -222,6 +224,7 @@ Note: Do check free disk space.</WaveFileMalformed>
     <TransportStreamFileNameEnding>File name ending</TransportStreamFileNameEnding>
     <TransportStreamSettingsButton>TS settings...</TransportStreamSettingsButton>
     <RemoveLineBreaks>Remove line-breaks</RemoveLineBreaks>
+    <TryToUseSourceEncoding>Try to use source encoding</TryToUseSourceEncoding>
   </BatchConvert>
   <Beamer>
     <Title>Beamer</Title>
@@ -345,7 +348,7 @@ Note: Do check free disk space.</WaveFileMalformed>
     <Generate>Generate</Generate>
   </DCinemaProperties>
   <DurationsBridgeGaps>
-    <Title>Bridge small gaps in durations</Title>
+    <Title>Bridge small gaps between subtitles</Title>
     <GapsBridgedX>Number of small gaps bridged: {0}</GapsBridgedX>
     <GapToNext>Gap to next in seconds</GapToNext>
     <BridgeGapsSmallerThanXPart1>Bridge gaps smaller than</BridgeGapsSmallerThanXPart1>
@@ -609,10 +612,10 @@ Note: Do check free disk space.</WaveFileMalformed>
     <FixSpanishInvertedQuestionAndExclamationMarks>Fix Spanish inverted question and exclamation marks</FixSpanishInvertedQuestionAndExclamationMarks>
     <AddMissingQuote>Add missing quote (")</AddMissingQuote>
     <AddMissingQuotes>Add missing quotes (")</AddMissingQuotes>
-    <FixHyphens>Fix (remove dash) lines beginning with dash (-)</FixHyphens>
-    <FixHyphensAdd>Fix (add dash) line pairs with only one dash (-)</FixHyphensAdd>
-    <FixHyphen>Fix line beginning with dash (-)</FixHyphen>
-    <XHyphensFixed>Dashes removed: {0}</XHyphensFixed>
+    <RemoveHyphensSingleLine>Remove dialog dashes in single lines</RemoveHyphensSingleLine>
+    <XHyphensSingleLineRemoved>Dialog dash removed in single lines: {0}</XHyphensSingleLineRemoved>
+    <FixHyphensInDialogs>Fix dash in dialogs via style: {0}</FixHyphensInDialogs>
+    <XHyphensInDialogsFixed>Dashes fixed: {0}</XHyphensInDialogsFixed>
     <AddMissingQuotesExample>"How are you? -&gt; "How are you?"</AddMissingQuotesExample>
     <XMissingQuotesAdded>Missing quotes added: {0}</XMissingQuotesAdded>
     <Fix3PlusLines>Fix subtitles with more than two lines</Fix3PlusLines>
@@ -777,6 +780,7 @@ Go to "Options -&gt; Settings -&gt; Tools" to enter your Google translate API ke
     <RemoveEmptyLines>Remove empty lines</RemoveEmptyLines>
     <RemoveLinesWithoutLetters>Remove lines without letters</RemoveLinesWithoutLetters>
     <GenerateTimeCodes>Generate time codes</GenerateTimeCodes>
+    <TakeTimeFromFileName>Take time from file name</TakeTimeFromFileName>
     <GapBetweenSubtitles>Gap between subtitles (milliseconds)</GapBetweenSubtitles>
     <Auto>Auto</Auto>
     <Fixed>Fixed</Fixed>
@@ -1027,7 +1031,7 @@ Go to "Options -&gt; Settings -&gt; Tools" to enter your Google translate API ke
         <Title>Tools</Title>
         <AdjustDisplayDuration>&amp;Adjust durations...</AdjustDisplayDuration>
         <ApplyDurationLimits>Apply duration limits...</ApplyDurationLimits>
-        <DurationsBridgeGap>Bridge gap in durations...</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>Bridge gaps between subtitles...</SubtitlesBridgeGaps>
         <FixCommonErrors>&amp;Fix common errors...</FixCommonErrors>
         <StartNumberingFrom>Renumber...</StartNumberingFrom>
         <RemoveTextForHearingImpaired>Remove text for hearing impaired...</RemoveTextForHearingImpaired>
@@ -1037,8 +1041,8 @@ Go to "Options -&gt; Settings -&gt; Tools" to enter your Google translate API ke
         <MergeShortLines>Merge short lines...</MergeShortLines>
         <MergeDuplicateText>Merge lines with same text...</MergeDuplicateText>
         <MergeSameTimeCodes>Merge lines with same time codes...</MergeSameTimeCodes>
-        <SplitLongLines>Split long lines...</SplitLongLines>
-        <MinimumDisplayTimeBetweenParagraphs>Minimum display time between subtitles...</MinimumDisplayTimeBetweenParagraphs>
+        <SplitLongLines>Break/split long lines...</SplitLongLines>
+        <MinimumDisplayTimeBetweenParagraphs>Apply minimum gap between subtitles...</MinimumDisplayTimeBetweenParagraphs>
         <SortBy>Sort by</SortBy>
         <NetflixQualityCheck>Netflix quality check...</NetflixQualityCheck>
         <Number>Number</Number>
@@ -1496,6 +1500,7 @@ Continue?</SubtitleAppendPrompt>
     <LineNumberXErrorReadingFromSourceLineY>Line {0} - error reading: {1}</LineNumberXErrorReadingFromSourceLineY>
     <LineNumberXErrorReadingTimeCodeFromSourceLineY>Line {0} - error reading time code: {1}</LineNumberXErrorReadingTimeCodeFromSourceLineY>
     <LineNumberXExpectedNumberFromSourceLineY>Line {0} - expected subtitle number: {1}</LineNumberXExpectedNumberFromSourceLineY>
+    <LineNumberXExpectedEmptyLine>Line {0} - expected empty line but found number + time code (number skipped): {1}</LineNumberXExpectedEmptyLine>
     <BeforeGuessingTimeCodes>Before guessing time codes</BeforeGuessingTimeCodes>
     <BeforeAutoDuration>Before auto-duration for selected lines</BeforeAutoDuration>
     <BeforeColumnPaste>Before column paste</BeforeColumnPaste>
@@ -1747,7 +1752,7 @@ can edit in same subtitle file (collaboration)</Information>
     <MaxVolume>Volume must be below</MaxVolume>
   </SeekSilence>
   <SetMinimumDisplayTimeBetweenParagraphs>
-    <Title>Set minimum display time between subtitles</Title>
+    <Title>Apply minimum gap between subtitles</Title>
     <PreviewLinesModifiedX>Preview - subtitles modified: {0}</PreviewLinesModifiedX>
     <ShowOnlyModifiedLines>Show only modified lines</ShowOnlyModifiedLines>
     <MinimumMillisecondsBetweenParagraphs>Minimum milliseconds between lines</MinimumMillisecondsBetweenParagraphs>
@@ -1939,6 +1944,11 @@ can edit in same subtitle file (collaboration)</Information>
     <FixCommonerrors>Fix common errors</FixCommonerrors>
     <RemoveTextForHi>Remove text for HI</RemoveTextForHi>
     <MergeLinesShorterThan>Unbreak subtitles shorter than</MergeLinesShorterThan>
+    <DialogStyle>Dialog style</DialogStyle>
+    <DialogStyleDashBothLinesWithSpace>Dash both lines with space</DialogStyleDashBothLinesWithSpace>
+    <DialogStyleDashBothLinesWithoutSpace>Dash both lines without space</DialogStyleDashBothLinesWithoutSpace>
+    <DialogStyleDashSecondLineWithSpace>Dash second line with space</DialogStyleDashSecondLineWithSpace>
+    <DialogStyleDashSecondLineWithoutSpace>Dash second line without space</DialogStyleDashSecondLineWithoutSpace>
     <MusicSymbol>Music symbol</MusicSymbol>
     <MusicSymbolsReplace>Music symbols to replace (separate by comma)</MusicSymbolsReplace>
     <FixCommonOcrErrorsUseHardcodedRules>Fix common OCR errors - also use hard-coded rules</FixCommonOcrErrorsUseHardcodedRules>
@@ -2012,6 +2022,7 @@ can edit in same subtitle file (collaboration)</Information>
     <WaveformGoToPreviousSceneChange>Go to previous scene change</WaveformGoToPreviousSceneChange>
     <WaveformGoToNextSceneChange>Go to next scene change</WaveformGoToNextSceneChange>
     <WaveformToggleSceneChange>Toggle scene change</WaveformToggleSceneChange>
+    <WaveformGuessStart>Auto adjust start via volume/scene change</WaveformGuessStart>
     <GoBack1Frame>One frame back</GoBack1Frame>
     <GoForward1Frame>One frame forward</GoForward1Frame>
     <GoBack1FrameWithPlay>One frame back (with play)</GoBack1FrameWithPlay>
@@ -2024,8 +2035,13 @@ can edit in same subtitle file (collaboration)</Information>
     <GoForward1Second>One second forward</GoForward1Second>
     <GoBack5Seconds>Five seconds back</GoBack5Seconds>
     <GoForward5Seconds>Five seconds forward</GoForward5Seconds>
+    <GoBack3Second>Three seconds back</GoBack3Second>
+    <GoToStartCurrent>Set video pos to start of current subtitle</GoToStartCurrent>
+    <ToggleStartEndCurrent>Toggle video pos between start/end of current subtitle</ToggleStartEndCurrent>
+    <PlayCurrent>Play current subtitle</PlayCurrent>
     <WaveformGoToPrevSubtitle>Go to previous subtitle (from video position)</WaveformGoToPrevSubtitle>
     <WaveformGoToNextSubtitle>Go to next subtitle (from video position)</WaveformGoToNextSubtitle>
+    <WaveformSelectNextSubtitle>Select next subtitle (from video position, keep video pos)</WaveformSelectNextSubtitle>
     <TogglePlayPause>Toggle play/pause</TogglePlayPause>
     <Pause>Pause</Pause>
     <Fullscreen>Fullscreen</Fullscreen>
@@ -2105,6 +2121,7 @@ Setting a font for a subtitle is normally done in the video player, but can also
     <RestoreDefaultSettingsMsg>All settings will be restored to default values
 
 Continue?</RestoreDefaultSettingsMsg>
+    <RemoveTimeCodes>Remove time codes</RemoveTimeCodes>
   </Settings>
   <SettingsMpv>
     <Title>Settings for mpv</Title>
@@ -2201,11 +2218,11 @@ Continue?</RestoreDefaultSettingsMsg>
     <Basic>Basic</Basic>
   </Split>
   <SplitLongLines>
-    <Title>Split long lines</Title>
+    <Title>Break/split long lines</Title>
     <SingleLineMaximumLength>Single line maximum length</SingleLineMaximumLength>
     <LineMaximumLength>Line maximum length</LineMaximumLength>
     <LineContinuationBeginEndStrings>Line continuation begin/end strings</LineContinuationBeginEndStrings>
-    <NumberOfSplits>Number of splits: {0}</NumberOfSplits>
+    <NumberOfSplits>Number of breaks/splits: {0}</NumberOfSplits>
     <LongestSingleLineIsXAtY>Longest single line length is {0} at line {1}</LongestSingleLineIsXAtY>
     <LongestLineIsXAtY>Longest total line length is {0} at line {1}</LongestLineIsXAtY>
   </SplitLongLines>

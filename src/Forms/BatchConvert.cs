@@ -46,7 +46,22 @@ namespace Nikse.SubtitleEdit.Forms
             public string ToFormat { get; set; }
             public SubtitleFormat SourceFormat { get; set; }
             public List<IBinaryParagraph> BinaryParagraphs { get; set; }
-            public ThreadDoWorkParameter(bool fixCommonErrors, bool multipleReplace, bool fixRtl, bool splitLongLinesActive, bool autoBalance, bool setMinDisplayTimeBetweenSubtitles, ListViewItem item, Subtitle subtitle, SubtitleFormat format, TextEncoding encoding, string language, string fileName, string toFormat, SubtitleFormat sourceFormat, List<IBinaryParagraph> binaryParagraphs)
+            public ThreadDoWorkParameter(
+                bool fixCommonErrors,
+                bool multipleReplace,
+                bool fixRtl,
+                bool splitLongLinesActive,
+                bool autoBalance,
+                bool setMinDisplayTimeBetweenSubtitles,
+                ListViewItem item,
+                Subtitle subtitle,
+                SubtitleFormat format,
+                TextEncoding encoding,
+                string language,
+                string fileName,
+                string toFormat,
+                SubtitleFormat sourceFormat,
+                List<IBinaryParagraph> binaryParagraphs)
             {
                 FixCommonErrors = fixCommonErrors;
                 MultipleReplaceActive = multipleReplace;
@@ -88,6 +103,7 @@ namespace Nikse.SubtitleEdit.Forms
         private readonly DurationsBridgeGaps _bridgeGaps;
         private const int ConvertMaxFileSize = 1024 * 1024 * 10; // 10 MB
         private Dictionary<string, List<BluRaySupParser.PcsData>> _bdLookup = new Dictionary<string, List<BluRaySupParser.PcsData>>();
+        RemoveTextForHISettings _removeTextForHiSettings;
 
         public BatchConvert(Icon icon)
         {
@@ -153,6 +169,7 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 comboBoxSubtitleFormats.Left = comboBoxEncoding.Left;
             }
+            buttonBrowseEncoding.Left = comboBoxEncoding.Left + comboBoxEncoding.Width + 5;
             buttonStyles.Left = comboBoxSubtitleFormats.Left + comboBoxSubtitleFormats.Width + 5;
             buttonTransportStreamSettings.Left = buttonStyles.Left;
 
@@ -194,6 +211,7 @@ namespace Nikse.SubtitleEdit.Forms
             UiUtil.InitializeSubtitleFormatComboBox(comboBoxSubtitleFormats, formatNames, Configuration.Settings.Tools.BatchConvertFormat);
 
             UiUtil.InitializeTextEncodingComboBox(comboBoxEncoding);
+            comboBoxEncoding.Items.Add(new TextEncoding(Encoding.UTF8, l.TryToUseSourceEncoding));
 
             if (string.IsNullOrEmpty(Configuration.Settings.Tools.BatchConvertOutputFolder) || !Directory.Exists(Configuration.Settings.Tools.BatchConvertOutputFolder))
             {
@@ -301,6 +319,10 @@ namespace Nikse.SubtitleEdit.Forms
             }
             numericUpDownMaxMillisecondsBetweenLines.Value = Configuration.Settings.Tools.MergeShortLinesMaxGap;
             checkBoxOnlyContinuationLines.Checked = Configuration.Settings.Tools.MergeShortLinesOnlyContinuous;
+
+            inverseSelectionToolStripMenuItem.Text = Configuration.Settings.Language.Main.Menu.Edit.InverseSelection;
+            toolStripMenuItemSelectAll.Text = Configuration.Settings.Language.Main.Menu.ContextMenu.SelectAll;
+            UpdateNumberOfFiles();
 
             var fixItems = new List<FixActionItem>
             {
@@ -455,14 +477,19 @@ namespace Nikse.SubtitleEdit.Forms
                 try
                 {
                     Cursor = Cursors.WaitCursor;
+                    labelStatus.Text = Configuration.Settings.Language.General.PleaseWait;
+                    listViewInputFiles.BeginUpdate();
                     foreach (string fileName in openFileDialog1.FileNames)
                     {
                         AddInputFile(fileName);
+                        Application.DoEvents();
                     }
                 }
                 finally
                 {
+                    listViewInputFiles.EndUpdate();
                     Cursor = Cursors.Default;
+                    labelStatus.Text = string.Empty;
                 }
             }
 
@@ -665,6 +692,7 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 // ignored
             }
+            UpdateNumberOfFiles();
         }
 
         private void listViewInputFiles_DragEnter(object sender, DragEventArgs e)
@@ -688,17 +716,27 @@ namespace Nikse.SubtitleEdit.Forms
                 return;
             }
 
-            var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
-            foreach (string fileName in fileNames)
+            try
             {
-                if (FileUtil.IsDirectory(fileName))
+                var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+                labelStatus.Text = Configuration.Settings.Language.General.PleaseWait;
+                listViewInputFiles.BeginUpdate();
+                foreach (string fileName in fileNames)
                 {
-                    SearchFolder(fileName);
+                    if (FileUtil.IsDirectory(fileName))
+                    {
+                        SearchFolder(fileName);
+                    }
+                    else
+                    {
+                        AddInputFile(fileName);
+                    }
                 }
-                else
-                {
-                    AddInputFile(fileName);
-                }
+            }
+            finally
+            {
+                labelStatus.Text = string.Empty;
+                listViewInputFiles.EndUpdate();
             }
         }
 
@@ -724,8 +762,23 @@ namespace Nikse.SubtitleEdit.Forms
             DialogResult = DialogResult.Cancel;
         }
 
-        private TextEncoding GetCurrentEncoding()
+        private TextEncoding GetCurrentEncoding(string fileName)
         {
+            bool useEncodingFromFile = comboBoxEncoding.SelectedIndex == comboBoxEncoding.Items.Count - 1;
+            if (useEncodingFromFile)
+            {
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(fileName))
+                {
+                    if (Configuration.Settings.General.DefaultEncoding == TextEncoding.Utf8WithoutBom)
+                    {
+                        return new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithoutBom);
+                    }
+                    return new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithBom);
+                }
+                var enc = LanguageAutoDetect.GetEncodingFromFile(fileName);
+                return new TextEncoding(enc, null);
+            }
+
             return UiUtil.GetTextEncodingComboBoxCurrentEncoding(comboBoxEncoding);
         }
 
@@ -1081,7 +1134,7 @@ namespace Nikse.SubtitleEdit.Forms
                                 if (IsActionEnabled(CommandLineConverter.BatchAction.RemoveTextForHI))
                                 {
                                     _removeTextForHearingImpaired.Settings = _removeTextForHiSettings;
-                                    p.Text = _removeTextForHearingImpaired.RemoveTextFromHearImpaired(p.Text);
+                                    p.Text = _removeTextForHearingImpaired.RemoveTextFromHearImpaired(p.Text, sub, sub.Paragraphs.IndexOf(p));
                                 }
                                 if (IsActionEnabled(CommandLineConverter.BatchAction.RemoveFormatting))
                                 {
@@ -1148,7 +1201,7 @@ namespace Nikse.SubtitleEdit.Forms
 
                             if (IsActionEnabled(CommandLineConverter.BatchAction.MergeSameTimeCodes))
                             {
-                                var mergedSameTimeCodesSub = Core.Forms.MergeLinesWithSameTimeCodes.Merge(sub, new List<int>(), out _, true, false, 1000, "en", new List<int>(), new Dictionary<int, bool>(), new Subtitle());
+                                var mergedSameTimeCodesSub = MergeLinesWithSameTimeCodes.Merge(sub, new List<int>(), out _, true, false, 1000, "en", new List<int>(), new Dictionary<int, bool>(), new Subtitle());
                                 if (mergedSameTimeCodesSub.Paragraphs.Count != sub.Paragraphs.Count)
                                 {
                                     sub.Paragraphs.Clear();
@@ -1178,7 +1231,23 @@ namespace Nikse.SubtitleEdit.Forms
                                 System.Threading.Thread.Sleep(100);
                             }
 
-                            var parameter = new ThreadDoWorkParameter(IsActionEnabled(CommandLineConverter.BatchAction.FixCommonErrors), IsActionEnabled(CommandLineConverter.BatchAction.MultipleReplace), IsActionEnabled(CommandLineConverter.BatchAction.FixRtl), IsActionEnabled(CommandLineConverter.BatchAction.SplitLongLines), IsActionEnabled(CommandLineConverter.BatchAction.BalanceLines), IsActionEnabled(CommandLineConverter.BatchAction.SetMinGap), item, sub, GetCurrentSubtitleFormat(), GetCurrentEncoding(), Configuration.Settings.Tools.BatchConvertLanguage, fileName, toFormat, format, binaryParagraphs);
+                            var parameter = new ThreadDoWorkParameter(
+                                IsActionEnabled(CommandLineConverter.BatchAction.FixCommonErrors),
+                                IsActionEnabled(CommandLineConverter.BatchAction.MultipleReplace),
+                                IsActionEnabled(CommandLineConverter.BatchAction.FixRtl),
+                                IsActionEnabled(CommandLineConverter.BatchAction.SplitLongLines),
+                                IsActionEnabled(CommandLineConverter.BatchAction.BalanceLines),
+                                IsActionEnabled(CommandLineConverter.BatchAction.SetMinGap),
+                                item,
+                                sub,
+                                GetCurrentSubtitleFormat(),
+                                GetCurrentEncoding(fileName),
+                                Configuration.Settings.Tools.BatchConvertLanguage,
+                                fileName,
+                                toFormat,
+                                format,
+                                binaryParagraphs);
+
                             if (!worker1.IsBusy)
                             {
                                 worker1.RunWorkerAsync(parameter);
@@ -1213,6 +1282,12 @@ namespace Nikse.SubtitleEdit.Forms
                 }
                 System.Threading.Thread.Sleep(100);
             }
+
+            // dispose workers
+            worker1.Dispose();
+            worker2.Dispose();
+            worker3.Dispose();
+
             _converting = false;
             labelStatus.Text = string.Empty;
             progressBar1.Visible = false;
@@ -1381,6 +1456,8 @@ namespace Nikse.SubtitleEdit.Forms
                     }
                 }
             }
+
+            clusterStream.Dispose();
             return subtitles;
         }
 
@@ -1436,10 +1513,6 @@ namespace Nikse.SubtitleEdit.Forms
                     }
                 }
             }
-            else if (comboBoxFilter.SelectedIndex == 4 && fileName.Contains(textBoxFilter.Text, StringComparison.OrdinalIgnoreCase))
-            {
-                skip = false;
-            }
             return skip;
         }
 
@@ -1449,14 +1522,20 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 progressBar1.Value++;
             }
+            else
+            {
+                progressBar1.Value = progressBar1.Maximum;
+            }
+            progressBar1.Refresh();
 
             TaskbarList.SetProgressValue(Handle, progressBar1.Value, progressBar1.Maximum);
             labelStatus.Text = progressBar1.Value + " / " + progressBar1.Maximum;
-
             if (progressBar1.Value == progressBar1.Maximum)
             {
                 labelStatus.Text = string.Empty;
             }
+
+            Application.DoEvents();
         }
 
         private static void DoThreadWork(object sender, DoWorkEventArgs e)
@@ -1535,9 +1614,10 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 try
                 {
+                    var l = LanguageAutoDetect.AutoDetectGoogleLanguageOrNull(p.Subtitle);
                     foreach (var paragraph in p.Subtitle.Paragraphs)
                     {
-                        paragraph.Text = Utilities.AutoBreakLine(paragraph.Text);
+                        paragraph.Text = Utilities.AutoBreakLine(paragraph.Text, l ?? p.Language);
                     }
                 }
                 catch (Exception exception)
@@ -1654,7 +1734,7 @@ namespace Nikse.SubtitleEdit.Forms
                     {
                         dir = Path.GetDirectoryName(p.FileName);
                     }
-                    var success = CommandLineConverter.BatchConvertSave(targetFormat, TimeSpan.Zero, GetCurrentEncoding(), dir, _count, ref _converted, ref _errors, _allFormats, p.FileName, p.Subtitle, p.SourceFormat, binaryParagraphs, overwrite, -1, null, null, null, null, false, progressCallback);
+                    var success = CommandLineConverter.BatchConvertSave(targetFormat, TimeSpan.Zero, GetCurrentEncoding(p.FileName), dir, _count, ref _converted, ref _errors, _allFormats, p.FileName, p.Subtitle, p.SourceFormat, binaryParagraphs, overwrite, -1, null, null, null, null, false, progressCallback);
                     if (success)
                     {
                         p.Item.SubItems[3].Text = Configuration.Settings.Language.BatchConvert.Converted;
@@ -1682,6 +1762,7 @@ namespace Nikse.SubtitleEdit.Forms
                 buttonStyles.Text = Configuration.Settings.Language.BatchConvert.Style;
                 buttonStyles.Visible = true;
                 comboBoxEncoding.Enabled = true;
+                buttonBrowseEncoding.Visible = true;
                 checkBoxUseStyleFromSource.Visible = true;
                 checkBoxUseStyleFromSource.Left = buttonStyles.Left + buttonStyles.Width - checkBoxUseStyleFromSource.Width;
             }
@@ -1695,6 +1776,7 @@ namespace Nikse.SubtitleEdit.Forms
                 }
 
                 comboBoxEncoding.Enabled = true;
+                buttonBrowseEncoding.Visible = true;
             }
             else if (comboBoxSubtitleFormats.Text == BluRaySubtitle ||
                      comboBoxSubtitleFormats.Text == VobSubSubtitle ||
@@ -1706,17 +1788,20 @@ namespace Nikse.SubtitleEdit.Forms
                 buttonStyles.Text = Configuration.Settings.Language.BatchConvert.Settings;
                 buttonStyles.Visible = true;
                 comboBoxEncoding.Enabled = false;
+                buttonBrowseEncoding.Visible = false;
             }
             else if (comboBoxSubtitleFormats.Text == Configuration.Settings.Language.BatchConvert.PlainText)
             {
                 buttonStyles.Text = Configuration.Settings.Language.BatchConvert.Settings;
                 buttonStyles.Visible = true;
                 comboBoxEncoding.Enabled = true;
+                buttonBrowseEncoding.Visible = true;
             }
             else
             {
                 buttonStyles.Visible = false;
                 comboBoxEncoding.Enabled = true;
+                buttonBrowseEncoding.Visible = true;
             }
         }
 
@@ -1859,6 +1944,7 @@ namespace Nikse.SubtitleEdit.Forms
         private void RemoveAllToolStripMenuItemClick(object sender, EventArgs e)
         {
             listViewInputFiles.Items.Clear();
+            UpdateNumberOfFiles();
         }
 
         private void RemoveSelectedFiles()
@@ -1868,10 +1954,28 @@ namespace Nikse.SubtitleEdit.Forms
                 return;
             }
 
+            int first = -1;
             for (int i = listViewInputFiles.SelectedIndices.Count - 1; i >= 0; i--)
             {
+                if (first < 0)
+                {
+                    first = listViewInputFiles.SelectedIndices[i];
+                }
                 listViewInputFiles.Items.RemoveAt(listViewInputFiles.SelectedIndices[i]);
             }
+
+            // keep an item selected/focused for improved UX
+            if (first < listViewInputFiles.Items.Count)
+            {
+                listViewInputFiles.Items[first].Selected = true;
+                listViewInputFiles.FocusedItem = listViewInputFiles.Items[first];
+            }
+            else if (listViewInputFiles.Items.Count > 0)
+            {
+                listViewInputFiles.Items[listViewInputFiles.Items.Count - 1].Selected = true;
+                listViewInputFiles.FocusedItem = listViewInputFiles.Items[listViewInputFiles.Items.Count - 1];
+            }
+            UpdateNumberOfFiles();
         }
 
         private void RemoveToolStripMenuItemClick(object sender, EventArgs e)
@@ -1980,11 +2084,12 @@ namespace Nikse.SubtitleEdit.Forms
 
                 labelStatus.Text = string.Empty;
 
-                progressBar1.Style = ProgressBarStyle.Continuous;
-                progressBar1.Visible = true;
                 SetControlState(true);
                 listViewInputFiles.EndUpdate();
             }
+            progressBar1.Value = 0;
+            progressBar1.Visible = false;
+            UpdateNumberOfFiles();
         }
 
         private void SetControlState(bool enabled)
@@ -2141,6 +2246,8 @@ namespace Nikse.SubtitleEdit.Forms
                         Application.DoEvents();
                         if (_abort)
                         {
+                            progressBar1.Value = 0;
+                            progressBar1.Visible = false;
                             return;
                         }
                     }
@@ -2159,6 +2266,7 @@ namespace Nikse.SubtitleEdit.Forms
             item.SubItems.Add(nameOfFormat);
             item.SubItems.Add("-");
             listViewInputFiles.Items.Add(item);
+            UpdateNumberOfFiles();
         }
 
         private void BatchConvert_KeyDown(object sender, KeyEventArgs e)
@@ -2181,25 +2289,9 @@ namespace Nikse.SubtitleEdit.Forms
             }
         }
 
-        RemoveTextForHISettings _removeTextForHiSettings;
-        private void buttonRemoveTextForHiSettings_Click(object sender, EventArgs e)
-        {
-            using (var form = new FormRemoveTextForHearImpaired(null, new Subtitle()))
-            {
-                form.InitializeSettingsOnly();
-                form.ShowDialog(this);
-                _removeTextForHiSettings = form.GetSettings(new Subtitle());
-            }
-        }
-
         private void comboBoxFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             textBoxFilter.Visible = comboBoxFilter.SelectedIndex == 3 || comboBoxFilter.SelectedIndex == 4;
-        }
-
-        private void buttonBridgeGapsSettings_Click(object sender, EventArgs e)
-        {
-            _bridgeGaps.ShowDialog(this);
         }
 
         private void buttonTransportStreamSettings_Click(object sender, EventArgs e)
@@ -2339,7 +2431,7 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 using (var form = new FixCommonErrors { BatchMode = true })
                 {
-                    form.RunBatchSettings(new Subtitle(), GetCurrentSubtitleFormat(), GetCurrentEncoding(), Configuration.Settings.Tools.BatchConvertLanguage);
+                    form.RunBatchSettings(new Subtitle(), GetCurrentSubtitleFormat(), GetCurrentEncoding(null), Configuration.Settings.Tools.BatchConvertLanguage);
                     form.ShowDialog(this);
                     Configuration.Settings.Tools.BatchConvertLanguage = form.Language;
                 }
@@ -2377,6 +2469,95 @@ namespace Nikse.SubtitleEdit.Forms
             else
             {
                 groupBoxConvertOptions.Text = Configuration.Settings.Language.BatchConvert.ConvertOptions;
+            }
+        }
+
+        private void toolStripMenuItemSelectAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listViewConvertOptions.Items)
+            {
+                item.Checked = true;
+            }
+        }
+
+        private void inverseSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listViewConvertOptions.Items)
+            {
+                item.Checked = !item.Checked;
+            }
+        }
+
+        private void listViewInputFiles_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (_converting)
+            {
+                return;
+            }
+
+            var sorter = (ListViewSorter)listViewInputFiles.ListViewItemSorter;
+            if (sorter == null)
+            {
+                sorter = new ListViewSorter
+                {
+                    ColumnNumber = e.Column,
+                    IsNumber = false,
+                    IsDisplayFileSize = e.Column == columnHeaderSize.DisplayIndex
+                };
+                listViewInputFiles.ListViewItemSorter = sorter;
+            }
+
+            if (e.Column == sorter.ColumnNumber)
+            {
+                sorter.Descending = !sorter.Descending; // inverse sort direction
+            }
+            else
+            {
+                sorter.ColumnNumber = e.Column;
+                sorter.Descending = false;
+                sorter.IsNumber = false;
+                sorter.IsDisplayFileSize = e.Column == columnHeaderSize.DisplayIndex;
+            }
+            listViewInputFiles.Sort();
+        }
+
+        private void buttonBrowseEncoding_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Title = Configuration.Settings.Language.Main.OpenAnsiSubtitle;
+            openFileDialog1.FileName = string.Empty;
+            openFileDialog1.Filter = UiUtil.SubtitleExtensionFilter.Value;
+            if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
+            {
+                var chooseEncoding = new ChooseEncoding();
+                chooseEncoding.Initialize(openFileDialog1.FileName);
+                if (chooseEncoding.ShowDialog(this) == DialogResult.OK)
+                {
+                    var encoding = chooseEncoding.GetEncoding();
+                    for (var i = 0; i < comboBoxEncoding.Items.Count; i++)
+                    {
+                        var item = comboBoxEncoding.Items[i];
+                        if (item is TextEncoding te)
+                        {
+                            if (te.Encoding.WebName == encoding.WebName)
+                            {
+                                comboBoxEncoding.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpdateNumberOfFiles()
+        {
+            if (listViewInputFiles.Items.Count > 0)
+            {
+                labelNumberOfFiles.Text = $"{listViewInputFiles.Items.Count:#,###,##0}";
+            }
+            else
+            {
+                labelNumberOfFiles.Text = string.Empty;
             }
         }
     }

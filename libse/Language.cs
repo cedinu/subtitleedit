@@ -198,7 +198,9 @@ namespace Nikse.SubtitleEdit.Core
                 Search = "Search",
                 DeleteCurrentLine = "Delete current line",
                 Width = "Width",
-                Height = "Height"
+                Height = "Height",
+                Collapse = "Collapse",
+                ShortcutX ="Shortcut: {0}"
             };
 
             About = new LanguageStructure.About
@@ -361,7 +363,8 @@ namespace Nikse.SubtitleEdit.Core
                 TransportStreamOverrideVideoSize = "Override original video size",
                 TransportStreamFileNameEnding = "File name ending",
                 TransportStreamSettingsButton = "TS settings...",
-                RemoveLineBreaks = "Remove line-breaks"
+                RemoveLineBreaks = "Remove line-breaks",
+                TryToUseSourceEncoding = "Try to use source encoding"
             };
 
             Beamer = new LanguageStructure.Beamer
@@ -515,7 +518,7 @@ namespace Nikse.SubtitleEdit.Core
 
             DurationsBridgeGaps = new LanguageStructure.DurationsBridgeGaps
             {
-                Title = "Bridge small gaps in durations",
+                Title = "Bridge small gaps between subtitles",
                 GapsBridgedX = "Number of small gaps bridged: {0}",
                 GapToNext = "Gap to next in seconds",
                 BridgeGapsSmallerThanXPart1 = "Bridge gaps smaller than",
@@ -805,10 +808,10 @@ namespace Nikse.SubtitleEdit.Core
                 FixSpanishInvertedQuestionAndExclamationMarks = "Fix Spanish inverted question and exclamation marks",
                 AddMissingQuote = "Add missing quote (\")",
                 AddMissingQuotes = "Add missing quotes (\")",
-                FixHyphens = "Fix (remove dash) lines beginning with dash (-)",
-                FixHyphensAdd = "Fix (add dash) line pairs with only one dash (-)",
-                FixHyphen = "Fix line beginning with dash (-)",
-                XHyphensFixed = "Dashes removed: {0}",
+                RemoveHyphensSingleLine = "Remove dialog dashes in single lines",
+                XHyphensSingleLineRemoved = "Dialog dash removed in single lines: {0}",
+                FixHyphensInDialogs = "Fix dash in dialogs via style: {0}",
+                XHyphensInDialogsFixed = "Dashes fixed: {0}",
                 AddMissingQuotesExample = "\"How are you? -> \"How are you?\"",
                 XMissingQuotesAdded = "Missing quotes added: {0}",
                 Fix3PlusLines = "Fix subtitles with more than two lines",
@@ -990,6 +993,7 @@ namespace Nikse.SubtitleEdit.Core
                 RemoveEmptyLines = "Remove empty lines",
                 RemoveLinesWithoutLetters = "Remove lines without letters",
                 GenerateTimeCodes = "Generate time codes",
+                TakeTimeFromFileName = "Take time from file name",
                 GapBetweenSubtitles = "Gap between subtitles (milliseconds)",
                 Auto = "Auto",
                 Fixed = "Fixed",
@@ -1392,6 +1396,7 @@ namespace Nikse.SubtitleEdit.Core
                 LineNumberXErrorReadingFromSourceLineY = "Line {0} - error reading: {1}",
                 LineNumberXErrorReadingTimeCodeFromSourceLineY = "Line {0} - error reading time code: {1}",
                 LineNumberXExpectedNumberFromSourceLineY = "Line {0} - expected subtitle number: {1}",
+                LineNumberXExpectedEmptyLine = "Line {0} - expected empty line but found number + time code (number skipped): {1}",
                 BeforeGuessingTimeCodes = "Before guessing time codes",
                 BeforeAutoDuration = "Before auto-duration for selected lines",
                 BeforeColumnPaste = "Before column paste",
@@ -1522,7 +1527,7 @@ namespace Nikse.SubtitleEdit.Core
                         Title = "Tools",
                         AdjustDisplayDuration = "&Adjust durations...",
                         ApplyDurationLimits = "Apply duration limits...",
-                        DurationsBridgeGap = "Bridge gap in durations...",
+                        SubtitlesBridgeGaps = "Bridge gaps between subtitles...",
                         FixCommonErrors = "&Fix common errors...",
                         StartNumberingFrom = "Renumber...",
                         RemoveTextForHearingImpaired = "Remove text for hearing impaired...",
@@ -1532,8 +1537,8 @@ namespace Nikse.SubtitleEdit.Core
                         MergeShortLines = "Merge short lines...",
                         MergeDuplicateText = "Merge lines with same text...",
                         MergeSameTimeCodes = "Merge lines with same time codes...",
-                        SplitLongLines = "Split long lines...",
-                        MinimumDisplayTimeBetweenParagraphs = "Minimum display time between subtitles...",
+                        SplitLongLines = "Break/split long lines...",
+                        MinimumDisplayTimeBetweenParagraphs = "Apply minimum gap between subtitles...",
                         NetflixQualityCheck = "Netflix quality check...",
                         SortBy = "Sort by",
                         Number = "Number",
@@ -2037,7 +2042,7 @@ can edit in same subtitle file (collaboration)",
 
             SetMinimumDisplayTimeBetweenParagraphs = new LanguageStructure.SetMinimumDisplayTimeBetweenParagraphs
             {
-                Title = "Set minimum display time between subtitles",
+                Title = "Apply minimum gap between subtitles",
                 PreviewLinesModifiedX = "Preview - subtitles modified: {0}",
                 MinimumMillisecondsBetweenParagraphs = "Minimum milliseconds between lines",
                 ShowOnlyModifiedLines = "Show only modified lines",
@@ -2233,6 +2238,11 @@ can edit in same subtitle file (collaboration)",
                 FixCommonerrors = "Fix common errors",
                 RemoveTextForHi = "Remove text for HI",
                 MergeLinesShorterThan = "Unbreak subtitles shorter than",
+                DialogStyle = "Dialog style",
+                DialogStyleDashBothLinesWithSpace = "Dash both lines with space",
+                DialogStyleDashBothLinesWithoutSpace = "Dash both lines without space",
+                DialogStyleDashSecondLineWithSpace = "Dash second line with space",
+                DialogStyleDashSecondLineWithoutSpace = "Dash second line without space",
                 MusicSymbol = "Music symbol",
                 MusicSymbolsReplace = "Music symbols to replace (separate by comma)",
                 FixCommonOcrErrorsUseHardcodedRules = "Fix common OCR errors - also use hard-coded rules",
@@ -2305,9 +2315,11 @@ can edit in same subtitle file (collaboration)",
                 WaveformFocusListView = "Focus list view",
                 WaveformGoToPrevSubtitle = "Go to previous subtitle (from video position)",
                 WaveformGoToNextSubtitle = "Go to next subtitle (from video position)",
+                WaveformSelectNextSubtitle = "Select next subtitle (from video position, keep video pos)",
                 WaveformGoToPreviousSceneChange = "Go to previous scene change",
                 WaveformGoToNextSceneChange = "Go to next scene change",
                 WaveformToggleSceneChange = "Toggle scene change",
+                WaveformGuessStart = "Auto adjust start via volume/scene change",
                 GoBack1Frame = "One frame back",
                 GoForward1Frame = "One frame forward",
                 GoBack1FrameWithPlay = "One frame back (with play)",
@@ -2320,6 +2332,10 @@ can edit in same subtitle file (collaboration)",
                 GoForward1Second = "One second forward",
                 GoBack5Seconds = "Five seconds back",
                 GoForward5Seconds = "Five seconds forward",
+                GoBack3Second = "Three seconds back",
+                GoToStartCurrent = "Set video pos to start of current subtitle",
+                ToggleStartEndCurrent = "Toggle video pos between start/end of current subtitle",
+                PlayCurrent = "Play current subtitle",
                 Pause = "Pause",
                 TogglePlayPause = "Toggle play/pause",
                 Fullscreen = "Fullscreen",
@@ -2398,7 +2414,8 @@ can edit in same subtitle file (collaboration)",
                 RestoreDefaultSettings = "Restore default settings",
                 RestoreDefaultSettingsMsg = "All settings will be restored to default values" + Environment.NewLine +
                                             Environment.NewLine +
-                                            "Continue?"
+                                            "Continue?",
+                RemoveTimeCodes = "Remove time codes"
             };
 
             SettingsMpv = new LanguageStructure.SettingsMpv
@@ -2514,11 +2531,11 @@ can edit in same subtitle file (collaboration)",
 
             SplitLongLines = new LanguageStructure.SplitLongLines
             {
-                Title = "Split long lines",
+                Title = "Break/split long lines",
                 SingleLineMaximumLength = "Single line maximum length",
                 LineMaximumLength = "Line maximum length",
                 LineContinuationBeginEndStrings = "Line continuation begin/end strings",
-                NumberOfSplits = "Number of splits: {0}",
+                NumberOfSplits = "Number of breaks/splits: {0}",
                 LongestSingleLineIsXAtY = "Longest single line length is {0} at line {1}",
                 LongestLineIsXAtY = "Longest total line length is {0} at line {1}",
             };
@@ -2984,3 +3001,4 @@ Keep changes?",
 
     }
 }
+

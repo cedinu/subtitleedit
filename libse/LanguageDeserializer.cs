@@ -298,6 +298,12 @@ namespace Nikse.SubtitleEdit.Core
                 case "General/Height":
                     language.General.Height = reader.Value;
                     break;
+                case "General/Collapse":
+                    language.General.Collapse = reader.Value;
+                    break;
+                case "General/ShortcutX":
+                    language.General.ShortcutX = reader.Value;
+                    break;
                 case "About/Title":
                     language.About.Title = reader.Value;
                     break;
@@ -606,6 +612,9 @@ namespace Nikse.SubtitleEdit.Core
                     break;
                 case "BatchConvert/RemoveLineBreaks":
                     language.BatchConvert.RemoveLineBreaks = reader.Value;
+                    break;
+                case "BatchConvert/TryToUseSourceEncoding":
+                    language.BatchConvert.TryToUseSourceEncoding = reader.Value;
                     break;
                 case "Beamer/Title":
                     language.Beamer.Title = reader.Value;
@@ -1594,17 +1603,17 @@ namespace Nikse.SubtitleEdit.Core
                 case "FixCommonErrors/AddMissingQuotes":
                     language.FixCommonErrors.AddMissingQuotes = reader.Value;
                     break;
-                case "FixCommonErrors/FixHyphens":
-                    language.FixCommonErrors.FixHyphens = reader.Value;
+                case "FixCommonErrors/RemoveHyphensSingleLine":
+                    language.FixCommonErrors.RemoveHyphensSingleLine = reader.Value;
                     break;
-                case "FixCommonErrors/FixHyphensAdd":
-                    language.FixCommonErrors.FixHyphensAdd = reader.Value;
+                case "FixCommonErrors/XHyphensSingleLineRemoved":
+                    language.FixCommonErrors.XHyphensSingleLineRemoved = reader.Value;
                     break;
-                case "FixCommonErrors/FixHyphen":
-                    language.FixCommonErrors.FixHyphen = reader.Value;
+                case "FixCommonErrors/FixHyphensInDialogs":
+                    language.FixCommonErrors.FixHyphensInDialogs = reader.Value;
                     break;
-                case "FixCommonErrors/XHyphensFixed":
-                    language.FixCommonErrors.XHyphensFixed = reader.Value;
+                case "FixCommonErrors/XHyphensInDialogsFixed":
+                    language.FixCommonErrors.XHyphensInDialogsFixed = reader.Value;
                     break;
                 case "FixCommonErrors/AddMissingQuotesExample":
                     language.FixCommonErrors.AddMissingQuotesExample = reader.Value;
@@ -2037,6 +2046,9 @@ namespace Nikse.SubtitleEdit.Core
                     break;
                 case "ImportText/GenerateTimeCodes":
                     language.ImportText.GenerateTimeCodes = reader.Value;
+                    break;
+                case "ImportText/TakeTimeFromFileName":
+                    language.ImportText.TakeTimeFromFileName = reader.Value;
                     break;
                 case "ImportText/GapBetweenSubtitles":
                     language.ImportText.GapBetweenSubtitles = reader.Value;
@@ -3172,6 +3184,9 @@ namespace Nikse.SubtitleEdit.Core
                 case "Main/LineNumberXExpectedNumberFromSourceLineY":
                     language.Main.LineNumberXExpectedNumberFromSourceLineY = reader.Value;
                     break;
+                case "Main/LineNumberXExpectedEmptyLine":
+                    language.Main.LineNumberXExpectedEmptyLine = reader.Value;
+                    break;
                 case "Main/BeforeGuessingTimeCodes":
                     language.Main.BeforeGuessingTimeCodes = reader.Value;
                     break;
@@ -3517,8 +3532,8 @@ namespace Nikse.SubtitleEdit.Core
                 case "Main/Menu/Tools/ApplyDurationLimits":
                     language.Main.Menu.Tools.ApplyDurationLimits = reader.Value;
                     break;
-                case "Main/Menu/Tools/DurationsBridgeGap":
-                    language.Main.Menu.Tools.DurationsBridgeGap = reader.Value;
+                case "Main/Menu/Tools/SubtitlesBridgeGaps":
+                    language.Main.Menu.Tools.SubtitlesBridgeGaps = reader.Value;
                     break;
                 case "Main/Menu/Tools/FixCommonErrors":
                     language.Main.Menu.Tools.FixCommonErrors = reader.Value;
@@ -5239,6 +5254,21 @@ namespace Nikse.SubtitleEdit.Core
                 case "Settings/MergeLinesShorterThan":
                     language.Settings.MergeLinesShorterThan = reader.Value;
                     break;
+                case "Settings/DialogStyle":
+                    language.Settings.DialogStyle = reader.Value;
+                    break;
+                case "Settings/DialogStyleDashBothLinesWithSpace":
+                    language.Settings.DialogStyleDashBothLinesWithSpace = reader.Value;
+                    break;
+                case "Settings/DialogStyleDashBothLinesWithoutSpace":
+                    language.Settings.DialogStyleDashBothLinesWithoutSpace = reader.Value;
+                    break;
+                case "Settings/DialogStyleDashSecondLineWithSpace":
+                    language.Settings.DialogStyleDashSecondLineWithSpace = reader.Value;
+                    break;
+                case "Settings/DialogStyleDashSecondLineWithoutSpace":
+                    language.Settings.DialogStyleDashSecondLineWithoutSpace = reader.Value;
+                    break;
                 case "Settings/MusicSymbol":
                     language.Settings.MusicSymbol = reader.Value;
                     break;
@@ -5458,6 +5488,9 @@ namespace Nikse.SubtitleEdit.Core
                 case "Settings/WaveformToggleSceneChange":
                     language.Settings.WaveformToggleSceneChange = reader.Value;
                     break;
+                case "Settings/WaveformGuessStart":
+                    language.Settings.WaveformGuessStart = reader.Value;
+                    break;
                 case "Settings/GoBack1Frame":
                     language.Settings.GoBack1Frame = reader.Value;
                     break;
@@ -5494,11 +5527,26 @@ namespace Nikse.SubtitleEdit.Core
                 case "Settings/GoForward5Seconds":
                     language.Settings.GoForward5Seconds = reader.Value;
                     break;
+                case "Settings/GoBack3Second":
+                    language.Settings.GoBack3Second = reader.Value;
+                    break;
+                case "Settings/GoToStartCurrent":
+                    language.Settings.GoToStartCurrent = reader.Value;
+                    break;
+                case "Settings/ToggleStartEndCurrent":
+                    language.Settings.ToggleStartEndCurrent = reader.Value;
+                    break;
+                case "Settings/PlayCurrent":
+                    language.Settings.PlayCurrent = reader.Value;
+                    break;
                 case "Settings/WaveformGoToPrevSubtitle":
                     language.Settings.WaveformGoToPrevSubtitle = reader.Value;
                     break;
                 case "Settings/WaveformGoToNextSubtitle":
                     language.Settings.WaveformGoToNextSubtitle = reader.Value;
+                    break;
+                case "Settings/WaveformSelectNextSubtitle":
+                    language.Settings.WaveformSelectNextSubtitle = reader.Value;
                     break;
                 case "Settings/TogglePlayPause":
                     language.Settings.TogglePlayPause = reader.Value;
@@ -5724,6 +5772,9 @@ namespace Nikse.SubtitleEdit.Core
                     break;
                 case "Settings/RestoreDefaultSettingsMsg":
                     language.Settings.RestoreDefaultSettingsMsg = reader.Value;
+                    break;
+                case "Settings/RemoveTimeCodes":
+                    language.Settings.RemoveTimeCodes = reader.Value;
                     break;
                 case "SettingsMpv/Title":
                     language.SettingsMpv.Title = reader.Value;

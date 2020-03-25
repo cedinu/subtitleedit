@@ -2,7 +2,7 @@
 <Language Name="Hungarian">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>Fordító: Zityi's Translator Team (http://szoftverforditasok.hu)</TranslatedBy>
     <CultureName>hu-HU</CultureName>
     <HelpFile />
@@ -674,8 +674,8 @@ Megjegyzés: Ellenőrizze a szabad merevlemez területet.</WaveFileMalformed>
   </FixCommonErrors>
   <GetDictionaries>
     <Title>Szüksége van szótárakra?</Title>
-    <DescriptionLine1>A Subtitle Edit helyesírás ellenőrzése a NHunspell modulon alapul,</DescriptionLine1>
-    <DescriptionLine2>amely az LibreOffice helyesírás-ellenőrző szótárait használja.</DescriptionLine2>
+    <DescriptionLine1>A Subtitle Edit helyesírás ellenőrzése az NHunspell modulon alapul,</DescriptionLine1>
+    <DescriptionLine2>amely a LibreOffice helyesírás-ellenőrző szótárait használja.</DescriptionLine2>
     <ChooseLanguageAndClickDownload>Válasszon nyelvet és kattintson a letöltésre</ChooseLanguageAndClickDownload>
     <OpenDictionariesFolder>'Szótár' mappa megnyitása</OpenDictionariesFolder>
     <Download>Letöltés</Download>
@@ -1006,7 +1006,7 @@ Lépjen az "Opciók -&gt; Beállítások -&gt; Eszközök" lapra a Google fordí
         <Title>Eszközök</Title>
         <AdjustDisplayDuration>Időtartam beállítások...</AdjustDisplayDuration>
         <ApplyDurationLimits>Időtartam korlátozások alkalmazása...</ApplyDurationLimits>
-        <DurationsBridgeGap>Szünet áthidalása az időtartamokban...</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>Szünet áthidalása az időtartamokban...</SubtitlesBridgeGaps>
         <FixCommonErrors>Gyakori hibák javítása...</FixCommonErrors>
         <StartNumberingFrom>Átszámozás...</StartNumberingFrom>
         <RemoveTextForHearingImpaired>Hallássérülteknek szánt szöveg eltávolítása...</RemoveTextForHearingImpaired>

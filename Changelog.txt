@@ -1,17 +1,56 @@
 ﻿Subtitle Edit Changelog
 
-3.5.14 (xth March 2020) BETA
+3.5.15 (xth April 2020) BETA
 * NEW:
-   * Installer can now update xml dictionaries - thx xylographe
+   * "Auto-adjust start via volume/scene-change" shortcut - thx Odaylton
+   * Add new shortcut "Select next subtitle (from video pos)" - thx OmrSi
+   * Add new subtitle format - thx Marko
+   * Add new subtitle format - thx José
+* IMPROVED:
+   * Update Bulgarian translation - thx KalinM
+   * Update Finnish translation - thx Teijo S :)
+   * Minor UI improvements for "Batch convert" UI
+   * Improve "Fix unneeded periods" - thx Aleksander
+   * Improve "Remove unneeded spaces" - thx Aleksander
+   * Keep properties between ASSA/SSA - thx DKqwerty
+   * Improve handling of alignment tags in "Merge lines" - thx Moisés
+   * Improve parsing of unknown subtitles - thx Marko
+   * Do not change end time in split - thx OmrSi
+   * Update Serbian spell check dictionary - thx arslan
+   * Display version in VLC player name
+   * Add text edit box to remove text for HI - thx Raistlin
+   * Improve English OCR fixes slightly - thx tormento
+* FIXED:
+   * Fix extraction from MKV via drag-n-drop - thx ryvec/Symos404/uckthis
+   * Fix issues with CheetahCaption - thx Tom 
+   * Fix issue with spell check replace - thx LithiumFlower
+   * Fix "Fix missing spaces" after ":" in Finnish - thx Boulder08
+   * Remove ASSA tags when exporting to "SMPTE-TT 2052" - thx Moisés
+   * Use current frame rate for format SMPTE-TT 2052 - thx Moisés
+   * Fix keeping settings in "OCR image pre-processing"
+   * Fix "Remove text for HI" issues - thx Zezslav
+   * Fix shortcut crash - thx MaOz63
+   * Do not auto-detect video if video is already loaded on startup
+   * Fix "Join" append issues - thx Henrique
+   * Fix "Duplicate line" shortcut in translator mode - thx OmrSi
+
+
+3.5.14 (8th March 2020)
+* NEW:
    * "UTF-8 without BOM" encoding added - thx uckthis
-   * Add some support for reading Adobe Premire .prproj files - thx Ariana
+   * Add "Dialog style" setting - thx OmrSi/Flitskikker
+   * Add some support for reading Adobe Premiere .prproj files - thx Ariana
    * Add new sub format - thx uckthis
    * Add new sub format - thx Ingo
    * Add new json subtitle format - thx Niraj
+   * Shortcut "remove time codes"
 * IMPROVED:
    * Update Finnish translation - thx Teijo S.
    * Update Basque translation - thx Azpidatziak
    * Update Dutch translation - thx xylographe
+   * Update Bulgarian translation - thx KalinM
+   * Update Russian translation - thx Elheym
+   * Update Portuguese translation - thx moob
    * Update names lists with territories from CLDR - thx xylographe
    * Remove (obsolete) support for SSL3
    * Remember "merge short lines max chars" - thx taxen
@@ -24,18 +63,39 @@
    * Improve speed of .scc reading
    * Auto detect xml in "custom text export" - thx Doug
    * Up to 3 secs "min display time" in "Apply duration limits" - thx Rudy
-   * Install Add more video files to "SupportedTypes" - thx xylographe
+   * Installer: Add more video files to "SupportedTypes" - thx xylographe
+   * Add "Collapse" context menu for "shortcuts treeview"
+   * Improve text regarding "gaps between subtitles"
+   * Add "ALL UPPERCASE" to "Modify selection" - thx Vladimír
+   * Improve ANSI encoding detection on non-Windows platforms - thx NickZ
+   * Import text w time code from file name - thx ChuotVu/BlazeSeven1989
+   * Make time code more readable in video player - thx Joseph
+   * Do not change format until combobox dropdown is closed - thx Moisés
+   * Auto-br now faster
+   * Format PAC: Add Turkish + add/fix many characters - thx Ingo S
 * FIXED:
    * Fix color in Sami format - thx OhaengCha/Jamakmake
+   * Fix Microsoft Translator API for non-English - thx Ed
    * Fix time code in format .sif - thx Milenko
    * Fix FCE short gap without time codes - thx OmrSi
    * Fix crash when opening translation only from blank - thx OmrSi
-   * Fix wrong filename after teletext import [2] - thx beeeeswax
+   * Fix wrong filename after teletext import - thx beeeeswax
    * Fix read "VPosition" w decimal point in DCinemaInterop - thx Marko
    * Fix issue with extended match in "Image compare" - thx Zoltán
    * Fix remove interjections issue - thx Waleri
    * Fix issue with spell check "change word" - thx OmrSi
    * Fix top alignment in format "SMPTE-TT 2052" - thx Flavia Rezende
+   * Fix crash in "fix Spanish inversion marks" - thx Lokotito
+   * Fix for Blu-ray sup file end time - thx mgutt
+   * Fix drag'n'drop after translation mode - thx Sopor
+   * Fix gap after "Set start and off-set the rest" - thx Flitskikker
+   * Fix add space with single music note in italic - thx btsix
+   * Fix some spelling mistakes in Hungarian - thx jtotht
+   * Fix import/export profile - thx Jamakmake
+   * Fix mpv crash/hang after open 4+ videos (again)
+   * Fix minor issues for Reopen - thx OmrSi
+   * Fix text paste in list view - thx Molly
+   * Fix crash when parsing bad BDSUP files - thx Jan
 
 
 3.5.13 (20th January 2020)

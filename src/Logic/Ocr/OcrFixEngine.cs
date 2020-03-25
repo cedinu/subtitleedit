@@ -1,8 +1,9 @@
 ﻿using Nikse.SubtitleEdit.Core;
 using Nikse.SubtitleEdit.Core.Dictionaries;
-using Nikse.SubtitleEdit.Core.Interfaces;
 using Nikse.SubtitleEdit.Core.Forms.FixCommonErrors;
+using Nikse.SubtitleEdit.Core.Interfaces;
 using Nikse.SubtitleEdit.Core.SpellCheck;
+using Nikse.SubtitleEdit.Forms;
 using Nikse.SubtitleEdit.Forms.Ocr;
 using Nikse.SubtitleEdit.Logic.SpellCheck;
 using System;
@@ -116,9 +117,12 @@ namespace Nikse.SubtitleEdit.Logic.Ocr
             _threeLetterIsoLanguageName = threeLetterIsoLanguageName;
             _parentForm = parentForm;
 
-            _spellCheck = new OcrSpellCheck { StartPosition = FormStartPosition.Manual, IsBinaryImageCompare = isBinaryImageCompare };
-            _spellCheck.Location = new Point(parentForm.Left + (parentForm.Width / 2 - _spellCheck.Width / 2),
-                                             parentForm.Top + (parentForm.Height / 2 - _spellCheck.Height / 2));
+            if (parentForm.GetType() != typeof(FixCommonErrors))
+            {
+                _spellCheck = new OcrSpellCheck { StartPosition = FormStartPosition.Manual, IsBinaryImageCompare = isBinaryImageCompare };
+                _spellCheck.Location = new Point(parentForm.Left + (parentForm.Width / 2 - _spellCheck.Width / 2),
+                    parentForm.Top + (parentForm.Height / 2 - _spellCheck.Height / 2));
+            }
 
             _ocrFixReplaceList = OcrFixReplaceList.FromLanguageId(threeLetterIsoLanguageName);
             LoadSpellingDictionaries(threeLetterIsoLanguageName, hunspellName); // Hunspell etc.
@@ -476,6 +480,19 @@ namespace Nikse.SubtitleEdit.Logic.Ocr
 
             if (Configuration.Settings.Tools.OcrFixUseHardcodedRules)
             {
+                if (text.Length > 3 && text.StartsWith(". .") && char.IsLetter(text[3]))
+                {
+                    text = text.Remove(1, 1).Insert(1, ".");
+                }
+                else if (text.Length > 3 && text.StartsWith(".. ") && char.IsLetter(text[3]))
+                {
+                    text = text.Remove(2, 1).Insert(2, ".");
+                }
+                else if (text.Length > 3 && text.StartsWith("..") && char.IsLetter(text[2]))
+                {
+                    text = "." + text;
+                }
+
                 int len = text.Length;
                 for (int i = 0; i < len; i++)
                 {
@@ -1123,29 +1140,6 @@ namespace Nikse.SubtitleEdit.Logic.Ocr
                 }
             }
 
-            if (text.Length > 2 && text[0] == '-' && char.IsUpper(text[1]))
-            {
-                text = text.Insert(1, " ");
-            }
-
-            if (text.Length > 5 && text.StartsWith("<i>-", StringComparison.Ordinal) && char.IsUpper(text[4]))
-            {
-                text = text.Insert(4, " ");
-            }
-
-            int nlLen = Environment.NewLine.Length;
-            int idx = text.IndexOf(Environment.NewLine + "-", StringComparison.Ordinal);
-            if (idx > 0 && idx + nlLen + 1 < text.Length && char.IsUpper(text[idx + nlLen + 1]))
-            {
-                text = text.Insert(idx + Environment.NewLine.Length + 1, " ");
-            }
-
-            idx = text.IndexOf(Environment.NewLine + "<i>-", StringComparison.Ordinal);
-            if (idx > 0 && idx + nlLen + 4 < text.Length && char.IsUpper(text[idx + nlLen + 4]))
-            {
-                text = text.Insert(idx + nlLen + 4, " ");
-            }
-
             if (string.IsNullOrEmpty(lastLine) ||
                 lastLine.EndsWith('.') ||
                 lastLine.EndsWith('!') ||
@@ -1264,7 +1258,7 @@ namespace Nikse.SubtitleEdit.Logic.Ocr
 
             if (text.Contains(". \"</i>" + Environment.NewLine, StringComparison.Ordinal))
             {
-                idx = text.IndexOf(". \"</i>" + Environment.NewLine, StringComparison.Ordinal);
+                var idx = text.IndexOf(". \"</i>" + Environment.NewLine, StringComparison.Ordinal);
                 if (idx > 0)
                 {
                     text = text.Remove(idx + 1, 1);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nikse.SubtitleEdit.Core.Forms.FixCommonErrors;
 
 namespace Nikse.SubtitleEdit.Core.Forms
 {
@@ -363,6 +364,26 @@ namespace Nikse.SubtitleEdit.Core.Forms
                                                                            !l1Trim.EndsWith('?'))
                                     {
                                         int indexOf = line.IndexOf(". ", StringComparison.Ordinal);
+                                        if (indexOf > 0 && indexOf < indexOfColon)
+                                        {
+                                            var periodWord = line.Substring(0, indexOf).TrimStart(' ', '-', '"');
+                                            if (periodWord.Equals("Dr", StringComparison.OrdinalIgnoreCase) ||
+                                                periodWord.Equals("Mr", StringComparison.OrdinalIgnoreCase) ||
+                                                periodWord.Equals("Mrs", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                indexOf = line.IndexOf(". ", indexOf + 1, StringComparison.Ordinal);
+                                            }
+                                            else
+                                            {
+                                                var toColonWord = line.Substring(0, indexOfColon);
+                                                if (toColonWord == toColonWord.ToUpperInvariant() && line != line.ToUpperInvariant())
+                                                {
+                                                    indexOf = indexOfColon;
+                                                }
+                                            }
+                                        }
+
+
                                         if (indexOf == -1)
                                         {
                                             indexOf = line.IndexOf("! ", StringComparison.Ordinal);
@@ -650,6 +671,11 @@ namespace Nikse.SubtitleEdit.Core.Forms
         private static readonly char[] TrimStartNoiseChar = { '-', ' ' };
 
         public string RemoveTextFromHearImpaired(string input)
+        {
+            return RemoveTextFromHearImpaired(input, null, -1);
+        }
+
+        public string RemoveTextFromHearImpaired(string input, Subtitle subtitle, int index)
         {
             if (StartsAndEndsWithHearImpairedTags(HtmlUtil.RemoveHtmlTags(input, true).TrimStart(TrimStartNoiseChar)))
             {
@@ -939,29 +965,13 @@ namespace Nikse.SubtitleEdit.Core.Forms
                     text = text.Insert(1, " ");
                 }
 
-                if (text.Length > 5 && text.StartsWith("<i>-", StringComparison.Ordinal) && text[4] != ' ' && text[4] != '-')
+                // remove/fix dashes
+                if (subtitle != null && index >= 0)
                 {
-                    text = text.Insert(4, " ");
+                    text = Helper.FixHyphensRemoveForSingleLine(subtitle, text, index);
                 }
-
-                int index = text.IndexOf(Environment.NewLine + "-", StringComparison.Ordinal);
-                if (index >= 0 && text.Length - index > 4)
-                {
-                    index += Environment.NewLine.Length + 1;
-                    if (text[index] != ' ' && text[index] != '-')
-                    {
-                        text = text.Insert(index, " ");
-                    }
-                }
-                index = text.IndexOf(Environment.NewLine + "<i>-", StringComparison.Ordinal);
-                if (index >= 0 && text.Length - index > 5)
-                {
-                    index += Environment.NewLine.Length + 4;
-                    if (text[index] != ' ' && text[index] != '-')
-                    {
-                        text = text.Insert(index, " ");
-                    }
-                }
+                var dialogHelper = new DialogSplitMerge { DialogStyle = Configuration.Settings.General.DialogStyle };
+                text = dialogHelper.FixDashesAndSpaces(text);
             }
             return text.Trim();
         }
@@ -1125,6 +1135,11 @@ namespace Nikse.SubtitleEdit.Core.Forms
 
         public string RemoveHearImpairedTags(string text)
         {
+            if (!text.Contains(Environment.NewLine) && Settings.OnlyIfInSeparateLine && !StartsAndEndsWithHearImpairedTags(text))
+            {
+                return text;
+            }
+
             string preAssTag = string.Empty;
             if (text.StartsWith("{\\", StringComparison.Ordinal) && text.IndexOf('}', 2) > 0)
             {

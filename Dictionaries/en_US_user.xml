@@ -1,4 +1,6 @@
 ﻿<words>
+  <word>'cause</word>
+  <word>'em</word>
   <word>50s</word>
   <word>9/11</word>
   <word>a.m.</word>
@@ -15,14 +17,17 @@
   <word>americium</word>
   <word>amnio</word>
   <word>amygdala</word>
+  <word>anastomosis</word>
   <word>anonymized</word>
   <word>anthropomorphize</word>
   <word>antimony</word>
   <word>apologise</word>
   <word>appétit</word>
   <word>argon</word>
+  <word>arrhythmias</word>
   <word>arsenic</word>
   <word>arses</word>
+  <word>arteritis</word>
   <word>astatine</word>
   <word>astrometry</word>
   <word>attosecond</word>
@@ -44,6 +49,7 @@
   <word>bona fide</word>
   <word>boneyard</word>
   <word>boron</word>
+  <word>bradycardia</word>
   <word>bradycardic</word>
   <word>braniac</word>
   <word>breakin'</word>
@@ -63,7 +69,6 @@
   <word>cardiothoracic</word>
   <word>catalogue</word>
   <word>catalogued</word>
-  <word>'cause</word>
   <word>centimetres</word>
   <word>cerium</word>
   <word>cesium</word>
@@ -83,12 +88,14 @@
   <word>copper</word>
   <word>copperish</word>
   <word>cosy</word>
+  <word>cottonoid</word>
   <word>could've</word>
   <word>craniotomy</word>
   <word>cryo</word>
   <word>cryotube</word>
   <word>cudgelled</word>
   <word>curium</word>
+  <word>cyanotic</word>
   <word>darmstadtium</word>
   <word>darndest</word>
   <word>decompensating</word>
@@ -101,9 +108,9 @@
   <word>douchey</word>
   <word>dreamt</word>
   <word>dubnium</word>
+  <word>dysesthesia</word>
   <word>dysprosium</word>
   <word>einsteinium</word>
-  <word>'em</word>
   <word>emoji</word>
   <word>endeth</word>
   <word>episiotomy</word>
@@ -136,6 +143,8 @@
   <word>fundraiser</word>
   <word>gadolinium</word>
   <word>gallium</word>
+  <word>ganglioneuralgia</word>
+  <word>gastroenterologists</word>
   <word>geez</word>
   <word>gemensheidt</word>
   <word>generationally</word>
@@ -143,10 +152,12 @@
   <word>giancarlo</word>
   <word>gigabit</word>
   <word>glioma</word>
+  <word>glossopharyngeal</word>
   <word>glowy</word>
   <word>goddamned</word>
   <word>golconda</word>
   <word>gold</word>
+  <word>gracilis</word>
   <word>guys'll</word>
   <word>hafnium</word>
   <word>hashtag</word>
@@ -166,6 +177,7 @@
   <word>how're</word>
   <word>humvee</word>
   <word>hydrogen</word>
+  <word>hypotensive</word>
   <word>hypothermic</word>
   <word>immunotherapy</word>
   <word>incontinentia</word>
@@ -177,6 +189,7 @@
   <word>iridium</word>
   <word>iron</word>
   <word>ischemia</word>
+  <word>isobutyric</word>
   <word>jeopardised</word>
   <word>jewellery</word>
   <word>jizz</word>
@@ -192,9 +205,11 @@
   <word>laparoscopically</word>
   <word>laparotomy</word>
   <word>laryngectomy</word>
+  <word>laryngopharyngeal</word>
   <word>lawrencium</word>
   <word>lead</word>
   <word>lithium</word>
+  <word>lobectomy</word>
   <word>loudmouth</word>
   <word>loupe</word>
   <word>lutetium</word>
@@ -202,14 +217,19 @@
   <word>manganese</word>
   <word>meds</word>
   <word>meitnerium</word>
-  <word>mendelevium</word>
   <word>men's</word>
+  <word>mendelevium</word>
   <word>mercury</word>
   <word>mesenteric</word>
+  <word>mesentery</word>
   <word>metres</word>
+  <word>microbiome</word>
   <word>micrografting</word>
+  <word>microvascular</word>
   <word>might've</word>
   <word>millennia</word>
+  <word>milliamp</word>
+  <word>milliamps</word>
   <word>mmm</word>
   <word>mmmmm</word>
   <word>mojo</word>
@@ -227,19 +247,26 @@
   <word>neon</word>
   <word>neptunium</word>
   <word>neurobiologist</word>
+  <word>neuropathy</word>
   <word>neuroscientific</word>
+  <word>neurotypical</word>
+  <word>neurovascular</word>
   <word>nickel</word>
   <word>niobium</word>
   <word>nitrogen</word>
   <word>nobelium</word>
   <word>nothin</word>
   <word>now's</word>
+  <word>odontoid</word>
   <word>ohh</word>
   <word>online</word>
   <word>or</word>
   <word>oropharyngeal</word>
   <word>osmium</word>
+  <word>osseointegrated</word>
+  <word>osseointegration</word>
   <word>other's</word>
+  <word>otolaryngologist</word>
   <word>oww</word>
   <word>owwwww</word>
   <word>oxygen</word>
@@ -248,6 +275,7 @@
   <word>paprikash</word>
   <word>parents'</word>
   <word>percutaneously</word>
+  <word>perfusionist</word>
   <word>phosphorus</word>
   <word>photoshopped</word>
   <word>platinum</word>
@@ -260,7 +288,9 @@
   <word>potassium</word>
   <word>praseodymium</word>
   <word>promethium</word>
+  <word>prosthetics</word>
   <word>protactinium</word>
+  <word>pseudoachondroplasia</word>
   <word>purée</word>
   <word>radium</word>
   <word>radon</word>
@@ -275,6 +305,8 @@
   <word>reframe</word>
   <word>resect</word>
   <word>retractor</word>
+  <word>retropulsion</word>
+  <word>revascularization</word>
   <word>rhenium</word>
   <word>rhodium</word>
   <word>ringtone</word>
@@ -294,10 +326,10 @@
   <word>secret's</word>
   <word>selenium</word>
   <word>selfies</word>
+  <word>sensei</word>
   <word>señor</word>
   <word>señora</word>
   <word>señorita</word>
-  <word>sensei</word>
   <word>sharpshoot</word>
   <word>shithead's</word>
   <word>shithole</word>
@@ -312,19 +344,25 @@
   <word>sodium</word>
   <word>something's</word>
   <word>spell's</word>
+  <word>sphenopalatine</word>
   <word>spilt</word>
+  <word>splenectomy</word>
   <word>spork</word>
   <word>spotteth</word>
+  <word>stenosis</word>
   <word>stent</word>
   <word>stenting</word>
+  <word>stereotactic</word>
   <word>sternotomy</word>
   <word>strontium</word>
+  <word>subclavian</word>
   <word>subdural hematoma</word>
   <word>sudoku</word>
   <word>sulfur</word>
   <word>sulphur</word>
   <word>synchronicity</word>
   <word>syncopal</word>
+  <word>synovectomy</word>
   <word>tantalum</word>
   <word>taxies</word>
   <word>technetium</word>
@@ -344,18 +382,25 @@
   <word>there'd</word>
   <word>there'll</word>
   <word>there're</word>
-  <word>this</word>
   <word>this'll</word>
+  <word>this</word>
   <word>thoracotomy</word>
   <word>thorium</word>
+  <word>thrombectomy</word>
   <word>thulium</word>
   <word>tin</word>
   <word>titanium</word>
   <word>tittie</word>
   <word>touché</word>
+  <word>transcervical</word>
+  <word>transcutaneous</word>
+  <word>transdural</word>
+  <word>transectional</word>
   <word>trickeration</word>
   <word>trifecta</word>
+  <word>trigeminal</word>
   <word>tungsten</word>
+  <word>ulcerative</word>
   <word>unreciprocated</word>
   <word>unsterile</word>
   <word>ununhexium</word>

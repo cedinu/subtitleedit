@@ -2,7 +2,7 @@
 <Language Name="Polish">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>Tłumaczenie: Adam Malich (http://www.mm.pl/~fanpack/)</TranslatedBy>
     <CultureName>pl-PL</CultureName>
     <HelpFile />
@@ -1026,7 +1026,7 @@ Przejdź do "Opcje -&gt; Ustawienia -&gt; Narzędzia", aby wpisać swój klucz A
         <Title>Narzędzia</Title>
         <AdjustDisplayDuration>&amp;Dostosuj czasy trwania...</AdjustDisplayDuration>
         <ApplyDurationLimits>Zastosuj limity czasu trwania...</ApplyDurationLimits>
-        <DurationsBridgeGap>Zmostkuj przerwy w czasach trwania...</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>Zmostkuj przerwy w czasach trwania...</SubtitlesBridgeGaps>
         <FixCommonErrors>&amp;Popraw najczęstsze błędy...</FixCommonErrors>
         <StartNumberingFrom>Zmień numerację...</StartNumberingFrom>
         <RemoveTextForHearingImpaired>Usuń tekst dla niedosłyszących...</RemoveTextForHearingImpaired>

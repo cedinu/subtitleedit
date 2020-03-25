@@ -2,7 +2,7 @@
 <Language Name="Bahasa Indonesia">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>Diterjemahkan oleh Nicedward (04/2018)</TranslatedBy>
     <CultureName>id-ID</CultureName>
     <HelpFile />
@@ -982,7 +982,7 @@ Catatan: Periksa ruang kosong disk.</WaveFileMalformed>
         <Title>Alat</Title>
         <AdjustDisplayDuration>&amp;Sesuaikan durasi...</AdjustDisplayDuration>
         <ApplyDurationLimits>Terapkan batas durasi...</ApplyDurationLimits>
-        <DurationsBridgeGap>Celah jembatan dlm durasi...</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>Celah jembatan dlm durasi...</SubtitlesBridgeGaps>
         <FixCommonErrors>&amp;Perbaiki eror umum...</FixCommonErrors>
         <StartNumberingFrom>Nomori ulang...</StartNumberingFrom>
         <RemoveTextForHearingImpaired>Buang teks untuk tuna rungu...</RemoveTextForHearingImpaired>

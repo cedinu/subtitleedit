@@ -2,7 +2,7 @@
 <Language Name="română">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.13</Version>
+    <Version>3.5.14</Version>
     <TranslatedBy>Tradus de Mircea Voiculescu</TranslatedBy>
     <CultureName>ro-RO</CultureName>
     <HelpFile />
@@ -1008,7 +1008,7 @@ Du-te la "Opțiuni -&gt; Setări -&gt; Unelte" ptr. a introduce codul API al Goo
         <Title>Unelte</Title>
         <AdjustDisplayDuration>&amp;Corectare durate de timp...</AdjustDisplayDuration>
         <ApplyDurationLimits>Aplică limite de timp...</ApplyDurationLimits>
-        <DurationsBridgeGap>Șuntează pauza dintre duratele de timp...</DurationsBridgeGap>
+        <SubtitlesBridgeGaps>Șuntează pauza dintre duratele de timp...</SubtitlesBridgeGaps>
         <FixCommonErrors>&amp;Corectează erorile comune...</FixCommonErrors>
         <StartNumberingFrom>Renumerotare...</StartNumberingFrom>
         <RemoveTextForHearingImpaired>Elimină textul pentru deficiențe de auz...</RemoveTextForHearingImpaired>

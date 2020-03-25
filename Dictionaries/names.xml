@@ -285,6 +285,7 @@ This file is case sensitive.
   <name>Archie</name>
   <name>Archimedes</name>
   <name>Ares</name>
+  <name>Arezzo</name>
   <name>Ari</name>
   <name>Aria</name>
   <name>Arial</name>
@@ -1419,6 +1420,7 @@ This file is case sensitive.
   <name>Dalgaard</name>
   <name>Dallas</name>
   <name>Dallin</name>
+  <name>Dalloway</name>
   <name>Dalton</name>
   <name>Damascus</name>
   <name>Damaskus</name>
@@ -1684,7 +1686,10 @@ This file is case sensitive.
   <name>Dover</name>
   <name>Doyle</name>
   <name>Dr.</name>
+  <name>Dr. Blaize</name>
+  <name>Dr. Glassman</name>
   <name>Dr. Hunt</name>
+  <name>Dr. Lim</name>
   <name>Dr. Singer</name>
   <name>Draco</name>
   <name>Dracula</name>
@@ -2299,6 +2304,7 @@ This file is case sensitive.
   <name>Gwyneth</name>
   <name>Gwynn</name>
   <name>Gyllenhaal</name>
+  <name>H.R.</name>
   <name>Hadas</name>
   <name>Hades</name>
   <name>Hadley</name>
@@ -2929,6 +2935,7 @@ This file is case sensitive.
   <name>Katya</name>
   <name>Kaufman</name>
   <name>Kayla</name>
+  <name>Kayley</name>
   <name>Kaylie</name>
   <name>Kazakh</name>
   <name>Kazakhstan</name>
@@ -4540,6 +4547,7 @@ This file is case sensitive.
   <name>Reynard</name>
   <name>Reynolds</name>
   <name>Reza</name>
+  <name>Reznick</name>
   <name>Rhizoc</name>
   <name>Rhizoctonia</name>
   <name>Rhode</name>
@@ -4572,6 +4580,7 @@ This file is case sensitive.
   <name>Rihanna</name>
   <name>Riley</name>
   <name>Rileys</name>
+  <name>Riluzole</name>
   <name>Ringo</name>
   <name>Riom</name>
   <name>Ripley</name>
@@ -5008,6 +5017,7 @@ This file is case sensitive.
   <name>Sri</name>
   <name>Sri Jayawardenepura Kotte</name>
   <name>Sri Lanka</name>
+  <name>Sriracha</name>
   <name>SSG</name>
   <name>SSG-SweSUB</name>
   <name>St.</name>
