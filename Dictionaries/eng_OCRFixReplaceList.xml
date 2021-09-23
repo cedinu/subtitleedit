@@ -173,6 +173,7 @@
     <Word from="AIso" to="Also" />
     <Word from="AIVIBULANCE" to="AMBULANCE" />
     <Word from="AIways" to="Always" />
+    <Word from="aimost" to="almost" />
     <Word from="ajanitor" to="a janitor" />
     <Word from="ajealous" to="a jealous" />
     <Word from="ajob" to="a job" />
@@ -370,6 +371,7 @@
     <Word from="bythe" to="by the" />
     <Word from="byyourself" to="by yourself" />
     <Word from="C/latter/'/7g" to="Chattering" />
+    <Word from="C02" to="CO2" />
     <Word from="ca///ng" to="calling" />
     <Word from="ca/I" to="call" />
     <Word from="cal/ed" to="called" />
@@ -804,6 +806,7 @@
     <Word from="H0ger" to="Roger" />
     <Word from="H0we·ver" to="However" />
     <Word from="ha/f" to="half" />
+    <Word from="hadjammed" to="had jammed" />
     <Word from="hadjust" to="had just" />
     <Word from="Hadnt" to="Hadn't" />
     <Word from="hadnt" to="hadn't" />
@@ -881,6 +884,7 @@
     <Word from="HeyJennifer" to="Hey Jennifer" />
     <Word from="hiddsn" to="hidden" />
     <Word from="hisjunk" to="his junk" />
+    <Word from="hisjourney" to="his journey" />
     <Word from="hisseLf" to="hisself" />
     <Word from="Hitlershare" to="Hitler share" />
     <Word from="Hlneed" to="I'll need" />
@@ -1064,6 +1068,7 @@
     <Word from="Iknow" to="I know" />
     <Word from="Ile" to="lie" />
     <Word from="Ileft" to="I left" />
+    <Word from="Ilive" to="I live" />
     <Word from="I'LL" to="I'll" />
     <Word from="I'lldo" to="I'll do" />
     <Word from="I'llgo" to="I'll go" />
@@ -1166,6 +1171,7 @@
     <Word from="It'Il" to="It'll" />
     <Word from="itin" to="it in" />
     <Word from="itis" to="it is" />
+    <Word from="Itis" to="It is" />
     <Word from="Itjust" to="It just" />
     <Word from="itjust" to="it just" />
     <Word from="It'lI" to="It'll" />
@@ -1300,10 +1306,12 @@
     <Word from="Lcve" to="Love" />
     <Word from="L'd" to="I'd" />
     <Word from="l'd" to="I'd" />
+    <Word from="lD" to="ID" />
     <Word from="ldid" to="I did" />
     <Word from="Ldid" to="I did" />
     <Word from="ldiot" to="Idiot" />
     <Word from="L'djump" to="I'd jump" />
+    <Word from="L'Il" to="I'll" />
     <Word from="ldon't" to="I don't" />
     <Word from="Ldon't" to="I don't" />
     <Word from="leastpeople" to="least people" />
@@ -1314,7 +1322,7 @@
     <Word from="let'sjust" to="let's just" />
     <Word from="Let'sjust" to="Let's just" />
     <Word from="Lf" to="If" />
-    <Word from="lf" to="if" />
+    <Word from="lf" to="If" />
     <Word from="lfeelonelung" to="I feel one lung" />
     <Word from="lfhe's" to="If he's" />
     <Word from="lfl" to="if I" />
@@ -1395,7 +1403,6 @@
     <Word from="lsolation" to="Isolation" />
     <Word from="Lst's" to="Let's" />
     <Word from="lsuppose" to="I suppose" />
-    <Word from="lt" to="it" />
     <Word from="Lt" to="It" />
     <Word from="ltake" to="I take" />
     <Word from="ltalian" to="Italian" />
@@ -2198,6 +2205,7 @@
     <Word from="theysay" to="they say" />
     <Word from="theyve" to="they've" />
     <Word from="Theyve" to="They've" />
+    <Word from="thing'II" to="thing'll" />
     <Word from="Thinkbackto" to="Think back to" />
     <Word from="thinkl" to="think l" />
     <Word from="thinkofafew" to="think of a few" />
@@ -2377,6 +2385,7 @@
     <Word from="we,re" to="we're" />
     <Word from="we,ve" to="we've" />
     <Word from="We,ve" to="We've" />
+    <Word from="We'il" to="We'll" />
     <Word from="We//" to="Well" />
     <Word from="We/came" to="Welcome" />
     <Word from="we/come" to="welcome" />
@@ -2459,6 +2468,8 @@
     <Word from="Whodunit" to="Whodunnit" />
     <Word from="whoJuma" to="who Juma" />
     <Word from="whoJuma's" to="who Juma's" />
+    <Word from="whojust" to="who just" />
+    <Word from="Whojust" to="Who just" />
     <Word from="Whyyou" to="Why you" />
     <Word from="whyyou" to="why you" />
     <Word from="wi//" to="will" />
@@ -2646,6 +2657,150 @@
     <Word from="ZSth" to="25th" />
     <Word from="d0n't" to="don't" />
     <Word from="D0n't" to="Don't" />
+    <Word from="anyjobs" to="any jobs" />
+    <Word from="Sogreat" to="So great" />
+    <Word from="hearfromyou" to="hear from you" />
+    <Word from="meansyou're" to="means you're" />
+    <Word from="forjust" to="for just" />
+    <Word from="notjoking" to="not joking" />
+    <Word from="hidbehind" to="hid behind" />
+    <Word from="Itstarts" to="It starts" />
+    <Word from="outlike" to="out like" />
+    <Word from="reallyfast" to="really fast" />
+    <Word from="Andthe" to="And the" />
+    <Word from="andit's" to="and it's" />
+    <Word from="completelyalone" to="completely alone" />
+    <Word from="wonderedifanyone" to="wondered if anyone" />
+    <Word from="changedevery" to="changed every" />
+    <Word from="reallyjuvenile" to="really juvenile" />
+    <Word from="lovedher" to="loved her" />
+    <Word from="thingsyou" to="things you" />
+    <Word from="Butmyheartache's" to="But my heartache's" />
+    <Word from="Didyou" to="Did you" />
+    <Word from="standbyme" to="stand by me" />
+    <Word from="notatall" to="not at all" />
+    <Word from="Nowdeparting" to="Now departing" />
+    <Word from="haveyourattention" to="have your attention" />
+    <Word from="IosAngeles" to="Los Angeles" />
+    <Word from="haveyourtickets" to="have your tickets" />
+    <Word from="Atlast" to="At last" />
+    <Word from="Mylove" to="My love" />
+    <Word from="walkedto" to="walked to" />
+    <Word from="herapartment" to="her apartment" />
+    <Word from="intoxicatedby" to="intoxicated by" />
+    <Word from="thepromise" to="the promise" />
+    <Word from="wouldalign" to="would align" />
+    <Word from="Whatjust" to="What just" />
+    <Word from="oftheyearare" to="of the year are" />
+    <Word from="Theybegin" to="They begin" />
+    <Word from="andtheyend" to="and they end" />
+    <Word from="IfTom" to="If Tom" />
+    <Word from="hadlearnedanything" to="had learned anything" />
+    <Word from="thatyou" to="that you" />
+    <Word from="cosmicsigniflcance" to="cosmic signiflcance" />
+    <Word from="allanything" to="all anything" />
+    <Word from="everis" to="ever is" />
+    <Word from="wasprettysure" to="was pretty sure" />
+    <Word from="grewup" to="grew up" />
+    <Word from="untilthe" to="until the" />
+    <Word from="totalmisreading" to="total misreading" />
+    <Word from="Thegirl" to="The girl" />
+    <Word from="didnotshare" to="did not share" />
+    <Word from="herlong" to="her long" />
+    <Word from="darkhair" to="dark hair" />
+    <Word from="Andfeelnothing" to="And feel nothing" />
+    <Word from="slightlyabove" to="slightly above" />
+    <Word from="Forallintents" to="For all intents" />
+    <Word from="andpurposes" to="and purposes" />
+    <Word from="justanothergirl" to="just another girl" />
+    <Word from="schoolyearbook" to="school yearbook" />
+    <Word from="Colormylife" to="Color my life" />
+    <Word from="Thisspike" to="This spike" />
+    <Word from="oftheiralbum" to="of their album" />
+    <Word from="topuzzle" to="to puzzle" />
+    <Word from="theirlives" to="their lives" />
+    <Word from="finditnow" to="find it now" />
+    <Word from="commercialbuildings" to="commercial buildings" />
+    <Word from="andyours" to="and yours" />
+    <Word from="anypity" to="any pity" />
+    <Word from="Areyou" to="Are you" />
+    <Word from="armyis" to="army is" />
+    <Word from="caughtsome" to="caught some" />
+    <Word from="cityofthe" to="city of the" />
+    <Word from="Didhegive" to="Did he give" />
+    <Word from="everyonego" to="everyone go" />
+    <Word from="evilandgood" to="evil and good" />
+    <Word from="findthe" to="find the" />
+    <Word from="flndthem" to="flnd them" />
+    <Word from="Forbeing" to="For being" />
+    <Word from="greatnumbers" to="great numbers" />
+    <Word from="heardthe" to="heard the" />
+    <Word from="helltheyare" to="hell they are" />
+    <Word from="hisprivate" to="his private" />
+    <Word from="Howdo" to="How do" />
+    <Word from="inflictmore" to="inflict more" />
+    <Word from="inyourinflnite" to="in your inflnite" />
+    <Word from="mydear" to="my dear" />
+    <Word from="ofwar" to="of war" />
+    <Word from="orgreed" to="or greed" />
+    <Word from="orlust" to="or lust" />
+    <Word from="ourhands" to="our hands" />
+    <Word from="ratherprimitive" to="rather primitive" />
+    <Word from="realnice" to="real nice" />
+    <Word from="talklike" to="talk like" />
+    <Word from="That'llbe" to="That'll be" />
+    <Word from="thatpowerhere" to="that power here" />
+    <Word from="Theyare" to="They are" />
+    <Word from="topossess" to="to possess" />
+    <Word from="toyou" to="to you" />
+    <Word from="wantpeace" to="want peace" />
+    <Word from="we'dbe" to="we'd be" />
+    <Word from="whichyou" to="which you" />
+    <Word from="Whycan't" to="Why can't" />
+    <Word from="willlook" to="will look" />
+    <Word from="willmake" to="will make" />
+    <Word from="willmurderhis" to="will murder his" />
+    <Word from="wishyou" to="wish you" />
+    <Word from="wouldnot" to="would not" />
+    <Word from="yourpeople" to="your people" />
+    <Word from="AII's" to="All's" />
+    <Word from="FIog" to="Flog" />
+    <Word from="SIit" to="Slit" />
+    <Word from="allsummer" to="all summer" />
+    <Word from="couldhave" to="could have" />
+    <Word from="flrst" to="first" />
+    <Word from="likeyou" to="like you" />
+    <Word from="makeyou" to="make you" />
+    <Word from="ofmysenioryear" to="of my senior year" />
+    <Word from="thatparty" to="that party" />
+    <Word from="thatpeople" to="that people" />
+    <Word from="thatperson" to="that person" />
+    <Word from="thoughyou" to="though you" />
+    <Word from="aduIt" to="adult" />
+    <Word from="aIive" to="alive" />
+    <Word from="alI" to="all" />
+    <Word from="Iaboratories" to="laboratories" />
+    <Word from="Iargest" to="largest" />
+    <Word from="Iifetime" to="lifetime" />
+    <Word from="Iiquid" to="liquid" />
+    <Word from="Iiving" to="living" />
+    <Word from="Iowest" to="lowest" />
+    <Word from="letterjackets" to="letter jackets" />
+    <Word from="snowbalI" to="snowball" />
+    <Word from="weII" to="well" />
+    <Word from="WelI" to="Well" />
+    <Word from="CIub" to="Club" />
+    <Word from="couId" to="could" />
+    <Word from="footbaII" to="football" />
+    <Word from="hoId" to="hold" />
+    <Word from="knowyou'll" to="know you'll" />
+    <Word from="LSDjust" to="LSD just" />
+    <Word from="lt'sjust" to="It's just" />
+    <Word from="schooI" to="school" />
+    <Word from="sIeep" to="sleep" />
+    <Word from="whiIe" to="while" />
+    <Word from="aII" to="all" />
+    <Word from="aIl" to="all" />
   </WholeWords>
   <PartialWordsAlways>
     <!-- Will be replaced always -->
@@ -2666,7 +2821,7 @@
   </PartialWordsAlways>
   <PartialWords>
     <!-- Will be used to check words not in dictionary.
-          If new word(s) and longer than 5 chars and exists in spelling dictionary, it is (or they are) accepted -->
+          If new word(s) and longer than 4 chars and exists in spelling dictionary, it is (or they are) accepted -->
     <WordPart from="IVI" to="M" />
     <WordPart from="/" to="l" />
     <WordPart from="|" to="I" />
@@ -2682,6 +2837,8 @@
     <WordPart from="ii" to="ll" />
     <!-- "f " will be two words -->
     <WordPart from="f" to="f " />
+    <WordPart from="j" to=" j" />
+    <WordPart from="y" to=" y" />
     <WordPart from="c" to="e" />
     <WordPart from="I" to="t" />
     <WordPart from="n" to="o" />
@@ -2692,6 +2849,10 @@
     <WordPart from=")/" to="y" />
     <WordPart from=")'" to="y" />
     <WordPart from="a’" to="d" />
+    <WordPart from="|" to="l" />
+    <WordPart from="¤" to="o" />
+    <WordPart from="vx/" to="w" />
+    <WordPart from="O" to="Q" />
   </PartialWords>
   <WholeLines>
     <!-- Whole lines - including -" etc -->
@@ -2712,6 +2873,13 @@
   </WholeLines>
   <PartialLinesAlways>
     <LinePart from="forbest act" to="for best act" />
+    <LinePart from="Apollo 1 3" to="Apollo 13" />
+    <LinePart from=",.," to="..." />
+    <LinePart from=" lt " to=" it " />
+    <LinePart from=". lt " to=". It " />
+    <LinePart from=" lf " to=" if " />
+    <LinePart from=". lf " to=". If " />
+    <LinePart from=" . " to=". " />
   </PartialLinesAlways>
   <PartialLines>
     <LinePart from=" /be " to=" I be " />
@@ -3032,6 +3200,10 @@
     <LinePart from="You' re" to="You're" />
     <LinePart from="you' re" to="you're" />
     <LinePart from="You' ve " to="You've " />
+    <LinePart from="he 'd " to="he'd " />
+    <LinePart from="ofb" to="of b" />
+    <LinePart from="ofM" to="of M" />
+    <LinePart from="ofS" to="of S" />
   </PartialLines>
   <BeginLines>
     <Beginning from="lgot it" to="I got it" />
@@ -3057,6 +3229,7 @@
     <Beginning from="-l don't" to="-I don't" />
     <Beginning from="l don't" to="I don't" />
     <Beginning from="L " to="I " />
+    <Beginning from="L'Il " to="I'll " />
     <Beginning from="-L " to="-I " />
     <Beginning from="-l " to="-I " />
     <Beginning from="- l " to="- I " />
@@ -3167,9 +3340,15 @@
     <Beginning from="J ust " to="Just " />
     <Beginning from="W-w-wh" to="W-W-Wh" />
     <Beginning from="W-wh" to="W-Wh" />
+    <Beginning from="I-i-i-i " to="I-I-I-I " />
     <Beginning from="I-i-i " to="I-I-I " />
     <Beginning from="I-i " to="I-I " />
     <Beginning from="H m, " to="Hm, " />
+    <Beginning from="Im sorry" to="I'm sorry" />
+    <Beginning from="lce " to="Ice " />
+    <Beginning from="lf " to="If " />
+    <Beginning from="-lf " to="-If " />
+    <Beginning from="-lt " to="-It " />
   </BeginLines>
   <EndLines>
     <Ending from=", sin" to=", sir." />
@@ -3180,6 +3359,9 @@
     <Ending from="pshycol" to="psycho!" />
     <Ending from=" i..." to=" I..." />
     <Ending from=" L." to=" I." />
+    <Ending from=" ." to="." />
+    <Ending from=" !" to="!" />
+    <Ending from=" lf " to=" if " />
   </EndLines>
   <RegularExpressions>
     <RegEx find="([a-z]) Won't " replaceWith="$1 won't " />
@@ -3189,5 +3371,14 @@
     <RegEx find="^-_\.(\p{L})" replaceWith="- ...$1" />
     <RegEx find="^_\.\.(\p{L})" replaceWith="...$1" />
     <RegEx find=" l([!?\.])" replaceWith=" I$1" />
+    <RegEx find="\b\|\b" replaceWith="I" />
+    <RegEx find="\b(1|l) (know|will|almost|didn't|get|got|have|apologize|paid|like|think|would|hope|shall|chose|choose|won|am|was|don't|just|start|run|saw|said|believe|try|ever|need|certainly|can't|anticipated|did|can|rang|heard|gave|came|decided|should|took|wanted|read|thought|was|still|do|love|want|overstepped|accept|authorized|owe|understand|made|guess|bumped|wasn't|mean|admire|had|spent|told|see|walk|were|help|definitely|could|say|take|brought|assume|proposed|realized|loved|base|left|change|changed|rule|feel|date|dated|imagine|went|kind|couldn't|wouldn't|work|care|make|lost|deserve|promise|swear|bring|put|found|wanna|swear|sold|save|figured|knew|kill|asked|supposed|act|wonder|leave|remind|stay|assure|guarantee|open|invited|doubt|refuse|sign|hid|might|wish)\b" replaceWith="I $2" />
+    <RegEx find=",\.\." replaceWith="..." />
+    <RegEx find="\bI KEA\b" replaceWith="IKEA" />
+    <RegEx find="\b(A|a)m (l|1)\b" replaceWith="$1m I" />
+    <RegEx find="\b1 00K\b" replaceWith="100K" />
+    <RegEx find="\bl\b" replaceWith="I" />
+    <RegEx find="\. lt\b" replaceWith=". It" />
+    <RegEx find="\. lf\b" replaceWith=". If" />
   </RegularExpressions>
 </OCRFixReplaceList>

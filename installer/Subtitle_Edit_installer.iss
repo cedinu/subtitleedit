@@ -15,15 +15,15 @@
 ;* GNU General Public License for more details.
 ;*
 ;* You should have received a copy of the GNU General Public License
-;* along with Subtitle Edit.  If not, see <http://www.gnu.org/licenses/>.
+;* along with Subtitle Edit.  If not, see <https://www.gnu.org/licenses/>.
 
 ; Requirements:
-; Inno Setup Unicode: http://www.jrsoftware.org/isdl.php
+; Inno Setup Unicode: https://jrsoftware.org/isdl.php
 
 
 ; preprocessor checks
-#if VER < EncodeVer(5,6,0)
-  #error Update your Inno Setup version (5.6.0 or newer)
+#if VER < EncodeVer(6,0,0)
+  #error Update your Inno Setup version (6.0.0 or newer)
 #endif
 
 #ifndef UNICODE
@@ -31,7 +31,7 @@
 #endif
 
 
-#define app_copyright "Copyright © 2001-2019, Nikse"
+#define app_copyright "Copyright © 2001-2021, Nikse"
 ; If you don't define "localize", i.e. comment out the following line then no translations
 ; for SubtitleEdit or the installer itself will be included in the installer
 #define localize
@@ -44,7 +44,8 @@
 #define VerBuild
 #define VerRevision
 
-#define bindir "..\src\bin\Release"
+#define bindir "..\src\ui\bin\Release"
+#define bindirres "..\src\Win32Resources\bin\Release"
 
 #ifnexist bindir + "\SubtitleEdit.exe"
   #error Compile Subtitle Edit first
@@ -76,7 +77,7 @@
 [Setup]
 AppID=SubtitleEdit
 AppCopyright={#app_copyright}
-AppContact=https://www.nikse.dk/SubtitleEdit/
+AppContact=https://www.nikse.dk/SubtitleEdit/Help
 AppName=Subtitle Edit
 AppVerName=Subtitle Edit {#app_ver}
 AppVersion={#app_ver_full}
@@ -89,10 +90,10 @@ UninstallDisplayIcon={app}\SubtitleEdit.exe
 DefaultDirName={pf}\Subtitle Edit
 DefaultGroupName=Subtitle Edit
 VersionInfoVersion={#app_ver_full}
-MinVersion=5.6
+MinVersion=6.0
 LicenseFile=..\LICENSE.txt
 InfoAfterFile=..\Changelog.txt
-SetupIconFile=..\src\Icons\SE.ico
+SetupIconFile=..\src\ui\Icons\SE.ico
 WizardImageFile=Icons\WizardImageFile.bmp
 WizardSmallImageFile=Icons\WizardSmallImageFile.bmp
 OutputDir=.
@@ -111,6 +112,7 @@ DisableProgramGroupPage=auto
 CloseApplications=true
 SetupMutex='subtitle_edit_setup_mutex'
 ArchitecturesInstallIn64BitMode=x64
+WizardStyle=modern
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -121,14 +123,12 @@ Name: "ca"; MessagesFile: "compiler:Languages\Catalan.isl"
 Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl"
 Name: "da"; MessagesFile: "compiler:Languages\Danish.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
-Name: "el"; MessagesFile: "compiler:Languages\Greek.isl"
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "eu"; MessagesFile: "Languages\Basque.isl"
 Name: "fa"; MessagesFile: "Languages\Farsi.isl"
 Name: "fi"; MessagesFile: "compiler:Languages\Finnish.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Name: "hr"; MessagesFile: "Languages\Croatian.isl"
-Name: "hu"; MessagesFile: "compiler:Languages\Hungarian.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"
 Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "ko"; MessagesFile: "Languages\Korean.isl"
@@ -141,8 +141,6 @@ Name: "ptBR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 Name: "ro"; MessagesFile: "Languages\Romanian.isl"
 Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "sl"; MessagesFile: "compiler:Languages\Slovenian.isl"
-Name: "srC"; MessagesFile: "compiler:Languages\SerbianCyrillic.isl"
-Name: "srL"; MessagesFile: "compiler:Languages\SerbianLatin.isl"
 Name: "sv"; MessagesFile: "Languages\Swedish.isl"
 Name: "th"; MessagesFile: "Languages\Thai.isl"
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"
@@ -156,9 +154,9 @@ Name: "zhTW"; MessagesFile: "Languages\ChineseTraditional.isl"
 #include "Custom_Messages.iss"
 
 [Messages]
-BeveledLabel=Subtitle Edit {#app_ver} by Nikse
+;BeveledLabel=Subtitle Edit {#app_ver} by Nikse
 SetupAppTitle=Setup - Subtitle Edit
-SetupWindowTitle=Setup - Subtitle Edit
+SetupWindowTitle=Setup - Subtitle Edit {#app_ver}
 
 
 [Types]
@@ -195,6 +193,7 @@ Source: ..\Dictionaries\mkd_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtit
 Source: ..\Dictionaries\nld_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\nob_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\nor_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
+Source: ..\Dictionaries\pol_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\por_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\rus_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\spa_OCRFixReplaceList.xml; DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
@@ -212,12 +211,16 @@ Source: ..\Dictionaries\nl_names.xml;              DestDir: {userappdata}\Subtit
 Source: ..\Dictionaries\pt_names.xml;              DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\ru_names.xml;              DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
 Source: ..\Dictionaries\names.xml;                 DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall; Components: main
+Source: ..\Dictionaries\ar_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
+Source: ..\Dictionaries\bg_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\da_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
+Source: ..\Dictionaries\el_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\en_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\es_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\hr_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\mk_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\pt_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
+Source: ..\Dictionaries\ru_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\sr_NoBreakAfterList.xml;   DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\da_DK_user.xml;            DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Dictionaries\de_DE_user.xml;            DestDir: {userappdata}\Subtitle Edit\Dictionaries; Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
@@ -232,6 +235,9 @@ Source: ..\Dictionaries\en_US.dic;                 DestDir: {userappdata}\Subtit
 
 Source: ..\Ocr\Latin.db;                           DestDir: {userappdata}\Subtitle Edit\Ocr;          Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
 Source: ..\Ocr\Latin.nocr;                         DestDir: {userappdata}\Subtitle Edit\Ocr;          Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
+
+Source: ..\preview.mkv;                            DestDir: {userappdata}\Subtitle Edit;              Flags: ignoreversion uninsneveruninstall onlyifdoesntexist; Components: main
+
 
 #ifdef localize
 Source: {#bindir}\Languages\ar-EG.xml;             DestDir: {app}\Languages;                          Flags: ignoreversion; Components: translations
@@ -276,9 +282,17 @@ Source: {#bindir}\Languages\zh-TW.xml;             DestDir: {app}\Languages;    
 #endif
 
 Source: {#bindir}\SubtitleEdit.exe;                DestDir: {app};                                    Flags: ignoreversion; Components: main
-Source: {#bindir}\SubtitleEdit.resources.dll;      DestDir: {app};                                    Flags: ignoreversion; Components: main; AfterInstall: ClearMUICache
+Source: {#bindirres}\SubtitleEdit.resources.dll;   DestDir: {app};                                    Flags: ignoreversion; Components: main; AfterInstall: ClearMUICache
 Source: {#bindir}\Hunspellx64.dll;                 DestDir: {app};                                    Flags: ignoreversion; Components: main
 Source: {#bindir}\Hunspellx86.dll;                 DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\libse.dll;                       DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\zlib.net.dll;                    DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\NHunspell.dll;                   DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\UtfUnknown.dll;                  DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: ..\src\ui\DLLs\Interop.QuartzTypeLib.dll;  DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\Newtonsoft.Json.dll;             DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\System.Net.Http.Extensions.dll;  DestDir: {app};                                    Flags: ignoreversion; Components: main
+Source: {#bindir}\System.Net.Http.Primitives.dll;  DestDir: {app};                                    Flags: ignoreversion; Components: main
 Source: ..\Changelog.txt;                          DestDir: {app};                                    Flags: ignoreversion; Components: main
 Source: ..\LICENSE.txt;                            DestDir: {app};                                    Flags: ignoreversion; Components: main
 Source: Icons\uninstall.ico;                       DestDir: {app}\Icons;                              Flags: ignoreversion; Components: main
@@ -307,11 +321,15 @@ Name: {#quick_launch}\Subtitle Edit;        Filename: {app}\SubtitleEdit.exe; Wo
 Type: files;      Name: {userdesktop}\Subtitle Edit.lnk;   Check: not IsTaskSelected('desktopicon\user')   and IsUpgrade()
 Type: files;      Name: {commondesktop}\Subtitle Edit.lnk; Check: not IsTaskSelected('desktopicon\common') and IsUpgrade()
 Type: files;      Name: {#quick_launch}\Subtitle Edit.lnk; Check: not IsTaskSelected('quicklaunchicon')    and IsUpgrade(); OnlyBelowVersion: 6.01
-
 Type: files;      Name: {userappdata}\Subtitle Edit\Settings.xml; Tasks: reset_settings
-
-; Remove files merged from now on with ILRepack
-Type: files;      Name: {app}\Interop.QuartzTypeLib.dll;               Check: IsUpgrade()
+Type: files;      Name: {app}\libse.dll;                              Check: IsUpgrade()
+Type: files;      Name: {app}\zlib.net.dll;                           Check: IsUpgrade()
+Type: files;      Name: {app}\NHunspell.dll;                          Check: IsUpgrade()
+Type: files;      Name: {app}\UtfUnknown.dll;                         Check: IsUpgrade()
+Type: files;      Name: {app}\Interop.QuartzTypeLib.dll;              Check: IsUpgrade()
+Type: files;      Name: {app}\Newtonsoft.Json.dll;                    Check: IsUpgrade()
+Type: files;      Name: {app}\System.Net.Http.Extensions.dll;         Check: IsUpgrade()
+Type: files;      Name: {app}\System.Net.Http.Primitives.dll;         Check: IsUpgrade()
 
 ; Remove old files from the {app} dir
 Type: files;      Name: {app}\Dictionaries\da_names.xml;               Check: IsUpgrade()
@@ -399,19 +417,22 @@ Type: dirifempty; Name: {app}\Languages;                Check: not IsComponentSe
 
 
 [Run]
-Filename: {win}\Microsoft.NET\Framework\v4.0.30319\ngen.exe; Parameters: "install ""{app}\SubtitleEdit.exe"""; StatusMsg: {cm:msg_OptimizingPerformance}; Flags: runhidden runascurrentuser skipifdoesntexist
-Filename: {app}\SubtitleEdit.exe;            Description: {cm:LaunchProgram,Subtitle Edit}; WorkingDir: {app}; Flags: nowait postinstall skipifsilent unchecked
+Filename: {win}\Microsoft.NET\Framework\v4.0.30319\ngen.exe;   Parameters: "install ""{app}\SubtitleEdit.exe"""; StatusMsg: {cm:msg_OptimizingPerformance}; Flags: runhidden runascurrentuser skipifdoesntexist; Check: not IsWin64
+Filename: {win}\Microsoft.NET\Framework64\v4.0.30319\ngen.exe; Parameters: "install ""{app}\SubtitleEdit.exe"""; StatusMsg: {cm:msg_OptimizingPerformance}; Flags: runhidden runascurrentuser skipifdoesntexist; Check: IsWin64
+Filename: {app}\SubtitleEdit.exe;             Description: {cm:LaunchProgram,Subtitle Edit}; WorkingDir: {app}; Flags: nowait postinstall skipifsilent unchecked
 Filename: https://www.nikse.dk/SubtitleEdit/; Description: {cm:run_VisitWebsite};                               Flags: nowait postinstall skipifsilent unchecked shellexec
 
 
 [UninstallRun]
-Filename: {win}\Microsoft.NET\Framework\v4.0.30319\ngen.exe; Parameters: "uninstall ""{app}\SubtitleEdit.exe"""; Flags: runhidden runascurrentuser skipifdoesntexist
+Filename: {win}\Microsoft.NET\Framework\v4.0.30319\ngen.exe;   Parameters: "uninstall ""{app}\SubtitleEdit.exe"""; Flags: runhidden runascurrentuser skipifdoesntexist; Check: not IsWin64
+Filename: {win}\Microsoft.NET\Framework64\v4.0.30319\ngen.exe; Parameters: "uninstall ""{app}\SubtitleEdit.exe"""; Flags: runhidden runascurrentuser skipifdoesntexist; Check: IsWin64
 
 
 [Registry]
-#include bindir + "\Resources.h"
+#include bindirres + "\Resources.h"
 #define rcicon(id) "{app}\SubtitleEdit.resources.dll,-" + Str(id)
 #define rctext(id) "@{app}\SubtitleEdit.resources.dll,-" + Str(id)
+
 Root: HKLM; Subkey: "{#keyAppPaths}\SubtitleEdit.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\SubtitleEdit.exe"; Flags: deletekey uninsdeletekey; Check: HklmKeyExists('{#keyAppPaths}')
 Root: HKLM; Subkey: "{#keyApps}\SubtitleEdit.exe"; ValueType: string; ValueName: ""; ValueData: "{#SetupSetting('AppName')} {#app_ver_full}"; Flags: deletekey uninsdeletekey; Check: HklmKeyExists('{#keyApps}')
 Root: HKLM; Subkey: "{#keyApps}\SubtitleEdit.exe\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\SubtitleEdit.exe"" ""%1"""; Check: HklmKeyExists('{#keyApps}')
@@ -569,6 +590,7 @@ begin
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\nld_OCRFixReplaceList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\nob_OCRFixReplaceList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\nor_OCRFixReplaceList.xml'));
+  DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\pol_OCRFixReplaceList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\por_OCRFixReplaceList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\rus_OCRFixReplaceList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\spa_OCRFixReplaceList.xml'));
@@ -587,12 +609,16 @@ begin
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\pt_names.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\ru_names.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\names.xml'));
+  DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\ar_NoBreakAfterList.xml'));
+  DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\bg_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\da_NoBreakAfterList.xml'));
+  DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\el_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\en_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\es_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\hr_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\mk_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\pt_NoBreakAfterList.xml'));
+  DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\ru_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\sr_NoBreakAfterList.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\da_DK_user.xml'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries\de_DE_user.xml'));
@@ -608,6 +634,7 @@ begin
   RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Dictionaries'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Ocr\Latin.db'));
   DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Ocr\Latin.nocr'));
+  DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\preview.mkv'));
   DelTree(ExpandConstant('{userappdata}\Subtitle Edit\Ocr\*.*'), False, True, False);
   RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Ocr'));
   DelTree(ExpandConstant('{userappdata}\Subtitle Edit\Plugins\*.*'), False, True, False);
@@ -665,50 +692,92 @@ begin
         DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Settings.xml'));
       end;
 
-      // Remove tesseract
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract411\tesseract.exe'));
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract411\tessdata\configs\hocr'));
-      DelTree(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract411\tessdata\*.traineddata'), False, True, False);
-      
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract410\tesseract.exe'));
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract410\tessdata\configs\hocr'));
-      DelTree(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract410\tessdata\*.traineddata'), False, True, False);
-      
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract4\tesseract.exe'));
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract4\tessdata\configs\hocr'));
-      DelTree(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract4\tessdata\*.traineddata'), False, True, False);
-
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\msvcp90.dll'));
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\msvcr90.dll'));
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\tesseract.exe'));
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\tessdata\configs\hocr'));
-      DelTree(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\tessdata\*.traineddata'), False, True, False);
-
-      // Remove possibly installed mpv
-      DeleteFile(ExpandConstant('{userappdata}\Subtitle Edit\mpv-1.dll'));
-
-      // Remove the dirs if they are empty
-      RemoveDir(ExpandConstant('{app}\Languages'));
-      RemoveDir(ExpandConstant('{app}\Spectrograms'));
-      RemoveDir(ExpandConstant('{app}\VobSub\English'));
-      RemoveDir(ExpandConstant('{app}\VobSub'));
-      RemoveDir(ExpandConstant('{app}\WaveForms'));
-      RemoveDir(ExpandConstant('{app}'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Spectrograms'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\VobSub\English'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\VobSub'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\WaveForms'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Plugins'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract4\tessdata\configs'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract4\tessdata'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract4'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\tessdata\configs'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302\tessdata'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit\Tesseract302'));
-      RemoveDir(ExpandConstant('{userappdata}\Subtitle Edit'));
-
+      DelTree(ExpandConstant('{userappdata}\Subtitle Edit'), True, True, True);
     end;
   end;
+end;
+
+
+function IsDotNetDetected(version: string; service: cardinal): boolean;
+// Indicates whether the specified version and service pack of the .NET Framework is installed.
+//
+// version -- Specify one of these strings for the required .NET Framework version:
+//    'v1.1'          .NET Framework 1.1
+//    'v2.0'          .NET Framework 2.0
+//    'v3.0'          .NET Framework 3.0
+//    'v3.5'          .NET Framework 3.5
+//    'v4\Client'     .NET Framework 4.0 Client Profile
+//    'v4\Full'       .NET Framework 4.0 Full Installation
+//    'v4.5'          .NET Framework 4.5
+//    'v4.5.1'        .NET Framework 4.5.1
+//    'v4.5.2'        .NET Framework 4.5.2
+//    'v4.6'          .NET Framework 4.6
+//    'v4.6.1'        .NET Framework 4.6.1
+//    'v4.6.2'        .NET Framework 4.6.2
+//    'v4.7'          .NET Framework 4.7
+//    'v4.7.1'        .NET Framework 4.7.1
+//    'v4.7.2'        .NET Framework 4.7.2
+//    'v4.8'          .NET Framework 4.8
+//
+// service -- Specify any non-negative integer for the required service pack level:
+//    0               No service packs required
+//    1, 2, etc.      Service pack 1, 2, etc. required
+var
+    key, versionKey: string;
+    install, release, serviceCount, versionRelease: cardinal;
+    success: boolean;
+begin
+    versionKey := version;
+    versionRelease := 0;
+
+    // .NET 1.1 and 2.0 embed release number in version key
+    if version = 'v1.1' then begin
+        versionKey := 'v1.1.4322';
+    end else if version = 'v2.0' then begin
+        versionKey := 'v2.0.50727';
+    end
+
+    // .NET 4.5 and newer install as update to .NET 4.0 Full
+    else if Pos('v4.', version) = 1 then begin
+        versionKey := 'v4\Full';
+        case version of
+          'v4.5':   versionRelease := 378389;
+          'v4.5.1': versionRelease := 378675; // 378758 on Windows 8 and older
+          'v4.5.2': versionRelease := 379893;
+          'v4.6':   versionRelease := 393295; // 393297 on Windows 8.1 and older
+          'v4.6.1': versionRelease := 394254; // 394271 before Win10 November Update
+          'v4.6.2': versionRelease := 394802; // 394806 before Win10 Anniversary Update
+          'v4.7':   versionRelease := 460798; // 460805 before Win10 Creators Update
+          'v4.7.1': versionRelease := 461308; // 461310 before Win10 Fall Creators Update
+          'v4.7.2': versionRelease := 461808; // 461814 before Win10 April 2018 Update
+          'v4.8':   versionRelease := 528040; // 528049 before Win10 May 2019 Update
+        end;
+    end;
+
+    // installation key group for all .NET versions
+    key := 'SOFTWARE\Microsoft\NET Framework Setup\NDP\' + versionKey;
+
+    // .NET 3.0 uses value InstallSuccess in subkey Setup
+    if Pos('v3.0', version) = 1 then begin
+        success := RegQueryDWordValue(HKLM, key + '\Setup', 'InstallSuccess', install);
+    end else begin
+        success := RegQueryDWordValue(HKLM, key, 'Install', install);
+    end;
+
+    // .NET 4.0 and newer use value Servicing instead of SP
+    if Pos('v4', version) = 1 then begin
+        success := success and RegQueryDWordValue(HKLM, key, 'Servicing', serviceCount);
+    end else begin
+        success := success and RegQueryDWordValue(HKLM, key, 'SP', serviceCount);
+    end;
+
+    // .NET 4.5 and newer use additional value Release
+    if versionRelease > 0 then begin
+        success := success and RegQueryDWordValue(HKLM, key, 'Release', release);
+        success := success and (release >= versionRelease);
+    end;
+
+    result := success and (install = 1) and (serviceCount >= service);
 end;
 
 
@@ -716,18 +785,16 @@ function InitializeSetup(): Boolean;
 var
   ErrorCode: Integer;
 begin
-  Result := True;
-
-  // Check if .NET Framework 4.0 is installed and if not offer to download it
-  try
-    ExpandConstant('{dotnet40}');
-  except
+  // Returns True if .NET Framework version 4.7.2 is installed, or a compatible version such as 4.8
+  Result := IsDotNetDetected('v4.7.2', 0);
+  if not Result then
+  begin
+    if not WizardSilent() then
     begin
-      if not WizardSilent() then begin
-        if SuppressibleMsgBox(CustomMessage('msg_AskToDownNET'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1, IDNO) = IDYES then
-          ShellExec('open','http://download.microsoft.com/download/5/6/2/562A10F9-C9F4-4313-A044-9C94E0A8FAC8/dotNetFx40_Client_x86_x64.exe','','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
+      if SuppressibleMsgBox(CustomMessage('msg_AskToDownNET'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1, IDNO) = IDYES then
+        ShellExec('open','https://go.microsoft.com/fwlink/?LinkId=2085155','','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
         Result := False;
       end;
     end;
   end;
-end;
+end.

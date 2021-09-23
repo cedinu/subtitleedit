@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nikse.SubtitleEdit.Core;
-using System;
+using Nikse.SubtitleEdit.Core.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;

@@ -14,7 +14,6 @@ IF /I "%~1" == "-?"     GOTO ShowHelp
 ECHO Getting latest changes...
 git pull
 ECHO.
-
 ECHO Starting compilation...
 
 REM Set environment variables for Visual Studio command line if necessary
@@ -81,7 +80,6 @@ TITLE %BUILDTYPE%ing Subtitle Edit - Release^|Any CPU...
 ECHO.
 ECHO %BUILDTYPE%ing Subtitle Edit - Release^|Any CPU...
 DEL /F /Q SubtitleEdit-*-Setup.exe SubtitleEdit-*.zip 2>NUL
-PUSHD "src"
 ECHO.
 ECHO Visual Studio installation path: "%VSINSTALLDIR%"
 IF EXIST "%VSINSTALLDIR%MSBuild\15.0\Bin\MSBuild.exe" (
@@ -93,20 +91,22 @@ IF EXIST "%VSINSTALLDIR%MSBuild\Current\Bin\MSBuild.exe" (
   ECHO Cannot find Visual Studio 2017.
   GOTO EndWithError
 ))
+
+ECHO Check for new translation strings...
+"%MSBUILD%" src\UpdateLanguageFiles\UpdateLanguageFiles.csproj /r /t:Rebuild /p:Configuration=Debug /p:Platform="Any CPU"^
+ /maxcpucount /p:OutputPath=bin\debug /consoleloggerparameters:DisableMPLogging;Summary;Verbosity=minimal
+SET "LanguageToolPath=src\UpdateLanguageFiles\bin\debug\UpdateLanguageFiles.exe"
+IF NOT EXIST "%LanguageToolPath%" (
+  ECHO Compile UpdateLanguageFiles!
+)
+"%LanguageToolPath%" "LanguageMaster.xml" "src\ui\Logic\LanguageDeserializer.cs"
+ECHO.
+
 "%MSBUILD%" SubtitleEdit.sln /r /t:%BUILDTYPE% /p:Configuration=Release /p:Platform="Any CPU"^
  /maxcpucount /consoleloggerparameters:DisableMPLogging;Summary;Verbosity=minimal
 IF %ERRORLEVEL% NEQ 0 GOTO EndWithError
 
 IF /I "%BUILDTYPE%" == "Clean" GOTO EndSuccessful
-
-ECHO.
-ECHO Merging assemblies with ILRepack...
-FOR /D %%A IN (packages\ILRepack.*) DO (SET "ILREPACKDIR=%%A")
-ECHO.
-"%ILREPACKDIR%\tools\ILRepack.exe" /parallel /internalize /targetplatform:v4 /out:"bin\Release\SubtitleEdit.exe" "bin\Release\SubtitleEdit.exe"^
- "bin\Release\libse.dll" "bin\Release\zlib.net.dll" "bin\Release\NHunspell.dll" "bin\Release\UtfUnknown.dll" "DLLs\Interop.QuartzTypeLib.dll"
-IF %ERRORLEVEL% NEQ 0 GOTO EndWithError
-POPD
 
 CALL :SubDetectSevenzipPath
 IF DEFINED SEVENZIP IF EXIST "%SEVENZIP%" (
@@ -166,22 +166,33 @@ EXIT /B
 TITLE Creating ZIP archive with 7-Zip...
 ECHO.
 ECHO Creating ZIP archive with 7-Zip...
-PUSHD "src\bin\Release"
+PUSHD "src\ui\bin\Release"
 IF EXIST "temp_zip"                  RD /S /Q "temp_zip"
 IF NOT EXIST "temp_zip"              MD "temp_zip"
 IF NOT EXIST "temp_zip\Languages"    MD "temp_zip\Languages"
 IF NOT EXIST "temp_zip\Dictionaries" MD "temp_zip\Dictionaries"
 IF NOT EXIST "temp_zip\Ocr"          MD "temp_zip\Ocr"
+IF NOT EXIST "temp_zip\Tesseract302"          MD "temp_zip\Tesseract302"
 
 ECHO.
-COPY /Y /V "..\..\..\LICENSE.txt"      "temp_zip\"
-COPY /Y /V "..\..\..\Changelog.txt"    "temp_zip\"
+COPY /Y /V "..\..\..\..\LICENSE.txt"      "temp_zip\"
+COPY /Y /V "..\..\..\..\Changelog.txt"    "temp_zip\"
+COPY /Y /V "..\..\..\..\preview.mkv"    "temp_zip\"
 COPY /Y /V "Hunspellx86.dll"           "temp_zip\"
 COPY /Y /V "Hunspellx64.dll"           "temp_zip\"
+COPY /Y /V "libse.dll"           "temp_zip\"
+COPY /Y /V "zlib.net.dll"           "temp_zip\"
+COPY /Y /V "NHunspell.dll"           "temp_zip\"
+COPY /Y /V "UtfUnknown.dll"           "temp_zip\"
+COPY /Y /V "..\..\DLLs\Interop.QuartzTypeLib.dll"           "temp_zip\"
+COPY /Y /V "System.Net.Http.Extensions.dll"           "temp_zip\"
+COPY /Y /V "Newtonsoft.Json.dll"           "temp_zip\"
+COPY /Y /V "System.Net.Http.Primitives.dll"           "temp_zip\"
 COPY /Y /V "SubtitleEdit.exe"          "temp_zip\"
 COPY /Y /V "Languages\*.xml"           "temp_zip\Languages\"
-COPY /Y /V "..\..\..\Dictionaries\*.*" "temp_zip\Dictionaries\"
-COPY /Y /V "..\..\..\Ocr\*.*"          "temp_zip\Ocr\"
+COPY /Y /V "..\..\..\..\Dictionaries\*.*" "temp_zip\Dictionaries\"
+COPY /Y /V "..\..\..\..\Ocr\*.*"          "temp_zip\Ocr\"
+XCOPY /Y /V "..\..\..\..\Tesseract302\*.*"      "temp_zip\Tesseract302\" /S
 
 PUSHD "temp_zip"
 START "" /B /WAIT "%SEVENZIP%" a -tzip -mx=9 "SubtitleEdit-%VERSION%.zip" * >NUL
@@ -189,7 +200,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO EndWithError
 
 ECHO.
 ECHO ZIP archive created successfully!
-MOVE /Y "SubtitleEdit-%VERSION%.zip" "..\..\..\.." >NUL
+MOVE /Y "SubtitleEdit-%VERSION%.zip" "..\..\..\..\.." >NUL
 POPD
 IF EXIST "temp_zip" RD /S /Q "temp_zip"
 POPD
@@ -198,7 +209,7 @@ EXIT /B
 
 
 :SubGetVersion
-FOR /F delims^=^"^ tokens^=2 %%A IN ('FINDSTR /R /C:"AssemblyVersion" "src\Properties\AssemblyInfo.cs.template"') DO (
+FOR /F delims^=^"^ tokens^=2 %%A IN ('FINDSTR /R /C:"AssemblyVersion" "src\ui\Properties\AssemblyInfo.cs.template"') DO (
   REM 3.4.1.[REVNO]
   SET "VERSION=%%A"
 )
@@ -225,6 +236,6 @@ FOR %%G IN (ISCC.exe) DO (SET "INNOSETUP_PATH=%%~$PATH:G")
 IF EXIST "%INNOSETUP_PATH%" (SET "INNOSETUP=%INNOSETUP_PATH%" & EXIT /B)
 
 FOR /F "tokens=5*" %%A IN (
-  'REG QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 5_is1" /v "Inno Setup: App Path" 2^>NUL ^|^|
-   REG QUERY "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 5_is1" /v "Inno Setup: App Path" 2^>NUL') DO IF "%%A" == "REG_SZ" SET "INNOSETUP=%%B\ISCC.exe"
+  'REG QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1" /v "Inno Setup: App Path" 2^>NUL ^|^|
+   REG QUERY "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1" /v "Inno Setup: App Path" 2^>NUL') DO IF "%%A" == "REG_SZ" SET "INNOSETUP=%%B\ISCC.exe"
 EXIT /B

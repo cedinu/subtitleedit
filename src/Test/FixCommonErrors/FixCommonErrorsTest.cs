@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nikse.SubtitleEdit.Core;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nikse.SubtitleEdit.Core.Common;
+using Nikse.SubtitleEdit.Core.Enums;
 using Nikse.SubtitleEdit.Core.Forms.FixCommonErrors;
 using Nikse.SubtitleEdit.Core.SubtitleFormats;
 using Nikse.SubtitleEdit.Forms;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Test.FixCommonErrors
 {
@@ -68,29 +69,38 @@ namespace Test.FixCommonErrors
 
             var asm = System.Reflection.Assembly.GetExecutingAssembly();
             var stream = asm.GetManifestResourceStream("Test.Dictionaries.en_US.aff");
-            if (stream != null)
-            {
-                using (Stream file = File.OpenWrite(Path.Combine(dictionaryFolder, "en_US.aff")))
-                {
-                    CopyStream(stream, file);
-                }
-            }
+            WriteStream(stream, Path.Combine(dictionaryFolder, "en_US.aff"));
 
             stream = asm.GetManifestResourceStream("Test.Dictionaries.en_US.dic");
-            if (stream != null)
-            {
-                using (Stream file = File.OpenWrite(Path.Combine(dictionaryFolder, "en_US.dic")))
-                {
-                    CopyStream(stream, file);
-                }
-            }
+            WriteStream(stream, Path.Combine(dictionaryFolder, "en_US.dic"));
 
             stream = asm.GetManifestResourceStream("Test.Dictionaries.names.xml");
-            if (stream != null)
+            WriteStream(stream, Path.Combine(dictionaryFolder, "names.xml"));
+        }
+
+        private static readonly object WriteStreamLock = new Object();
+
+        private static void WriteStream(Stream stream, string fileName)
+        {
+            lock (WriteStreamLock)
             {
-                using (Stream file = File.OpenWrite(Path.Combine(dictionaryFolder, "names.xml")))
+                if (stream != null)
                 {
-                    CopyStream(stream, file);
+                    if (File.Exists(fileName))
+                    {
+                        try
+                        {
+                            File.Delete(fileName);
+                        }
+                        catch
+                        {
+                            return;
+                        }
+                    }
+                    using (Stream file = File.OpenWrite(fileName))
+                    {
+                        CopyStream(stream, file);
+                    }
                 }
             }
         }
@@ -205,8 +215,8 @@ namespace Test.FixCommonErrors
             string expected = input;
             string expected2 = input2;
 
-            var result = Helper.FixShortLines(input);
-            var result2 = Helper.FixShortLines(input2);
+            var result = Helper.FixShortLines(input, "en");
+            var result2 = Helper.FixShortLines(input2, "en");
             Assert.AreEqual(result, expected); Assert.AreEqual(result2, expected2.Replace(Environment.NewLine, " "));
         }
 
@@ -406,10 +416,6 @@ namespace Test.FixCommonErrors
         }
 
         #endregion Fix Missing Periods At End Of Line
-
-
-
-
 
         #region Fix OCR errors
 
@@ -711,6 +717,17 @@ namespace Test.FixCommonErrors
         }
 
         [TestMethod]
+        public void FixMissingSpacesAfterThreeDotsBeforeDollarSign()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Give me...$20!");
+                new FixMissingSpaces().Fix(_subtitle, new EmptyFixCallback { Language = "en" });
+                Assert.AreEqual("Give me... $20!", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
         public void FixMissingSwedish()
         {
             using (var target = GetFixCommonErrorsLib())
@@ -965,6 +982,28 @@ namespace Test.FixCommonErrors
             }
         }
 
+        [TestMethod]
+        public void FixMissingSpacesArabic()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "aaa\u060Caaa؟aaa.aaa");
+                new FixMissingSpaces().Fix(_subtitle, new EmptyFixCallback { Language = "ar" });
+                Assert.AreEqual("aaa\u060C aaa؟ aaa. aaa", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixMissingSpacesArabic2()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "aaa\u060C\"aaa؟\"aaa.\"aaa");
+                new FixMissingSpaces().Fix(_subtitle, new EmptyFixCallback { Language = "ar" });
+                Assert.AreEqual("aaa\u060C\"aaa؟\"aaa.\"aaa", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
         #endregion Fix missing spaces
 
         #region Fix unneeded spaces
@@ -1136,6 +1175,74 @@ namespace Test.FixCommonErrors
             }
         }
 
+        [TestMethod]
+        public void FixUnneededSpacesBeforeEndTag1()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>I happen to have" + Environment.NewLine + " the blood of an ancient family .</i>");
+                new FixUnneededSpaces().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>I happen to have" + Environment.NewLine + "the blood of an ancient family.</i>", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixUnneededSpacesBeforeEndTag1b()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>I happen to have" + Environment.NewLine + " the blood of an ancient family !</i>");
+                new FixUnneededSpaces().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>I happen to have" + Environment.NewLine + "the blood of an ancient family!</i>", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+
+        [TestMethod]
+        public void FixUnneededSpacesBeforeEndTag1c()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>I happen to have" + Environment.NewLine + " the blood of an ancient family ?</i>");
+                new FixUnneededSpaces().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>I happen to have" + Environment.NewLine + "the blood of an ancient family?</i>", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+
+        [TestMethod]
+        public void FixUnneededSpacesBeforeEndTag2()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>I happen to have to. </i>" + Environment.NewLine + "Right?");
+                new FixUnneededSpaces().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>I happen to have to.</i>" + Environment.NewLine + "Right?", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixUnneededSpacesBeforeEndTag2a()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>I happen to have to! </i>" + Environment.NewLine + "Right?");
+                new FixUnneededSpaces().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>I happen to have to!</i>" + Environment.NewLine + "Right?", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixUnneededSpacesBeforeEndTag2b()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>I happen to have to? </i>" + Environment.NewLine + "Right?");
+                new FixUnneededSpaces().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>I happen to have to?</i>" + Environment.NewLine + "Right?", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
         #endregion Fix unneeded spaces
 
         #region Fix EmptyLines
@@ -1159,6 +1266,16 @@ namespace Test.FixCommonErrors
                 InitializeFixCommonErrorsLine(target, "<font color=\"#000000\">\r\nHello world!\r\n</font>");
                 new FixEmptyLines().Fix(_subtitle, new EmptyFixCallback());
                 Assert.AreEqual(_subtitle.Paragraphs[0].Text, "<font color=\"#000000\">Hello world!</font>");
+            }
+        }
+
+        public void FixEmptyLinesTest3()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "\\U202C");
+                new FixEmptyLines().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual(0, _subtitle.Paragraphs.Count);
             }
         }
 
@@ -1817,8 +1934,8 @@ namespace Test.FixCommonErrors
         public void FixDialogsOnOneLine1()
         {
             const string source = "- I was here, putting our child to sleep-- - Emma.";
-            string target = "- I was here, putting our child to sleep--" + Environment.NewLine + "- Emma.";
-            string result = Helper.FixDialogsOnOneLine(source, "en");
+            var target = "- I was here, putting our child to sleep--" + Environment.NewLine + "- Emma.";
+            var result = Helper.FixDialogsOnOneLine(source, "en");
             Assert.AreEqual(result, target);
         }
 
@@ -1826,35 +1943,44 @@ namespace Test.FixCommonErrors
         public void FixDialogsOnOneLine2()
         {
             const string source = "- Seriously, though. Are you being bullied? - Nope.";
-            string target = "- Seriously, though. Are you being bullied?" + Environment.NewLine + "- Nope.";
-            string result = Helper.FixDialogsOnOneLine(source, "en");
+            var target = "- Seriously, though. Are you being bullied?" + Environment.NewLine + "- Nope.";
+            var result = Helper.FixDialogsOnOneLine(source, "en");
             Assert.AreEqual(result, target);
         }
 
         [TestMethod]
         public void FixDialogsOnOneLine3()
         {
-            string source = "- Having sexual relationships" + Environment.NewLine + "with other women. - A'ight.";
-            string target = "- Having sexual relationships with other women." + Environment.NewLine + "- A'ight.";
-            string result = Helper.FixDialogsOnOneLine(source, "en");
+            var source = "- Having sexual relationships" + Environment.NewLine + "with other women. - A'ight.";
+            var target = "- Having sexual relationships with other women." + Environment.NewLine + "- A'ight.";
+            var result = Helper.FixDialogsOnOneLine(source, "en");
             Assert.AreEqual(result, target);
         }
 
         [TestMethod]
         public void FixDialogsOnOneLine4()
         {
-            string source = "- Haiman, say: \"I love you.\" - So," + Environment.NewLine + "what are you up to? Another question!";
-            string target = "- Haiman, say: \"I love you.\"" + Environment.NewLine + "- So, what are you up to? Another question!";
-            string result = Helper.FixDialogsOnOneLine(source, "en");
+            var source = "- Haiman, say: \"I love you.\" - So," + Environment.NewLine + "what are you up to? Another question!";
+            var target = "- Haiman, say: \"I love you.\"" + Environment.NewLine + "- So, what are you up to? Another question!";
+            var result = Helper.FixDialogsOnOneLine(source, "en");
             Assert.AreEqual(result, target);
         }
 
         [TestMethod]
         public void FixDialogsOnOneLine5()
         {
-            string source = "- [Gunshot] - [Scream]";
-            string target = "- [Gunshot]" + Environment.NewLine + "- [Scream]";
-            string result = Helper.FixDialogsOnOneLine(source, "en");
+            var source = "- [Gunshot] - [Scream]";
+            var target = "- [Gunshot]" + Environment.NewLine + "- [Scream]";
+            var result = Helper.FixDialogsOnOneLine(source, "en");
+            Assert.AreEqual(result, target);
+        }
+
+        [TestMethod]
+        public void FixDialogsOnOneLine6()
+        {
+            var source = "- Where did she get the tip? <i>- I don't know.</i>";
+            var target = "- Where did she get the tip?" + Environment.NewLine + "<i>- I don't know.</i>";
+            var result = Helper.FixDialogsOnOneLine(source, "en");
             Assert.AreEqual(result, target);
         }
 
@@ -2213,6 +2339,116 @@ namespace Test.FixCommonErrors
             Assert.AreEqual("Foobar? Foobar! Foobar", processedText);
         }
 
+        [TestMethod]
+        public void FixUnneededPeriodsTestKorean()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("- 안녕하세요." + Environment.NewLine + "- 반갑습니다.", 0, 1000));
+            var fup = new FixUnneededPeriods();
+            fup.Fix(sub, new EmptyFixCallback { Language = "ko" });
+            Assert.AreEqual("- 안녕하세요" + Environment.NewLine + "- 반갑습니다", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixUnneededPeriodsTestKoreanItalic()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("<i>- 안녕하세요." + Environment.NewLine + "- 반갑습니다.</i>", 0, 1000));
+            var fup = new FixUnneededPeriods();
+            fup.Fix(sub, new EmptyFixCallback { Language = "ko" });
+            Assert.AreEqual("<i>- 안녕하세요" + Environment.NewLine + "- 반갑습니다</i>", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixUnneededPeriodsTestKoreanDoNotChange()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("안녕하세요...", 0, 1000));
+            var fup = new FixUnneededPeriods();
+            fup.Fix(sub, new EmptyFixCallback { Language = "ko" });
+            Assert.AreEqual("안녕하세요...", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas1()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("Hi,, how are you?", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("Hi, how are you?", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas2()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("Hi, , how are you?", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("Hi, how are you?", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas3()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("Hi,,,", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("Hi...", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas4()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("Hi,!", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("Hi!", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas5()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("Hi,,, are you okay?", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("Hi... are you okay?", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommasArabic()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("مرحبا ، ، مرحبا", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback { Language = "ar" });
+            Assert.AreEqual("مرحبا، مرحبا", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas6()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("[Hi,]", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("[Hi]", sub.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void FixCommas7()
+        {
+            var sub = new Subtitle();
+            sub.Paragraphs.Add(new Paragraph("(Hi,)", 0, 1000));
+            var fc = new FixCommas();
+            fc.Fix(sub, new EmptyFixCallback());
+            Assert.AreEqual("(Hi)", sub.Paragraphs[0].Text);
+        }
+
         #endregion
 
         #region Fix Danish letter "i"
@@ -2307,6 +2543,822 @@ namespace Test.FixCommonErrors
             new AddMissingQuotes().Fix(s, new EmptyFixCallback());
             Assert.AreEqual("\"Bad Ape!\"", p.Text);
         }
+
+        [TestMethod]
+        public void AddMissingQuotesMissingMultiple2()
+        {
+            var s = new Subtitle();
+            s.Paragraphs.Add(new Paragraph("\"Dear Juilliard School of Music,", 2000, 5000));
+            s.Paragraphs.Add(new Paragraph("I was baffled by your restraining order" + Environment.NewLine + "of October the 13th.", 5100, 8000));
+            s.Paragraphs.Add(new Paragraph("What did I do?\"", 8100, 1500));
+            new AddMissingQuotes().Fix(s, new EmptyFixCallback());
+            Assert.AreEqual("\"Dear Juilliard School of Music,", s.Paragraphs[0].Text);
+            Assert.AreEqual("I was baffled by your restraining order" + Environment.NewLine + "of October the 13th.", s.Paragraphs[1].Text);
+            Assert.AreEqual("What did I do?\"", s.Paragraphs[2].Text);
+        }
+
+        [TestMethod]
+        public void AddMissingQuotesMissingMultipleDontTouch()
+        {
+            var s = new Subtitle();
+            s.Paragraphs.Add(new Paragraph("And Caesar says, \"If I wanted two,", 2000, 5000));
+            s.Paragraphs.Add(new Paragraph("I would have ordered two.\"", 5100, 8000));
+            new AddMissingQuotes().Fix(s, new EmptyFixCallback());
+            Assert.AreEqual("And Caesar says, \"If I wanted two,", s.Paragraphs[0].Text);
+            Assert.AreEqual("I would have ordered two.\"", s.Paragraphs[1].Text);
+        }
+
+        [TestMethod]
+        public void AddMissingQuotesMissingMultiple3lines()
+        {
+            var s = new Subtitle();
+            s.Paragraphs.Add(new Paragraph("\"Painter left job unfinished," + Environment.NewLine + "spilled paint on porch.", 2000, 5000));
+            s.Paragraphs.Add(new Paragraph("Do not hire this person.", 5100, 8000));
+            s.Paragraphs.Add(new Paragraph("Zero stars.\"", 8100, 1200));
+            new AddMissingQuotes().Fix(s, new EmptyFixCallback());
+            Assert.AreEqual("\"Painter left job unfinished," + Environment.NewLine + "spilled paint on porch.", s.Paragraphs[0].Text);
+            Assert.AreEqual("Do not hire this person.", s.Paragraphs[1].Text);
+            Assert.AreEqual("Zero stars.\"", s.Paragraphs[2].Text);
+        }
+
+        [TestMethod]
+        public void AddMissingQuotesMissingMultiple4lines()
+        {
+            var s = new Subtitle();
+            s.Paragraphs.Add(new Paragraph("\"Painter left job unfinished," + Environment.NewLine + "spilled paint on porch.", 2000, 5000));
+            s.Paragraphs.Add(new Paragraph("Do not hire this person.", 5100, 8000));
+            s.Paragraphs.Add(new Paragraph("Shrug emoji, poop emoji," + Environment.NewLine + "thumbs-down emoji.", 8100, 15000));
+            s.Paragraphs.Add(new Paragraph("Zero stars.\"", 15100, 1800));
+            new AddMissingQuotes().Fix(s, new EmptyFixCallback());
+            Assert.AreEqual("\"Painter left job unfinished," + Environment.NewLine + "spilled paint on porch.", s.Paragraphs[0].Text);
+            Assert.AreEqual("Do not hire this person.", s.Paragraphs[1].Text);
+            Assert.AreEqual("Shrug emoji, poop emoji," + Environment.NewLine + "thumbs-down emoji.", s.Paragraphs[2].Text);
+            Assert.AreEqual("Zero stars.\"", s.Paragraphs[3].Text);
+        }
+
         #endregion
+
+        #region Fix continuation style
+
+        [TestMethod]
+        public void FixUnnecessaryLeadingDots1()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test...", "...and we need to do it.");
+                new FixUnnecessaryLeadingDots().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("and we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixUnnecessaryLeadingDots2()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test.", "...coming in mid-sentence.");
+                new FixUnnecessaryLeadingDots().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test.", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...coming in mid-sentence.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixUnnecessaryLeadingDots3()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "{\an8}<i>This is a test...</i>" + Environment.NewLine + " " + Environment.NewLine + "_", "{\an8}<i>...and we need to do it.</i>" + Environment.NewLine + " " + Environment.NewLine + "_");
+                new FixUnnecessaryLeadingDots().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("{\an8}<i>This is a test...</i>" + Environment.NewLine + " " + Environment.NewLine + "_", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("{\an8}<i>and we need to do it.</i>" + Environment.NewLine + " " + Environment.NewLine + "_", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle1()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test...", "...but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test,", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle2()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "NO ENTRY", "...but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("NO ENTRY", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle2A()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "10 LANDMINES", "...but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("10 LANDMINES", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle2B()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "No wait...", "NO ENTRY");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("No wait...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("NO ENTRY", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle2C()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "No wait...", "10 LANDMINES");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("No wait...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("10 LANDMINES", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle3()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test...", "...but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.OnlyTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle4()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test,", "but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle5()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "no entry", "...but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("no entry", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle6()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>la la la</i>", "...but we need to do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>la la la</i>", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...but we need to do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle7()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test,", "Mark should do it.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...Mark should do it.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle8()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test...", "...Mark can do.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("Mark can do.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle9()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "{\an8}<i>'This is a test...</i>" + Environment.NewLine + " " + Environment.NewLine + "_", "{\an8}<i>...Mark can do.'</i>" + Environment.NewLine + " " + Environment.NewLine + "_");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("{\an8}<i>'This is a test</i>" + Environment.NewLine + " " + Environment.NewLine + "_", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("{\an8}<i>Mark can do.'</i>" + Environment.NewLine + " " + Environment.NewLine + "_", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle10()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I'm just testin'", "and you can join.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I'm just testin'...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...and you can join.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle11()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I am <i>testing</i>", "this right now.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I am <i>testing</i>...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...this right now.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle13()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I am testing -", "- this right now.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I am testing...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...this right now.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle14()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I am testing...", "...this right now.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDash;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I am testing -", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("- this right now.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle15()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I am testing...", "- ...this right now." + Environment.NewLine + "- You kidding me?");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDash;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I am testing -", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("- this right now." + Environment.NewLine + "- You kidding me?", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle16()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I am testing", "- this right now." + Environment.NewLine + "- You kidding me?");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I am testing...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("- ...this right now." + Environment.NewLine + "- You kidding me?", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle17()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "I am testing", "- this right now." + Environment.NewLine + "- You kidding me?");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDash;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("I am testing -", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("- this right now." + Environment.NewLine + "- You kidding me?", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle18()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test", "to see if it works.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...to see if it works.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle19()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test", "To see if it works.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("To see if it works.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle20()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>This is a test</i>", "to see if it works.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>This is a test...</i>", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...to see if it works.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle21()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a <i>test</i>", "to see if it works.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a <i>test</i>...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...to see if it works.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle22()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a <i>test</i>", "To see if it works.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a <i>test</i>", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("To see if it works.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle23()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test with a comma,", "but it should stay here.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test with a comma,", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("but it should stay here.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle23B()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test with a comma, -", "- but it should stay here.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test with a comma,", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("but it should stay here.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle24()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is a test with a comma, -", "- but it should be removed.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDash;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is a test with a comma -", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("- but it should be removed.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle25()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>This is a test...</i>" + Environment.NewLine + "_", "<i>but I should do it.</i>" + Environment.NewLine + "_");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>This is a test,</i>" + Environment.NewLine + "_", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("<i>but I should do it.</i>" + Environment.NewLine + "_", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle26()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "-Test." + Environment.NewLine + "-(CHATTER)", "Hello.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("-Test." + Environment.NewLine + "-(CHATTER)", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("Hello.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle27()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "-LACEY: Teleportation." + Environment.NewLine + "-(PHONE CHIMES)", "-(PHONE CHIMES)" + Environment.NewLine + "-Time travel.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("-LACEY: Teleportation." + Environment.NewLine + "-(PHONE CHIMES)", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("-(PHONE CHIMES)" + Environment.NewLine + "-Time travel.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle28()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "It's okay, you fucked up", "(PHONE CHIMES)");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("It's okay, you fucked up", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("(PHONE CHIMES)", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle29()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "(PHONE CHIMES)", "It's okay, you fucked up");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("(PHONE CHIMES)", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("It's okay, you fucked up", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle30()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "We might as well...", "-(PHONE CHIMES)" + Environment.NewLine + "-...just eat Dominos...");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("We might as well...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("-(PHONE CHIMES)" + Environment.NewLine + "-...just eat Dominos...", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle31()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test,", "test,");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("...test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle31B()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test,", "test,");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test,", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test,", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle31C()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test,", "test,");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.NoneLeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test,", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("...test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle31D()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test,", "test,");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.NoneTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test,", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle32()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("...test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle32B()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle32C()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.NoneLeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("...test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle32D()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.NoneTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle33()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("Test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("Test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle33B()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("Test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.None;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("Test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle33C()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("Test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.NoneLeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("Test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle33D()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "Test...", "test...");
+                _subtitle.Paragraphs.Add(new Paragraph("Test.", 40000, 50000));
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.NoneTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("Test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("test...", _subtitle.Paragraphs[1].Text);
+                Assert.AreEqual("Test.", _subtitle.Paragraphs[2].Text);
+            }
+        }
+        [TestMethod]
+        public void FixContinuationStyle34()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is what you call a 'test'...", "and you can join.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is what you call a 'test'...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...and you can join.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle34B()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is what you call a 'test'", "and you can join.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is what you call a 'test'...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...and you can join.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle34C()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is what you call a 'test,'", "and you can join.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is what you call a 'test'...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...and you can join.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle34D()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "This is what you call a 'test...'", "and you can join.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("This is what you call a 'test'...", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("...and you can join.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle34E()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "'This is what you call a test'", "'and you can join.'");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("'This is what you call a test...'", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("'...and you can join.'", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        [TestMethod]
+        public void FixContinuationStyle35()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "They wanted to test", "But they couldn't.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new FixContinuationStyle().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("They wanted to test", _subtitle.Paragraphs[0].Text);
+                Assert.AreEqual("But they couldn't.", _subtitle.Paragraphs[1].Text);
+            }
+        }
+
+        #endregion Fix continuation style
+
+
+        [TestMethod]
+        public void RemoveDialogFirstLineInNonDialogs1()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "- They wanted to test!");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new RemoveDialogFirstLineInNonDialogs().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("They wanted to test!", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
+        public void RemoveDialogFirstLineInNonDialogs2()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "<i>- They wanted to test!</i>");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new RemoveDialogFirstLineInNonDialogs().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("<i>They wanted to test!</i>", _subtitle.Paragraphs[0].Text);
+            }
+        }
+
+        [TestMethod]
+        public void RemoveDialogFirstLineInNonDialogs3()
+        {
+            using (var target = GetFixCommonErrorsLib())
+            {
+                InitializeFixCommonErrorsLine(target, "- They wanted to test!" + Environment.NewLine + "But not Kal-El.");
+                Configuration.Settings.General.ContinuationStyle = ContinuationStyle.LeadingTrailingDots;
+                new RemoveDialogFirstLineInNonDialogs().Fix(_subtitle, new EmptyFixCallback());
+                Assert.AreEqual("They wanted to test!" + Environment.NewLine + "But not Kal-El.", _subtitle.Paragraphs[0].Text);
+            }
+        }
     }
 }

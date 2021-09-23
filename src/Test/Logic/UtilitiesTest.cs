@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nikse.SubtitleEdit.Core;
+using Nikse.SubtitleEdit.Core.Common;
 using Nikse.SubtitleEdit.Core.Forms.FixCommonErrors;
 using System;
 
@@ -61,6 +61,15 @@ namespace Test.Logic
             string s1 = "!دعه -" + Environment.NewLine + "!دعه أنت -";
             string s2 = Utilities.AutoBreakLine(s1, "ar");
             Assert.AreEqual(s1, s2);
+        }
+
+        [TestMethod]
+        public void AutoBreakFrenchSpaceBeforePunctuation()
+        {
+            Configuration.Settings.General.SubtitleLineMaximumLength = 43;
+            string s1 = "Et elle te le dis maintenant ? Pour quoi donc donc ?";
+            string s2 = Utilities.AutoBreakLine(s1, "fr");
+            Assert.AreEqual("Et elle te le dis maintenant ?" + Environment.NewLine + "Pour quoi donc donc ?", s2);
         }
 
         [TestMethod]
@@ -228,7 +237,7 @@ namespace Test.Logic
             var old = Configuration.Settings.General.MaxNumberOfLines;
             Configuration.Settings.General.MaxNumberOfLines = 3;
             Configuration.Settings.Tools.AutoBreakUsePixelWidth = false;
-            const string s1 = "Follow him.    Day and night wherever he goes and goes and goes and goes and goes <b>again<b>!";
+            const string s1 = "Follow him. Day and night wherever he goes and goes and goes and goes and goes <b>again<b>!";
             string s2 = Utilities.AutoBreakLine(s1);
             Configuration.Settings.General.MaxNumberOfLines = old;
             Assert.AreEqual("Follow him. Day and night wherever he goes" + Environment.NewLine + "and goes and goes and goes and goes <b>again<b>!", s2);
@@ -438,6 +447,14 @@ namespace Test.Logic
         }
 
         [TestMethod]
+        public void FixInvalidItalicTagsBadStartTag()
+        {
+            var s1 = "<i<Hallo!<i/>";
+            string s2 = HtmlUtil.FixInvalidItalicTags(s1);
+            Assert.AreEqual("<i>Hallo!</i>", s2);
+        }
+
+        [TestMethod]
         public void FixUnneededSpacesDoubleSpace1()
         {
             const string s1 = "This is  a test";
@@ -594,7 +611,14 @@ namespace Test.Logic
             string s = Utilities.RemoveUnneededSpaces("The time is 8. 40.", "en");
             Assert.AreEqual("The time is 8.40.", s);
         }
-        
+
+        [TestMethod]
+        public void RemoveUnneededSpacesBetweenNumbersDates()
+        {
+            string s = Utilities.RemoveUnneededSpaces("The 4 th and 1 st 3 rd and 2 nd.", "en");
+            Assert.AreEqual("The 4th and 1st 3rd and 2nd.", s);
+        }
+
         [TestMethod]
         public void CountTagInTextStringOneLetterString()
         {
@@ -673,35 +697,35 @@ namespace Test.Logic
         public void RemoveLineBreaks1()
         {
             string result = Utilities.RemoveLineBreaks("Hey" + Environment.NewLine + "you!");
-            Assert.AreEqual(result, "Hey you!");
+            Assert.AreEqual("Hey you!", result);
         }
 
         [TestMethod]
         public void RemoveLineBreaks2()
         {
             string result = Utilities.RemoveLineBreaks("<i>Foobar " + Environment.NewLine + "</i> foobar.");
-            Assert.AreEqual(result, "<i>Foobar</i> foobar.");
+            Assert.AreEqual("<i>Foobar</i> foobar.", result);
         }
 
         [TestMethod]
         public void RemoveLineBreaks3()
         {
             string result = Utilities.RemoveLineBreaks("<i>Foobar " + Environment.NewLine + "</i>foobar.");
-            Assert.AreEqual(result, "<i>Foobar</i> foobar.");
+            Assert.AreEqual("<i>Foobar</i> foobar.", result);
         }
 
         [TestMethod]
         public void RemoveLineBreaks4()
         {
             string result = Utilities.RemoveLineBreaks("<i>Hey</i>" + Environment.NewLine + "<i>you!</i>");
-            Assert.AreEqual(result, "<i>Hey you!</i>");
+            Assert.AreEqual("<i>Hey you!</i>", result);
         }
 
         [TestMethod]
         public void RemoveLineBreaks5()
         {
             string result = Utilities.RemoveLineBreaks("<i>Foobar" + Environment.NewLine + "</i>");
-            Assert.AreEqual(result, "<i>Foobar</i>");
+            Assert.AreEqual("<i>Foobar</i>", result);
         }
 
         [TestMethod]

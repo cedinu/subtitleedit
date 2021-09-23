@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nikse.SubtitleEdit.Core;
+using Nikse.SubtitleEdit.Core.Common;
 using Nikse.SubtitleEdit.Core.SubtitleFormats;
 using System;
 using System.Collections.Generic;
@@ -467,6 +467,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\i1}Italic{\i0}"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<i>Italic</i>";
             Assert.AreEqual(expected, actual);
@@ -478,6 +479,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\b1}Bold{\b0}"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<b>Bold</b>";
             Assert.AreEqual(expected, actual);
@@ -489,6 +491,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\u1}Underline{\u0}"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<u>Underline</u>";
             Assert.AreEqual(expected, actual);
@@ -500,6 +503,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\fs28}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font size=\"28\">Font</font>";
             Assert.AreEqual(expected, actual);
@@ -511,6 +515,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\fs1}T{\fs2}E{\fs3}S{\fs4}T"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font size=\"1\">T</font><font size=\"2\">E</font><font size=\"3\">S</font><font size=\"4\">T</font>";
             Assert.AreEqual(expected, actual);
@@ -532,6 +537,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\fnArial}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font face=\"Arial\">Font</font>";
             Assert.AreEqual(expected, actual);
@@ -543,6 +549,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\fnArial Bold}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font face=\"Arial Bold\">Font</font>";
             Assert.AreEqual(expected, actual);
@@ -563,6 +570,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\fnArial}Font1{\fnTahoma}Font2"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font face=\"Arial\">Font1</font><font face=\"Tahoma\">Font2</font>";
             Assert.AreEqual(expected, actual);
@@ -574,6 +582,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\c&HFF&}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font color=\"#ff0000\">Font</font>";
             Assert.AreEqual(expected, actual);
@@ -585,6 +594,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\c&HFF00&}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font color=\"#00ff00\">Font</font>";
             Assert.AreEqual(expected, actual);
@@ -596,6 +606,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\c&HFF0000&}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font color=\"#0000ff\">Font</font>";
             Assert.AreEqual(expected, actual);
@@ -607,19 +618,69 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\c&HFFFFFF&}Font"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font color=\"#ffffff\">Font</font>";
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
-        public void AssSimpleFontColorAndItalic()
+        public void AssSimpleFontColorUnclosed()
         {
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
-            target.LoadSubtitle(subtitle, GetAssLines(@"{\1c&HFFFF00&\i1}CYAN{\i0}"), null);
+            target.LoadSubtitle(subtitle, GetAssLines(@"start {\c&HFFFFFF&}Font end"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
-            const string expected = "<font color=\"#00ffff\"><i>CYAN</i></font>";
+            const string expected = "start <font color=\"#ffffff\">Font end</font>";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void AssSimpleFontPrimaryColorAndItalic()
+        {
+            var target = new AdvancedSubStationAlpha();
+            var subtitle = new Subtitle();
+            target.LoadSubtitle(subtitle, GetAssLines(@"start {\1c&HFFFF00&\i1}CYAN{\i0}{\1c} end"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            string actual = subtitle.Paragraphs[0].Text;
+            const string expected = "start <font color=\"#00ffff\"><i>CYAN</i></font> end";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void AssSimpleFontPrimaryColorAndItalic2()
+        {
+            var target = new AdvancedSubStationAlpha();
+            var subtitle = new Subtitle();
+            target.LoadSubtitle(subtitle, GetAssLines(@"{\i1\c&H00ffff&}Italic and color{\c}{\i0}"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            var actual = subtitle.Paragraphs[0].Text;
+            const string expected = "<i><font color=\"#ffff00\">Italic and color</font></i>";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void AssSimpleFontPrimaryColorUnclosedAndItalic()
+        {
+            var target = new AdvancedSubStationAlpha();
+            var subtitle = new Subtitle();
+            target.LoadSubtitle(subtitle, GetAssLines(@"start {\1c&HFFFF00&\i1}CYAN{\i0} end"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            string actual = subtitle.Paragraphs[0].Text;
+            const string expected = "start <font color=\"#00ffff\"><i>CYAN</i> end</font>";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void AssNestedFormatting()
+        {
+            var target = new AdvancedSubStationAlpha();
+            var subtitle = new Subtitle();
+            target.LoadSubtitle(subtitle, GetAssLines(@"start {\fnFont Name}text1 {\fs10}text2{\fs}{\fn} {\1c&H112233}text3{\1c} text4 {\c&332211}text5{\c} end"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            string actual = subtitle.Paragraphs[0].Text;
+            const string expected = "start <font face=\"Font Name\">text1 <font size=\"10\">text2</font></font> <font color=\"#332211\">text3</font> text4 <font color=\"#112233\">text5</font> end";
             Assert.AreEqual(expected, actual);
         }
 
@@ -629,6 +690,7 @@ Dialogue: 0,0:00:16.84,0:00:18.16,rechts,,0000,0000,0000,," + lineOneText;
             var target = new AdvancedSubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetAssLines(@"{\fnViner Hand ITC\fs28}Testing"), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font face=\"Viner Hand ITC\" size=\"28\">Testing</font>";
             Assert.AreEqual(expected, actual);
@@ -683,6 +745,18 @@ Dialogue: 0,0:00:05.02,0:00:07.94,Segoe Script Red shadow alpha 160,,0,0,0,,Dit 
             Assert.AreEqual(2, subtitle.Paragraphs.Count);
         }
 
+        [TestMethod]
+        public void AddSsaStyleToHeader()
+        {
+            var s = new Subtitle();
+            s.Paragraphs.Add(new Paragraph("<font color=\"#ff0000\">Previously...</font> :)", 0, 2000));
+            s.Header = AdvancedSubStationAlpha.DefaultHeader;
+            var newStyle = new SsaStyle();
+            newStyle.Name = "Test12334666";
+            s.Header = AdvancedSubStationAlpha.AddSsaStyle(newStyle, s.Header);
+            var text = new AdvancedSubStationAlpha().ToText(s, string.Empty);
+            Assert.IsTrue(text.Contains(newStyle.Name));
+        }
 
         #endregion Advanced Sub Station alpha (.ass)
 
@@ -710,12 +784,54 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
 
         [TestMethod]
         public void SsaSimpleFontColorAndItalic()
-        {
+        { 
             var target = new SubStationAlpha();
             var subtitle = new Subtitle();
             target.LoadSubtitle(subtitle, GetSsaLines(@"{\c&HFFFF00&\i1}CYAN{\i0}"), null);
             string actual = subtitle.Paragraphs[0].Text;
             const string expected = "<font color=\"#00ffff\"><i>CYAN</i></font>";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void SsaLoadSubtitle_TestData()
+        {
+            SsaLoadSubtitle("[EvEnTs]\nDialogue: ,0:00:00.00,0:00:00.01,,,,,,,text".SplitToLines(), "text");  // label casing insensitivity
+            SsaLoadSubtitle("[Events]\n,0:00:00.00,0:00:00.01,,,,,,,labelless dialogue".SplitToLines(), "labelless dialogue"); // no "Dialogue:" label, it is optional
+            SsaLoadSubtitle("[Events]\nFormat: Text, Start, End, Layer, Effect, Style\nDialogue: reordered text,0:00:00.00,0:00:00.01".SplitToLines(), "reordered text"); // reordered formats
+
+            SsaLoadSubtitle(GetSsaLines(@"Cased TEXT"), "Cased TEXT"); // preserve text casing
+            SsaLoadSubtitle(GetSsaLines(@"  text  "), "  text  "); // do not trim text
+            SsaLoadSubtitle(GetSsaLines(@"text, more text"), "text, more text"); // append excess dialogue values (> 10) to text
+            SsaLoadSubtitle(GetSsaLines(@"start {\fnFont Name}text{\fn} end"), "start <font face=\"Font Name\">text</font> end"); // font name
+            SsaLoadSubtitle(GetSsaLines(@"start {\fs10}text{\fs} end"), "start <font size=\"10\">text</font> end"); // font size
+            SsaLoadSubtitle(GetSsaLines(@"start {\c&H112233}text{\c} end"), "start <font color=\"#332211\">text</font> end"); // color
+            SsaLoadSubtitle(GetSsaLines(@"start {\c&H112233}text end"), "start <font color=\"#332211\">text end</font>"); // unclosed color should span to end of line
+            SsaLoadSubtitle(GetSsaLines(@"start {\1c&H112233}text{\1c} end"), "start <font color=\"#332211\">text</font> end"); // primay color
+            SsaLoadSubtitle(GetSsaLines(@"start {\1c&H112233}text{\1c} end"), "start <font color=\"#332211\">text</font> end"); // unclosed primay color should span to end of line
+            SsaLoadSubtitle(GetSsaLines(@"start {\fnFont Name}text1 {\fs10}text2{\fs}{\fn} {\1c&H112233}text3{\1c} text4 {\c&332211}text5{\c} end"), "start <font face=\"Font Name\">text1 <font size=\"10\">text2</font></font> <font color=\"#332211\">text3</font> text4 <font color=\"#112233\">text5</font> end"); // nested formatting
+
+            //each line should have its own formatting
+            List<string> multipleDialogueLines = @"[Events]
+                Format: Layer, Start, End, Text
+                Dialogue: ,00:00:01:18,00:00:01:85,{\fnFont Name}dialogue0{\fn}
+                Dialogue: ,0:00:02.18,0:00:02.85,{\fs10}dialogue1{\fs}
+                Dialogue: ,0:00:03.18,0:00:03.85,dialogue2
+                ".SplitToLines();
+
+            SsaLoadSubtitle(multipleDialogueLines, "<font face=\"Font Name\">dialogue0</font>", 0);
+            SsaLoadSubtitle(multipleDialogueLines, "<font size=\"10\">dialogue1</font>", 1);
+            SsaLoadSubtitle(multipleDialogueLines, "dialogue2", 2);
+        }
+
+        private void SsaLoadSubtitle(List<string> lines, string expected, int paragraphIndex = 0)
+        {
+            var target = new SubStationAlpha();
+            var subtitle = new Subtitle();
+
+            target.LoadSubtitle(subtitle, lines, null);
+
+            string actual = subtitle.Paragraphs[paragraphIndex].Text;
             Assert.AreEqual(expected, actual);
         }
 
@@ -730,7 +846,7 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
             var subtitle = new Subtitle();
             subtitle.Paragraphs.Add(new Paragraph("<i>Italic</i>", 1000, 5000));
             string text = target.ToText(subtitle, "title");
-            Assert.IsTrue(text.Contains("<dcst:Font Italic=\"yes\">Italic</dcst:Font>"));
+            Assert.IsTrue(text.Contains("<Font Italic=\"yes\">Italic</Font>"));
         }
 
         [TestMethod]
@@ -740,7 +856,7 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
             var subtitle = new Subtitle();
             subtitle.Paragraphs.Add(new Paragraph("<font color=\"#ff0000\"><i>Red</i></font>", 1000, 5000));
             string text = target.ToText(subtitle, "title");
-            Assert.IsTrue(text.Contains("<dcst:Font Italic=\"yes\" Color=\"FFFF0000\">Red</dcst:Font>"));
+            Assert.IsTrue(text.Contains("<Font Italic=\"yes\" Color=\"FFFF0000\">Red</Font>"));
         }
 
         #endregion DCinema smpte (.xml)
@@ -955,7 +1071,7 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
         #region Scenerist SCC
 
         [TestMethod]
-        public void CheckTimeCodes()
+        public void SceneristCheckTimeCodes()
         {
             var target = new ScenaristClosedCaptions();
             var subtitle = new Subtitle();
@@ -1024,6 +1140,24 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
             }
         }
 
+        [TestMethod]
+        public void SceneristLoadTextWithUppercaseHexCodes()
+        {
+            const string text = @"Scenarist_SCC V1.0
+
+01:00:00;09	942C 942C
+
+01:00:00;13	9429 9429 9154 9154 AD80 9137 9137 2043 EF6D E520 616E 6420 6B6E EFE3 6B80 91F4 91F4 97A2 97A2 EF6E 20EF 75F2 2064 EFEF F220 9137 9137
+
+01:00:01;10	9420 9420 94AE 94AE 9154 9154 97A1 97A1 AD80 9137 9137 2043 EF6D E520 616E 6420 6B6E EFE3 6B80 91F4 91F4 9723 9723 EF6E 20EF 75F2 2064 EFEF F220 9137 9137 942F 942F
+
+01:00:03;00	9420 9420 94AE 94AE 9152 9152 97A2 97A2 AD80 9137 9137 2057 E5A7 76E5 2062 E5E5 6E20 F761 E9F4 E96E 6780 9176 9176 E6EF F220 79EF 7520 9137 9137 942F 942F
+";
+            var subtitle = new Subtitle();
+            subtitle.ReloadLoadSubtitle(text.SplitToLines(), null, new ScenaristClosedCaptionsDropFrame());
+            Assert.AreEqual("{\\an8}-♪ Come and knock" + Environment.NewLine + "on our door ♪", subtitle.Paragraphs[0].Text);
+        }
+
         #endregion Scenerist SCC
 
         #region All subtitle formats
@@ -1038,18 +1172,21 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
             subtitle.Paragraphs.Add(new Paragraph("Line 4", 12000, 15000));
 
             int expected = subtitle.Paragraphs.Count;
-            foreach (SubtitleFormat format in SubtitleFormat.AllSubtitleFormats)
+            foreach (var format in SubtitleFormat.AllSubtitleFormats)
             {
                 if (format.GetType() != typeof(JsonType6) && format.IsTextBased)
                 {
                     format.BatchMode = true;
-                    string text = format.ToText(subtitle, "test");
+                    var text = format.ToText(subtitle, "test");
                     var list = new List<string>();
-                    foreach (string line in text.Replace("\r\n", "\n").Split('\n'))
+                    foreach (var line in text.Replace("\r\n", "\n").Split('\n'))
+                    {
                         list.Add(line);
+                    }
+
                     var s2 = new Subtitle();
                     format.LoadSubtitle(s2, list, null);
-                    int actual = s2.Paragraphs.Count;
+                    var actual = s2.Paragraphs.Count;
                     Assert.AreEqual(expected, actual, format.FriendlyName);
                 }
             }
@@ -1560,6 +1697,23 @@ VÄLKOMMEN TILL TEXAS
             Assert.AreEqual("<font color=\"yellow\">This is yellow text</font>", subtitle.Paragraphs[0].Text);
             Assert.AreEqual("<font color=\"magenta\">This is magenta text</font>", subtitle.Paragraphs[1].Text);
             Assert.AreEqual("<font color=\"#008000\">This is hex colored</font>", subtitle.Paragraphs[2].Text);
+        }
+
+
+        [TestMethod]
+        public void WebVttFontColor3()
+        {
+            var target = new WebVTT();
+            var subtitle = new Subtitle();
+            var raw = @"WEBVTT
+
+00:00:28.800 --> 00:00:30.880 line:83% align:center
+<c.cyan.bg_black>(Amanda): line2.1</c>
+<c.cyan.bg_black>line 2.2</c>";
+            target.LoadSubtitle(subtitle, raw.SplitToLines(), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            Assert.AreEqual("<font color=\"cyan\">(Amanda): line2.1</font>" + Environment.NewLine +
+                            "<font color=\"cyan\">line 2.2</font>", subtitle.Paragraphs[0].Text);
         }
 
         [TestMethod]

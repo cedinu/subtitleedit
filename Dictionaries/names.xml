@@ -71,7 +71,6 @@ This file is case sensitive.
   <name>Adipex</name>
   <name>Aditya</name>
   <name>Adolf</name>
-  <name>Adolf Hitler</name>
   <name>Adolfo</name>
   <name>Adolph</name>
   <name>Adolphus</name>
@@ -188,6 +187,7 @@ This file is case sensitive.
   <name>Amari</name>
   <name>Amarion</name>
   <name>Amarone</name>
+  <name>Amasova</name>
   <name>Amazon</name>
   <name>Amazons</name>
   <name>Amber</name>
@@ -371,6 +371,7 @@ This file is case sensitive.
   <name>Avery</name>
   <name>Avodart</name>
   <name>Axel</name>
+  <name>Axel Foley</name>
   <name>Ayden</name>
   <name>Aziz</name>
   <name>Azkaban</name>
@@ -552,6 +553,7 @@ This file is case sensitive.
   <name>Becca</name>
   <name>Beccas</name>
   <name>Béchar</name>
+  <name>Bechmann</name>
   <name>Beck</name>
   <name>Becker</name>
   <name>Beckett</name>
@@ -1116,6 +1118,7 @@ This file is case sensitive.
   <name>Cassidy</name>
   <name>Cassie</name>
   <name>Cassies</name>
+  <name>Cassini</name>
   <name>Cassius</name>
   <name>Castries</name>
   <name>Castro</name>
@@ -1156,6 +1159,7 @@ This file is case sensitive.
   <name>Cesar</name>
   <name>Chad</name>
   <name>Chadwick</name>
+  <name>Chaffee</name>
   <name>Chaim</name>
   <name>Chamberlain</name>
   <name>Chambliss</name>
@@ -1166,7 +1170,6 @@ This file is case sensitive.
   <name>Chantix</name>
   <name>Chapman</name>
   <name>Charles</name>
-  <name>Charles Darwin</name>
   <name>Charleston</name>
   <name>Charley</name>
   <name>Charlie</name>
@@ -1363,12 +1366,14 @@ This file is case sensitive.
   <name>Coumadin</name>
   <name>Couric</name>
   <name>Courtney</name>
+  <name>COVID-19</name>
   <name>Covina</name>
   <name>Covington</name>
   <name>Cox</name>
   <name>Craig</name>
   <name>Craiglist</name>
   <name>Cranberries</name>
+  <name>Cranston</name>
   <name>Crawford</name>
   <name>Crescent</name>
   <name>Crestor</name>
@@ -1386,8 +1391,10 @@ This file is case sensitive.
   <name>Crowe</name>
   <name>Crozier</name>
   <name>Cruella</name>
+  <name>Cruithne</name>
   <name>Cruz</name>
   <name>CSI</name>
+  <name>CTO</name>
   <name>CTU</name>
   <name>Cuba</name>
   <name>Cullen</name>
@@ -1480,6 +1487,7 @@ This file is case sensitive.
   <name>Dashawn</name>
   <name>Datsun</name>
   <name>Daughtry</name>
+  <name>Dauphine</name>
   <name>Dautry</name>
   <name>Dave</name>
   <name>Dave Matthews Band</name>
@@ -1645,6 +1653,7 @@ This file is case sensitive.
   <name>Dolly</name>
   <name>Dolly Parton</name>
   <name>Dolores</name>
+  <name>Dom Pérignon</name>
   <name>Domenic</name>
   <name>Domina</name>
   <name>Dominic</name>
@@ -1745,13 +1754,13 @@ This file is case sensitive.
   <name>Earl</name>
   <name>EastEnders</name>
   <name>Eastwood</name>
+  <name>eBay</name>
   <name>Echelon</name>
   <name>Echolls</name>
   <name>Eckhart</name>
   <name>Ed Sheeran</name>
   <name>Eddard</name>
   <name>Eddie</name>
-  <name>Eddie Thawne</name>
   <name>Eddies</name>
   <name>Edgar</name>
   <name>Edgington</name>
@@ -1840,6 +1849,7 @@ This file is case sensitive.
   <name>Englehart</name>
   <name>Enos</name>
   <name>Enrique</name>
+  <name>Ensenada</name>
   <name>Enya</name>
   <name>Eobard Thawne</name>
   <name>Ephraim</name>
@@ -2002,6 +2012,7 @@ This file is case sensitive.
   <name>Ford</name>
   <name>Fordham</name>
   <name>Forrest Gump</name>
+  <name>Forsyth</name>
   <name>Forsythe</name>
   <name>Fort Lauderdale</name>
   <name>Fortenberry</name>
@@ -2089,7 +2100,6 @@ This file is case sensitive.
   <name>Gale</name>
   <name>Galilei</name>
   <name>Galileo</name>
-  <name>Galileo Galilei</name>
   <name>Gallagher</name>
   <name>Galloway</name>
   <name>Galotti</name>
@@ -2244,6 +2254,7 @@ This file is case sensitive.
   <name>Gridley</name>
   <name>Griffin</name>
   <name>Griffith</name>
+  <name>Grinspoon</name>
   <name>Griselda</name>
   <name>Grisham</name>
   <name>Grissom</name>
@@ -2375,6 +2386,7 @@ This file is case sensitive.
   <name>Hartford</name>
   <name>Hartland</name>
   <name>Hartlands</name>
+  <name>Hartmann</name>
   <name>Hartofilias</name>
   <name>Hartwell</name>
   <name>Harvard</name>
@@ -2497,7 +2509,6 @@ This file is case sensitive.
   <name>Honda</name>
   <name>Hong</name>
   <name>Hong Kong</name>
-  <name>Hongkong</name>
   <name>Honiara</name>
   <name>Honolulu</name>
   <name>Hoodia</name>
@@ -2588,7 +2599,6 @@ This file is case sensitive.
   <name>Irvings</name>
   <name>Irvy</name>
   <name>Isaac</name>
-  <name>Isaac Newton</name>
   <name>Isaacs</name>
   <name>Isabel</name>
   <name>Isabell</name>
@@ -2643,7 +2653,6 @@ This file is case sensitive.
   <name>Jacksons</name>
   <name>Jacksonville</name>
   <name>Jacob</name>
-  <name>Jacob Zuma</name>
   <name>Jacobs</name>
   <name>Jacobson</name>
   <name>Jacoby</name>
@@ -2782,6 +2791,7 @@ This file is case sensitive.
   <name>Jodie</name>
   <name>Jody</name>
   <name>Joe</name>
+  <name>Joe Biden</name>
   <name>Joel</name>
   <name>Joes</name>
   <name>Joey</name>
@@ -2931,7 +2941,6 @@ This file is case sensitive.
   <name>Katrina</name>
   <name>Katrine</name>
   <name>Katy</name>
-  <name>Katy Perry</name>
   <name>Katya</name>
   <name>Kaufman</name>
   <name>Kayla</name>
@@ -3077,6 +3086,7 @@ This file is case sensitive.
   <name>LaBelle</name>
   <name>Lacey</name>
   <name>Lachlan</name>
+  <name>Lacerta</name>
   <name>LaClaire</name>
   <name>Lacombe</name>
   <name>Lacy</name>
@@ -3175,7 +3185,6 @@ This file is case sensitive.
   <name>Leonard</name>
   <name>Leonardo</name>
   <name>Leonardo da Vinci</name>
-  <name>Leonardo DiCaprio</name>
   <name>Leone</name>
   <name>Leoni</name>
   <name>Leopold</name>
@@ -3210,6 +3219,7 @@ This file is case sensitive.
   <name>Libreville</name>
   <name>Liby</name>
   <name>Libya</name>
+  <name>Licia</name>
   <name>Lidocaine</name>
   <name>Liebowitz</name>
   <name>Liechtenstein</name>
@@ -3253,6 +3263,7 @@ This file is case sensitive.
   <name>Ljubljana</name>
   <name>Llithyia</name>
   <name>Lloyd</name>
+  <name>Loch Ness</name>
   <name>Lochley</name>
   <name>Locke</name>
   <name>Lockhart</name>
@@ -3323,6 +3334,7 @@ This file is case sensitive.
   <name>Luka</name>
   <name>Lukas</name>
   <name>Luke</name>
+  <name>Luke Cage</name>
   <name>Lulu</name>
   <name>Lundy</name>
   <name>Lunesta</name>
@@ -3354,6 +3366,7 @@ This file is case sensitive.
   <name>Mac OS</name>
   <name>MacArthur</name>
   <name>MacArthurs</name>
+  <name>Macarena</name>
   <name>Macau</name>
   <name>Macbeth</name>
   <name>MacDonald</name>
@@ -3462,7 +3475,6 @@ This file is case sensitive.
   <name>Marci</name>
   <name>Marcie</name>
   <name>Marco</name>
-  <name>Marco Polo</name>
   <name>Marcus</name>
   <name>Marcy</name>
   <name>Margaret</name>
@@ -3497,6 +3509,7 @@ This file is case sensitive.
   <name>Mark Hamill</name>
   <name>Mark Zuckerberg</name>
   <name>Marko</name>
+  <name>Markovitz</name>
   <name>Markus</name>
   <name>Marky Mark</name>
   <name>Marla</name>
@@ -3746,6 +3759,7 @@ This file is case sensitive.
   <name>Michelles</name>
   <name>Michigan</name>
   <name>Michigans</name>
+  <name>Michoacán</name>
   <name>Michonne</name>
   <name>Mick</name>
   <name>Mickens</name>
@@ -3846,7 +3860,6 @@ This file is case sensitive.
   <name>Mor'du</name>
   <name>Moreau</name>
   <name>Morgan</name>
-  <name>Morgan Freeman</name>
   <name>Moritz</name>
   <name>Mormonism</name>
   <name>Moroccan</name>
@@ -4056,7 +4069,6 @@ This file is case sensitive.
   <name>Niklas</name>
   <name>Niklaus</name>
   <name>Nikola</name>
-  <name>Nikola Tesla</name>
   <name>Nikolai</name>
   <name>Nikolaj</name>
   <name>Nikolas</name>
@@ -4287,6 +4299,7 @@ This file is case sensitive.
   <name>Pennsylvania</name>
   <name>Pentagon</name>
   <name>Pentagons</name>
+  <name>Pentothal</name>
   <name>Pepperwood</name>
   <name>Pepsi</name>
   <name>Perce</name>
@@ -4320,6 +4333,7 @@ This file is case sensitive.
   <name>Pettersson</name>
   <name>Petunia</name>
   <name>Peyton</name>
+  <name>Ph.D.</name>
   <name>Phelps</name>
   <name>Phenelzine</name>
   <name>Phil</name>
@@ -4457,6 +4471,7 @@ This file is case sensitive.
   <name>R&amp;D</name>
   <name>Rabat</name>
   <name>Rachel</name>
+  <name>Rachel Grey</name>
   <name>Rachelle</name>
   <name>Rachels</name>
   <name>Raczynski</name>
@@ -4520,6 +4535,7 @@ This file is case sensitive.
   <name>Regina</name>
   <name>Reginald</name>
   <name>Regis</name>
+  <name>Rehoboam</name>
   <name>Rei-gun</name>
   <name>Reihado</name>
   <name>Reikai</name>
@@ -4652,6 +4668,7 @@ This file is case sensitive.
   <name>Rosenbaum</name>
   <name>Rosenberg</name>
   <name>Rosenstein</name>
+  <name>Rosetti</name>
   <name>Rosie</name>
   <name>Rosita</name>
   <name>Roslin</name>
@@ -4745,9 +4762,6 @@ This file is case sensitive.
   <name>Samuels</name>
   <name>Samuelson</name>
   <name>San</name>
-  <name>San Jose</name>
-  <name>San Marino</name>
-  <name>San Salvador</name>
   <name>Sana'a</name>
   <name>Sanchez</name>
   <name>Sánchez</name>
@@ -4920,7 +4934,6 @@ This file is case sensitive.
   <name>Sierra Leone</name>
   <name>SiggeMcKvack</name>
   <name>Sigmund</name>
-  <name>Sigmund Freud</name>
   <name>Signe</name>
   <name>Silas</name>
   <name>Silberman</name>
@@ -4998,6 +5011,7 @@ This file is case sensitive.
   <name>Soviets</name>
   <name>Sovjet</name>
   <name>Sovjets</name>
+  <name>SpaceX</name>
   <name>Spangler</name>
   <name>Spartacus</name>
   <name>Spaulding</name>
@@ -5255,8 +5269,10 @@ This file is case sensitive.
   <name>Thailand</name>
   <name>Thailands</name>
   <name>Thanksgiving</name>
+  <name>Thanos</name>
   <name>Thatcher</name>
   <name>Thawne</name>
+  <name>Theia</name>
   <name>Thelma</name>
   <name>Themyscira</name>
   <name>Theo</name>
@@ -5408,6 +5424,7 @@ This file is case sensitive.
   <name>Tyrion</name>
   <name>Tyrone</name>
   <name>Tyson</name>
+  <name>U.S.</name>
   <name>U.V.</name>
   <name>U2</name>
   <name>Udaipur</name>
@@ -5489,6 +5506,7 @@ This file is case sensitive.
   <name>Vicky</name>
   <name>Vicodin</name>
   <name>Victor</name>
+  <name>Victor Von Doom</name>
   <name>Victoria</name>
   <name>Victorias</name>
   <name>Victors</name>

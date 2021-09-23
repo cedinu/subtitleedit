@@ -43,14 +43,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Configuration)\</IntDir>
+    <OutDir>bin\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Configuration)\</IntDir>
+    <OutDir>bin\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>SubtitleEdit.resources</TargetName>
@@ -112,7 +112,7 @@
   </ItemGroup>
   <Target Name="BeforeResourceCompile">
     <Copy SourceFiles="Resources.h" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />
-    <Exec Command="%22$(SolutionDir)..\build_helpers.bat%22 rsrc %22$(ConfigurationName)%22" />
+    <Exec Command="%22$(SolutionDir)\build_helpers.bat%22 rsrc %22$(ConfigurationName)%22" />
   </Target>
   <Target Name="BeforeClean">
     <Delete Files="$(OutDir)Resources.h" />

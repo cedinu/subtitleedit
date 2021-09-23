@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nikse.SubtitleEdit.Core.Common;
+using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nikse.SubtitleEdit.Core;
 
 namespace Test.Core
 {
@@ -109,6 +109,25 @@ namespace Test.Core
             var result = parser.GetArrayElementsByName("{ \"start_time\": \"118.64\", \"items\": [] }", "items");
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("", result[0].Trim());
+        }
+
+
+        [TestMethod]
+        public void GetArrayElementsByName_Get_Two_Lines()
+        {
+            var json = @"{                    
+	        'TextLines': [                        
+		        'Aussi dur que ce soit pour nous,',
+		        'tout ce qui nous arrive'
+		        ],                    
+	        'ClassName': 'fr',
+	        'ShowTime': 115801,                    
+	        'HideTime': 120040".Replace('\'', '"');
+            var parser = new SeJsonParser();
+            var result = parser.GetArrayElementsByName(json, "TextLines");
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual("Aussi dur que ce soit pour nous,", result[0].Trim());
+            Assert.AreEqual("tout ce qui nous arrive", result[1].Trim());
         }
 
         [TestMethod]
