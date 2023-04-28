@@ -35,6 +35,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             labelItalicOn2.Visible = false;
             buttonAbort.Text = language.Abort;
             buttonOK.Text = LanguageSettings.Current.General.Ok;
+            buttonOnce.Text = language.UseOnce;
             buttonSkip.Text = language.Skip;
             checkBoxAutoSubmitOfFirstChar.Text = language.AutoSubmitOnFirstChar;
 
@@ -70,12 +71,14 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         public bool ShrinkSelection { get; private set; }
 
         public bool SkipImage { get; private set; }
+        public bool UseOnce { get; private set; }
 
         internal void Initialize(Bitmap vobSubImage, ImageSplitterItem character, Point position, bool italicChecked, bool showShrink, VobSubOcr.CompareMatch bestGuess, List<VobSubOcr.ImageCompareAddition> additions, VobSubOcr vobSubForm, bool allowExpand = true)
         {
             ShrinkSelection = false;
             ExpandSelection = false;
             SkipImage = false;
+            UseOnce = false;
 
             textBoxCharacters.Text = string.Empty;
             if (bestGuess != null)
@@ -102,7 +105,19 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             }
 
             pictureBoxSubtitleImage.Image = vobSubImage;
-            pictureBoxCharacter.Image = character.NikseBitmap.GetBitmap();
+            var charImage = character.NikseBitmap.GetBitmap();
+            if (charImage.Width > 100 || charImage.Height > 50)
+            {
+                pictureBoxCharacter.SizeMode = PictureBoxSizeMode.Zoom;
+                pictureBoxCharacter.Width = 100;
+                pictureBoxCharacter.Height = 50;
+            }
+            else
+            {
+                pictureBoxCharacter.SizeMode = PictureBoxSizeMode.AutoSize;
+            }
+
+            pictureBoxCharacter.Image = charImage;
             labelItalicOn2.Left = Math.Max(40, pictureBoxCharacter.Left + pictureBoxCharacter.Width);
 
             if (_additions.Count > 0)
@@ -155,11 +170,26 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         {
             if (e.KeyCode == Keys.Enter)
             {
+                if (e.Modifiers == Keys.Control)
+                {
+                    UseOnce = true;
+                }
+
                 DialogResult = DialogResult.OK;
             }
             else if (e.KeyCode == Keys.Escape)
             {
                 DialogResult = DialogResult.Cancel;
+            }
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.I)
+            {
+                checkBoxItalic.Checked = !checkBoxItalic.Checked;
+                e.SuppressKeyPress = true;
+            }
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.F)
+            {
+                checkBoxAutoSubmitOfFirstChar.Checked = !checkBoxAutoSubmitOfFirstChar.Checked;
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -309,6 +339,12 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private void buttonSkip_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+        }
+
+        private void buttonOnce_Click(object sender, EventArgs e)
+        {
+            UseOnce = true;
+            DialogResult = DialogResult.OK;
         }
     }
 }

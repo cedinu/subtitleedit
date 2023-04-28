@@ -2,12 +2,16 @@
 using Nikse.SubtitleEdit.Logic;
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Nikse.SubtitleEdit.Forms
 {
     public sealed partial class ChangeFrameRate : PositionAndSizeForm
     {
+        public double OldFrameRate { get; set; }
+        public double NewFrameRate { get; set; }
+
         public ChangeFrameRate()
         {
             UiUtil.PreInitialize(this);
@@ -25,19 +29,9 @@ namespace Nikse.SubtitleEdit.Forms
             buttonOK.Text = LanguageSettings.Current.General.Ok;
             buttonCancel.Text = LanguageSettings.Current.General.Cancel;
             UiUtil.FixLargeFonts(this, buttonOK);
-            if (Configuration.IsRunningOnWindows)
-            {
-                buttonSwap.Text = "🡙";
-            }
-            else
-            {
-                buttonSwap.Text = "<->";
-                buttonSwap.Width = 35;
-                buttonSwap.Font = new Font(Font.FontFamily, Font.Size);
-            }
         }
 
-        private void InitializeCombobox(ComboBox comboBox)
+        private static void InitializeCombobox(ComboBox comboBox)
         {
             comboBox.BeginUpdate();
             comboBox.Items.Clear();
@@ -97,8 +91,11 @@ namespace Nikse.SubtitleEdit.Forms
                 return;
             }
 
-            if (double.TryParse(comboBoxFrameRateFrom.Text, out _) && double.TryParse(comboBoxFrameRateTo.Text, out _))
+            if (double.TryParse(comboBoxFrameRateFrom.Text.Replace(',', '.'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var from) &&
+                double.TryParse(comboBoxFrameRateTo.Text.Replace(',', '.'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var to))
             {
+                OldFrameRate = from;
+                NewFrameRate = to;
                 DialogResult = DialogResult.OK;
             }
             else
@@ -109,15 +106,11 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void buttonSwap_Click(object sender, EventArgs e)
         {
-            string oldFrameRate = comboBoxFrameRateFrom.Text;
-            string newFrameRate = comboBoxFrameRateTo.Text;
+            var oldFrameRate = comboBoxFrameRateFrom.Text;
+            var newFrameRate = comboBoxFrameRateTo.Text;
 
             comboBoxFrameRateFrom.Text = newFrameRate;
             comboBoxFrameRateTo.Text = oldFrameRate;
         }
-
-        public double OldFrameRate => double.Parse(comboBoxFrameRateFrom.Text);
-
-        public double NewFrameRate => double.Parse(comboBoxFrameRateTo.Text);
     }
 }

@@ -2,7 +2,7 @@
 <Language Name="ไทย">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.6.2</Version>
+    <Version>3.6.12</Version>
     <TranslatedBy>ภาษาไทยโดย Bonfelder</TranslatedBy>
     <CultureName>th-TH</CultureName>
     <HelpFile />
@@ -101,9 +101,6 @@
     <SourceVideoFile>ไฟล์วิดีโอต้นฉบับ:</SourceVideoFile>
     <GenerateWaveformData>สร้างข้อมูลเวฟฟอร์ม</GenerateWaveformData>
     <PleaseWait>อาจต้องใช้เวลาสักครู่ - โปรดรอ</PleaseWait>
-    <VlcMediaPlayerNotFoundTitle>ไม่พบโปรแกรม VLC Media Player</VlcMediaPlayerNotFoundTitle>
-    <VlcMediaPlayerNotFound>Subtitle Edit ต้องใช้กับ VLC media player 1.1.x หรือใหม่กว่าเพื่อแยกข้อมูลออดิโอ</VlcMediaPlayerNotFound>
-    <GoToVlcMediaPlayerHomePage>คุณอยากไปที่โฮมเพจของ VLC media player หรือไม่</GoToVlcMediaPlayerHomePage>
     <GeneratingPeakFile>กำลังสร้างไฟล์พีค...</GeneratingPeakFile>
     <GeneratingSpectrogram>กำลังสร้างสเปกโตแกรม...</GeneratingSpectrogram>
     <ExtractingSeconds>กำลังแยกออดิโอ: {0:0.0} วินาที</ExtractingSeconds>
@@ -485,7 +482,7 @@
     <FixCommonOcrErrors>แก้ข้อผิดพลาด OCR ทั่วไป (ใช้รายการแทนที่คำ OCR)</FixCommonOcrErrors>
     <CommonOcrErrorsFixed>ข้อผิดพลาด OCR ทั่วไปที่แก้ (ไฟล์แทนที่คำ Ocr ที่ใช้): {0}</CommonOcrErrorsFixed>
     <RemoveSpaceBetweenNumber>ลบช่องว่างระหว่างตัวเลข</RemoveSpaceBetweenNumber>
-    <FixDialogsOnOneLine>แก้ไดอะล็อกในหนึ่งบรรทัด</FixDialogsOnOneLine>
+    <BreakDialogsOnOneLine>แก้ไดอะล็อกในหนึ่งบรรทัด</BreakDialogsOnOneLine>
     <RemoveSpaceBetweenNumbersFixed>ลบช่องว่างระหว่างตัวเลขไปแล้ว: {0}</RemoveSpaceBetweenNumbersFixed>
     <FixTurkishAnsi>แก้อักษร ANSI ตุรกี (Icelandic) เป็นยูนิโค้ด</FixTurkishAnsi>
     <FixDanishLetterI>แก้อักษรเดนมาร์ก 'i'</FixDanishLetterI>
@@ -615,7 +612,7 @@
     <Input>อินพุต</Input>
     <InputDescription>เลือกไฟล์อินพุต (เบราซ์หรือลากแล้วปล่อย)</InputDescription>
   </ImportImages>
-  <ImportSceneChanges>
+  <ImportShotChanges>
     <Title>อิมพอร์ตฉากที่เปลี่ยนแปลง</Title>
     <OpenTextFile>เปิดไฟล์ข้อความ...</OpenTextFile>
     <ImportOptions>ตัวเลือกอิมพอร์ต</ImportOptions>
@@ -624,7 +621,7 @@
     <Frames>เฟรม</Frames>
     <Seconds>วินาที</Seconds>
     <Milliseconds>มิลลิวินาที</Milliseconds>
-  </ImportSceneChanges>
+  </ImportShotChanges>
   <ImportText>
     <Title>อิมพอร์ตเฉพาะข้อความ</Title>
     <OneSubtitleIsOneFile>หลายไฟล์ - หนึ่งไฟล์ต่อหนึ่งซับไตเติ้ล</OneSubtitleIsOneFile>
@@ -913,8 +910,8 @@
         <OpenDvd>เปิดดีวีดี...</OpenDvd>
         <ChooseAudioTrack>เลือกแทร็กออดิโอ</ChooseAudioTrack>
         <CloseVideo>ปิดวิดีโอ</CloseVideo>
-        <ImportSceneChanges>อิมพอร์ตฉากที่เปลี่ยนแปลง...</ImportSceneChanges>
-        <RemoveSceneChanges>ลบฉากที่เปลี่ยนแปลง</RemoveSceneChanges>
+        <ImportShotChanges>อิมพอร์ตฉากที่เปลี่ยนแปลง...</ImportShotChanges>
+        <RemoveShotChanges>ลบฉากที่เปลี่ยนแปลง</RemoveShotChanges>
         <ShowHideVideo>แสดง/ซ่อนวิดีโอ</ShowHideVideo>
         <ShowHideWaveform>แสดง/ซ่อนเวฟฟอร์ม</ShowHideWaveform>
         <ShowHideWaveformAndSpectrogram>แสดง/ซ่อนเวฟฟอร์มและสเปคโตแกรม</ShowHideWaveformAndSpectrogram>
@@ -1150,7 +1147,7 @@
     <BeforeDisplayTimeAdjustment>ก่อนการปรับเวลาแสดงผล</BeforeDisplayTimeAdjustment>
     <DisplayTimeAdjustedX>เวลาแสดงผลที่ปรับแล้ว: {0}</DisplayTimeAdjustedX>
     <DisplayTimesAdjustedX>เวลาแสดงผลที่ปรับแล้ว: {0}</DisplayTimesAdjustedX>
-    <StarTimeAdjustedX>เวลาเริ่มต้นที่ปรับแล้ว: {0}</StarTimeAdjustedX>
+    <StartTimeAdjustedX>เวลาเริ่มต้นที่ปรับแล้ว: {0}</StartTimeAdjustedX>
     <BeforeCommonErrorFixes>ก่อนแก้ไขข้อผิดพลาดทั่วไป</BeforeCommonErrorFixes>
     <CommonErrorsFixedInSelectedLines>ข้อผิดพลาดทั่วไปที่แก้แล้วบนบรรทัดที่เลือก</CommonErrorsFixedInSelectedLines>
     <CommonErrorsFixed>ข้อผิดพลาดทั่วไปที่แก้แล้ว</CommonErrorsFixed>
@@ -1326,7 +1323,7 @@
     <BeforeDisplaySubtitleJoin>ก่อนต่อซับไตเติ้ล</BeforeDisplaySubtitleJoin>
     <SubtitlesJoined>ซับไตเติ้ลต่อแล้ว</SubtitlesJoined>
     <StatusLog>ล็อกสถานะ</StatusLog>
-    <XSceneChangesImported>{0} ฉากที่เปลี่ยนแปลงอิมพอร์ตแล้ว</XSceneChangesImported>
+    <XShotChangesImported>{0} ฉากที่เปลี่ยนแปลงอิมพอร์ตแล้ว</XShotChangesImported>
     <PluginXExecuted>ปลั๊กอิน '{0}' ทำงานแล้ว</PluginXExecuted>
     <NotAValidXSubFile>ไม่ใช่ไฟล์ XSub ที่ถูกต้อง!</NotAValidXSubFile>
     <BeforeMergeLinesWithSameText>ก่อนการรวมบรรทัดที่มีข้อความเหมือนกัน</BeforeMergeLinesWithSameText>
@@ -2036,7 +2033,7 @@
     <TransportStreamGrayscale>ขาวดำ</TransportStreamGrayscale>
     <TransportStreamGetColor>ใช้สี (อาจเกิดการแบ่งบรรทัด)</TransportStreamGetColor>
     <PromptForUnknownWords>ยืนยันคำที่ไม่รู้จัก</PromptForUnknownWords>
-    <TryToGuessUnkownWords>พยายามเดาคำที่ไม่รู้จัก</TryToGuessUnkownWords>
+    <TryToGuessUnknownWords>พยายามเดาคำที่ไม่รู้จัก</TryToGuessUnknownWords>
     <AutoBreakSubtitleIfMoreThanTwoLines>แบ่งย่อหน้าอัตโนมัติถ้ายาวเกินสองบรรทัด</AutoBreakSubtitleIfMoreThanTwoLines>
     <AllFixes>ส่วนที่แก้ทั้งหมด</AllFixes>
     <GuessesUsed>สิ่งที่เดาไปทั้งหมด</GuessesUsed>

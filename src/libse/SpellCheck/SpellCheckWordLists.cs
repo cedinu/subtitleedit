@@ -93,6 +93,29 @@ namespace Nikse.SubtitleEdit.Core.SpellCheck
                     }
                 }
             }
+
+            if (File.Exists(dictionaryFolder + languageName + "_se.xml"))
+            {
+                var userWordDictionary = new XmlDocument();
+                userWordDictionary.Load(dictionaryFolder + languageName + "_se.xml");
+                var xmlNodeList = userWordDictionary.DocumentElement?.SelectNodes("word");
+                if (xmlNodeList != null)
+                {
+                    foreach (XmlNode node in xmlNodeList)
+                    {
+                        var word = node.InnerText.Trim().ToLowerInvariant();
+                        if (word.Contains(' '))
+                        {
+                            _userPhraseList.Add(word);
+                        }
+                        else
+                        {
+                            _userWordList.Add(word);
+                        }
+                    }
+                }
+            }
+
             // Add names/userdic with "." or " " or "-"
             foreach (var word in namesMultiWordList)
             {
@@ -221,6 +244,11 @@ namespace Nikse.SubtitleEdit.Core.SpellCheck
             _userWordList.Remove(word);
             _userPhraseList.Remove(word);
             Utilities.RemoveFromUserDictionary(word, _languageName);
+        }
+
+        public HashSet<string> GetSeAndUserWords()
+        {
+            return _userWordList;
         }
 
         public void RemoveName(string word)

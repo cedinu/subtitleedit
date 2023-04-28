@@ -21,19 +21,19 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public override string ToText(Subtitle subtitle, string title)
         {
-            const string timeCodeFormatNoHours = "{0:00}:{1:00}.{2:000}"; // h:mm:ss.cc
-            const string timeCodeFormatHours = "{0}:{1:00}:{2:00}.{3:000}"; // h:mm:ss.cc
+            const string timeCodeFormatNoHours = "{0:00}:{1:00}.{2:000}"; // mm:ss.cc
+            const string timeCodeFormatHours = "{0:00}:{1:00}:{2:00}.{3:000}"; // hh:mm:ss.cc
             const string paragraphWriteFormat = "{0} --> {1}{2}{5}{3}{4}{5}";
 
             var sb = new StringBuilder();
             sb.AppendLine("WEBVTT FILE");
             sb.AppendLine();
-            int count = 1;
-            foreach (Paragraph p in subtitle.Paragraphs)
+            var count = 1;
+            foreach (var p in subtitle.Paragraphs)
             {
-                string start = string.Format(timeCodeFormatNoHours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds);
-                string end = string.Format(timeCodeFormatNoHours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
-                string positionInfo = WebVTT.GetPositionInfoFromAssTag(p);
+                var start = string.Format(timeCodeFormatNoHours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds);
+                var end = string.Format(timeCodeFormatNoHours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
+                var positionInfo = WebVTT.GetPositionInfoFromAssTag(p);
 
                 if (p.StartTime.Hours > 0 || p.EndTime.Hours > 0)
                 {
@@ -41,7 +41,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     end = string.Format(timeCodeFormatHours, p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
                 }
 
-                string style = string.Empty;
+                var style = string.Empty;
                 if (!string.IsNullOrEmpty(p.Extra) && subtitle.Header == "WEBVTT FILE")
                 {
                     style = p.Extra;
@@ -52,6 +52,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 sb.AppendLine(string.Format(paragraphWriteFormat, start, end, positionInfo, WebVTT.FormatText(p), style, Environment.NewLine));
                 count++;
             }
+
             return sb.ToString().Trim();
         }
 
@@ -59,19 +60,22 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         {
             _errorCount = 0;
             Paragraph p = null;
-            string positionInfo = string.Empty;
-            bool hadEmptyLine = false;
+            var positionInfo = string.Empty;
+            var hadEmptyLine = false;
+            var numbers = 0;
             for (var index = 0; index < lines.Count; index++)
             {
-                string line = lines[index];
-                string next = string.Empty;
+                var line = lines[index];
+                var next = string.Empty;
+                var isNextTimeCode = false;
                 if (index < lines.Count - 1)
                 {
                     next = lines[index + 1];
+                    isNextTimeCode = next.Contains("-->");
                 }
 
-                string s = line;
-                bool isTimeCode = line.Contains("-->");
+                var s = line;
+                var isTimeCode = line.Contains("-->");
                 if (isTimeCode && RegexTimeCodesMiddle.IsMatch(s))
                 {
                     s = "00:" + s; // start is without hours, end is with hours
@@ -82,7 +86,16 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     s = "00:" + s.Replace("--> ", "--> 00:");
                 }
 
-                if (isTimeCode && RegexTimeCodes.IsMatch(s))
+                if (isNextTimeCode && Utilities.IsNumber(s))
+                {
+                    numbers++;
+                }
+
+                if (isNextTimeCode && Utilities.IsNumber(s) && p?.Text.Length > 0)
+                {
+                    // skip number
+                }
+                else if (isTimeCode && RegexTimeCodes.IsMatch(s))
                 {
                     if (p != null)
                     {
@@ -121,7 +134,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
                 else if (p != null)
                 {
-                    string text = positionInfo + line.Trim();
+                    var text = positionInfo + line.Trim();
                     if (string.IsNullOrEmpty(text))
                     {
                         hadEmptyLine = true;
@@ -157,6 +170,11 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 paragraph.Text = System.Net.WebUtility.HtmlDecode(paragraph.Text);
             }
 
+            if (numbers == 0 || numbers < subtitle.Paragraphs.Count / 2 && !new WebVTT().IsMine(lines, fileName))
+            {
+                _errorCount = subtitle.Paragraphs.Count + 1;
+            }
+
             subtitle.Renumber();
         }
 
@@ -164,6 +182,5 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         {
             new WebVTT().RemoveNativeFormatting(subtitle, newFormat);
         }
-
     }
 }

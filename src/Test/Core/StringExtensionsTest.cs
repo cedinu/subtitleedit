@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Nikse.SubtitleEdit.Core.Common;
 using System;
+using Nikse.SubtitleEdit.Core.Common.TextLengthCalculator;
+using Nikse.SubtitleEdit.Core.SubtitleFormats;
 
 namespace Test.Core
 {
@@ -219,58 +221,170 @@ namespace Test.Core
         [TestMethod]
         public void CountLetters1()
         {
-            string input = " Hallo  world! ";
-            var res = input.CountCharacters(false, false);
+            var input = " Hallo  world! ";
+            var res = CalcFactory.MakeCalculator(nameof(CalcAll)).CountCharacters(input, false);
             Assert.AreEqual(" Hallo  world! ".Length, res);
         }
 
         [TestMethod]
         public void CountLetters2()
         {
-            string input = " Hallo " + Environment.NewLine + " world! ";
-            var res = input.CountCharacters(true, false);
+            var input = " Hallo " + Environment.NewLine + " world! ";
+            var res = CalcFactory.MakeCalculator(nameof(CalcNoSpace)).CountCharacters(input, false);
             Assert.AreEqual("Halloworld!".Length, res);
         }
 
         [TestMethod]
         public void CountLetters3()
         {
-            string input = " Hallo" + Environment.NewLine + "world!";
-            var res = input.CountCharacters(false, false);
+            var input = " Hallo" + Environment.NewLine + "world!";
+            var res = CalcFactory.MakeCalculator(nameof(CalcAll)).CountCharacters(input, false);
             Assert.AreEqual(" Halloworld!".Length, res);
         }
 
         [TestMethod]
         public void CountLetters4Ssa()
         {
-            string input = "{\\an1}Hallo";
-            var res = input.CountCharacters(true, false);
+            var input = "{\\an1}Hallo";
+            var res = CalcFactory.MakeCalculator(nameof(CalcAll)).CountCharacters(input, false);
             Assert.AreEqual("Hallo".Length, res);
         }
 
         [TestMethod]
         public void CountLetters4Html()
         {
-            string input = "<i>Hallo</i>";
-            var res = input.CountCharacters(true, false);
+            var input = "<i>Hallo</i>";
+            var res = CalcFactory.MakeCalculator(nameof(CalcAll)).CountCharacters(input, false);
             Assert.AreEqual("Hallo".Length, res);
         }
 
         [TestMethod]
         public void CountLetters5HtmlFont()
         {
-            string input = "<font color=\"red\"><i>Hal lo<i></font>";
-            var res = input.CountCharacters(true, false);
+            var input = "<font color=\"red\"><i>Hal lo<i></font>";
+            var res = CalcFactory.MakeCalculator(nameof(CalcNoSpace)).CountCharacters(input, false);
             Assert.AreEqual("Hallo".Length, res);
         }
 
         [TestMethod]
         public void CountLetters6HtmlFontMultiLine()
         {
-            string input = "<font color=\"red\"><i>Hal lo<i></font>" + Environment.NewLine + "<i>Bye!</i>";
-            var res = input.CountCharacters(true, false);
+            var input = "<font color=\"red\"><i>Hal lo<i></font>" + Environment.NewLine + "<i>Bye!</i>";
+            var res = CalcFactory.MakeCalculator(nameof(CalcNoSpace)).CountCharacters(input, false);
             Assert.AreEqual("HalloBye!".Length, res);
         }
 
+        [TestMethod]
+        public void ToggleCasing1()
+        {
+            var input = "how are you";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("How Are You", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasing1WithItalic()
+        {
+            var input = "how <i>are</i> you";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("How <i>Are</i> You", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasing1WithItalicStart()
+        {
+            var input = "<i>how</i> are you";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("<i>How</i> Are You", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasing1WithItalicEnd()
+        {
+            var input = "how are <i>you</i>";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("How Are <i>You</i>", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasing1WithItalicEndAndBold()
+        {
+            var input = "how are <i><b>you</b></i>";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("How Are <i><b>You</b></i>", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasing2()
+        {
+            var input = "How Are You";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("HOW ARE YOU", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasing3()
+        {
+            var input = "HOW ARE YOU";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("how are you", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasingWithFont()
+        {
+            var input = "<font color=\"Red\">HOW ARE YOU</font>";
+            var res = input.ToggleCasing(new SubRip());
+            Assert.AreEqual("<font color=\"Red\">how are you</font>", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasingAssa()
+        {
+            var input = "{\\i1}This is an example…{\\i0}";
+            var res = input.ToggleCasing(new AdvancedSubStationAlpha());
+            Assert.AreEqual("{\\i1}THIS IS AN EXAMPLE…{\\i0}", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasingAssaSoftLineBreak()
+        {
+            var input = "HOW ARE\\nYOU?";
+            var res = input.ToggleCasing(new AdvancedSubStationAlpha());
+            Assert.AreEqual("how are\\nyou?", res);
+        }
+
+        [TestMethod]
+        public void ToggleCasingVoiceTag()
+        {
+            var input = "<v Johnny>How are you?";
+            var res = input.ToggleCasing(null);
+            Assert.AreEqual("<v Johnny>HOW ARE YOU?", res);
+        }
+
+
+        [TestMethod]
+        public void ToProperCaseFromUpper()
+        {
+            var input = "HOW ARE YOU?";
+            var res = input.ToProperCase(null);
+            Assert.AreEqual("How Are You?", res);
+        }
+
+        [TestMethod]
+        public void ToProperCaseFromLower()
+        {
+            var input = "how are you?";
+            var res = input.ToProperCase(null);
+            Assert.AreEqual("How Are You?", res);
+        }
+
+        [TestMethod]
+        public void ToProperCaseItalic()
+        {
+            var input = "<i>HOW ARE YOU?</i>";
+            var res = input.ToProperCase(null);
+            Assert.AreEqual("<i>How Are You?</i>", res);
+        }
     }
 }

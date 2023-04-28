@@ -5,12 +5,14 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 {
     public class AdvancedSubStationAlpha : SubtitleFormat
     {
+        private static readonly Regex ScriptTypeFinder = new Regex("ScriptType: *v4.00", RegexOptions.Compiled);
         public string Errors { get; private set; }
 
         public static string DefaultStyle
@@ -69,10 +71,6 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             if (!string.IsNullOrEmpty(fileName) && fileName.EndsWith(".ass", StringComparison.OrdinalIgnoreCase) && !all.Contains("[V4 Styles]"))
             {
             }
-            else if (!all.Contains("dialog:", StringComparison.OrdinalIgnoreCase) && !all.Contains("dialogue:", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
             else if (!all.Contains("[V4+ Styles]") && new SubStationAlpha().IsMine(lines, fileName))
             {
                 return false;
@@ -93,12 +91,13 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             return false;
         }
 
-        public const string HeaderNoStyles = @"[Script Info]
+        public static string HeaderNoStyles = @"[Script Info]
 ; This is an Advanced Sub Station Alpha v4+ script.
 Title: {0}
-ScriptType: v4.00+
-Collisions: Normal
-PlayDepth: 0
+ScriptType: v4.00+" +
+(Configuration.Settings.SubtitleSettings.AssaShowPlayDepth ? Environment.NewLine + "PlayDepth: 0" : string.Empty) +
+(Configuration.Settings.SubtitleSettings.AssaShowScaledBorderAndShadow ? Environment.NewLine + "ScaledBorderAndShadow: Yes" : string.Empty) +
+@"
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
@@ -109,13 +108,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
 
         public override string ToText(Subtitle subtitle, string title)
         {
-            bool fromTtml = false;
-            string header = $@"[Script Info]
+            var fromTtml = false;
+            var header = $@"[Script Info]
 ; This is an Advanced Sub Station Alpha v4+ script.
-Title: {0}
-ScriptType: v4.00+
-Collisions: Normal
-PlayDepth: 0
+Title: {{0}}
+ScriptType: v4.00+" +
+(Configuration.Settings.SubtitleSettings.AssaShowPlayDepth ? (Environment.NewLine + "PlayDepth: 0") : string.Empty) +
+(Configuration.Settings.SubtitleSettings.AssaShowScaledBorderAndShadow ? (Environment.NewLine + "ScaledBorderAndShadow: Yes") : string.Empty) +
+$@"
 
 [V4+ Styles]
 {SsaStyle.DefaultAssStyleFormat}
@@ -167,8 +167,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
             }
             foreach (var p in subtitle.Paragraphs)
             {
-                var start = string.Format(timeCodeFormat, p.StartTime.Hours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds / 10);
-                var end = string.Format(timeCodeFormat, p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds / 10);
+                var start = MakeTimeCode(timeCodeFormat, p.StartTime);
+                var end = MakeTimeCode(timeCodeFormat, p.EndTime);
                 var style = "Default";
                 if (!string.IsNullOrEmpty(p.Extra) && isValidAssHeader && styles.Contains(p.Extra))
                 {
@@ -180,7 +180,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                     style = p.Style;
                 }
 
-                var actor = "";
+                var actor = string.Empty;
                 if (!string.IsNullOrEmpty(p.Actor))
                 {
                     actor = p.Actor;
@@ -204,19 +204,20 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                     marginV = p.MarginV;
                 }
 
-                var effect = "";
+                var effect = string.Empty;
                 if (!string.IsNullOrEmpty(p.Effect))
                 {
                     effect = p.Effect;
                 }
 
+                var text = p.Text.Replace(Environment.NewLine, "\\N");
                 if (p.IsComment)
                 {
-                    sb.AppendFormat(commentWriteFormat, start, end, FormatText(p), style, actor, marginL, marginR, marginV, effect, p.Layer).AppendLine();
+                    sb.AppendFormat(commentWriteFormat, start, end, FormatText(text), style, actor, marginL, marginR, marginV, effect, p.Layer).AppendLine();
                 }
                 else
                 {
-                    sb.AppendFormat(paragraphWriteFormat, start, end, FormatText(p), style, actor, marginL, marginR, marginV, effect, p.Layer).AppendLine();
+                    sb.AppendFormat(paragraphWriteFormat, start, end, FormatText(text), style, actor, marginL, marginR, marginV, effect, p.Layer).AppendLine();
                 }
             }
 
@@ -229,6 +230,19 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
             return sb.ToString().Trim() + Environment.NewLine;
         }
 
+        private static string MakeTimeCode(string timeCodeFormat, TimeCode timeCode)
+        {
+            var tc = new TimeCode(timeCode.Hours, timeCode.Minutes, timeCode.Seconds, timeCode.Milliseconds);
+            var fragment = (int)Math.Round(timeCode.Milliseconds / 10.0, MidpointRounding.AwayFromZero);
+            if (fragment >= 100)
+            {
+                tc = new TimeCode(tc.Hours, tc.Minutes, tc.Seconds + 1, 0);
+                fragment = 0;
+            }
+
+            return string.Format(timeCodeFormat, tc.Hours, tc.Minutes, tc.Seconds, fragment);
+        }
+
         public static string GetHeaderAndStylesFromSubStationAlpha(string header)
         {
             var scriptInfo = string.Empty;
@@ -237,6 +251,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                 header.Contains("ScriptType: v4.00") &&
                 !header.Contains("ScriptType: v4.00+"))
             {
+                header = FixScriptType(header);
                 var sb = new StringBuilder();
                 var scriptInfoOn = false;
                 foreach (var line in header.SplitToLines())
@@ -249,6 +264,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                     if (line.Equals("[Script Info]", StringComparison.OrdinalIgnoreCase))
                     {
                         scriptInfoOn = true;
+                    }
+
+                    if (line.Length > 10 && line.TrimStart().StartsWith("format:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var s = line.Trim().Remove(0, 7);
+                        var arr = line.Split(',');
                     }
 
                     if (scriptInfoOn)
@@ -267,26 +288,35 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                         }
                     }
                 }
+
                 scriptInfo = sb.ToString();
             }
+            else
+            {
+                header = FixScriptType(header);
+            }
 
-            var style = GetStyle(header);
-
-            if (string.IsNullOrEmpty(scriptInfo) || string.IsNullOrEmpty(style))
+            var stylesContent = GetStyleContentFromHeader(header);
+            if (string.IsNullOrEmpty(scriptInfo) || stylesContent.Count == 0)
             {
                 return DefaultHeader;
             }
 
-            return string.Format($@"{scriptInfo.Trim() + Environment.NewLine}
-[V4+ Styles]
-{SsaStyle.DefaultAssStyleFormat}
-{style.Trim() + Environment.NewLine}
-[Events]");
+            var styles = new List<SsaStyle>();
+            foreach (var styleAsString in stylesContent)
+            {
+                styles.Add(SsaStyle.FromRawSsa(header, styleAsString));
+            }
+
+            header = GetHeaderAndStylesFromAdvancedSubStationAlpha(header, styles);
+            return header;
         }
 
         public static string GetHeaderAndStylesFromAdvancedSubStationAlpha(string header, List<SsaStyle> styles)
         {
             var scriptInfo = string.Empty;
+            header = FixScriptType(header);
+
             if (header != null &&
                 header.Contains("[Script Info]") &&
                 header.Contains("ScriptType: v4.00+"))
@@ -335,11 +365,27 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                 return DefaultHeader;
             }
 
-            return string.Format($@"{scriptInfo.Trim() + Environment.NewLine}
-[V4+ Styles]
-{SsaStyle.DefaultAssStyleFormat}
-{style.ToString().Trim() + Environment.NewLine}
-[Events]");
+            return scriptInfo.Trim() + Environment.NewLine + 
+                   Environment.NewLine +
+                   "[V4+ Styles]" + Environment.NewLine + 
+                   SsaStyle.DefaultAssStyleFormat + Environment.NewLine + 
+                   style.ToString().Trim() + Environment.NewLine +
+                   Environment.NewLine +
+                   "[Events]";
+        }
+
+        private static string FixScriptType(string header)
+        {
+            if (header != null && !header.Contains("ScriptType: v4.00+"))
+            {
+                var match = ScriptTypeFinder.Match(header);
+                if (match.Success)
+                {
+                    header = header.Remove(match.Index, match.Length).Insert(match.Index, "ScriptType: v4.00+");
+                }
+            }
+
+            return header;
         }
 
         private static void LoadStylesFromSubstationAlpha(Subtitle subtitle, string title, string header, string headerNoStyles, StringBuilder sb)
@@ -852,7 +898,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
             var styles = new List<SsaStyle>();
             foreach (var styleName in GetStylesFromHeader(header))
             {
-                styles.Add(AdvancedSubStationAlpha.GetSsaStyle(styleName, header));
+                styles.Add(GetSsaStyle(styleName, header));
             }
             return styles;
         }
@@ -888,10 +934,40 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
             return list;
         }
 
-        public static string FormatText(Paragraph p)
+        public static List<string> GetStyleContentFromHeader(string headerLines)
         {
-            string text = p.Text.Replace(Environment.NewLine, "\\N");
+            var list = new List<string>();
 
+            if (headerLines == null)
+            {
+                headerLines = DefaultStyle;
+            }
+
+            if (headerLines.Contains("http://www.w3.org/ns/ttml"))
+            {
+                var subtitle = new Subtitle { Header = headerLines };
+                LoadStylesFromTimedText10(subtitle, string.Empty, headerLines, HeaderNoStyles, new StringBuilder());
+                headerLines = subtitle.Header;
+            }
+
+            foreach (var line in headerLines.SplitToLines())
+            {
+                if (line.StartsWith("style:", StringComparison.OrdinalIgnoreCase))
+                {
+                    var end = line.IndexOf(',');
+                    if (end > 0)
+                    {
+                        list.Add(line.Remove(0, 6).Trim());
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public static string FormatText(string input)
+        {
+            var text = input;
             if (!text.Contains('<'))
             {
                 return text;
@@ -1002,8 +1078,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
 
         public static string GetFormattedText(string input)
         {
-            var text = input.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine);
-
+            var text = NormalizeNewLines(input);
             var tooComplex = ContainsUnsupportedTags(text);
 
             if (!tooComplex)
@@ -1618,9 +1693,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                             {
                                 StartTime = GetTimeCodeFromString(start),
                                 EndTime = GetTimeCodeFromString(end),
-                                Text = text
-                                    .Replace("\\n", Environment.NewLine)
-                                    .Replace("\\N", Environment.NewLine),
+                                Text = NormalizeNewLines(text),
                             };
 
                             if (!string.IsNullOrEmpty(style))
@@ -1696,38 +1769,38 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                 int.Parse(timeCode[3]) * 10);
         }
 
+        public static void NormalizeNewLines(Subtitle subtitle)
+        {
+            foreach (var p in subtitle.Paragraphs)
+            {
+                p.Text = NormalizeNewLines(p.Text);
+            }
+        }
+
+        private static string NormalizeNewLines(string text)
+        {
+            return text.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine);
+        }
+
         public override void RemoveNativeFormatting(Subtitle subtitle, SubtitleFormat newFormat)
         {
+            var paragraphs = subtitle.Paragraphs.Where(p => !p.IsComment).Select(p => new Paragraph(p)).ToList();
+            subtitle.Paragraphs.Clear();
+            subtitle.Paragraphs.AddRange(paragraphs);
+
             if (newFormat != null && newFormat.Name == SubStationAlpha.NameOfFormat)
             {
                 foreach (var p in subtitle.Paragraphs)
                 {
-                    string s = p.Text;
-
+                    var s = p.Text;
                     if (s.Contains('{') && s.Contains('}'))
                     {
-                        var p1Index = s.IndexOf("\\p1", StringComparison.Ordinal);
-                        var p0Index = s.IndexOf("{\\p0}", StringComparison.Ordinal);
-                        if (p1Index > 0 && (p0Index > p1Index || p0Index == -1))
-                        {
-                            var startTagIndex = s.Substring(0, p1Index).LastIndexOf('{');
-                            if (startTagIndex >= 0)
-                            {
-                                if (p0Index > p1Index)
-                                {
-                                    s = s.Remove(startTagIndex, p0Index - startTagIndex + "{\\p0}".Length);
-                                }
-                                else
-                                {
-                                    s = s.Remove(startTagIndex);
-                                }
-                            }
-                        }
+                        s = RemoveDrawingTag(s);
 
                         var karaokeStart = s.IndexOf("{Kara Effector", StringComparison.Ordinal);
                         if (karaokeStart >= 0)
                         {
-                            int l = s.IndexOf('}', karaokeStart + 1);
+                            var l = s.IndexOf('}', karaokeStart + 1);
                             if (l < karaokeStart)
                             {
                                 break;
@@ -1779,8 +1852,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                         continue;
                     }
 
-                    p.Text = p.Text.Replace("\\n", Environment.NewLine); // Soft line break
-                    p.Text = p.Text.Replace("\\N", Environment.NewLine); // Hard line break
+                    p.Text = NormalizeNewLines(p.Text);
                     p.Text = p.Text.Replace("\\h", " "); // Hard space
 
                     if (noTags.StartsWith("m ", StringComparison.Ordinal))
@@ -1795,12 +1867,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                     }
 
                     p.Text = GetFormattedText(p.Text);
+                    p.Text = RemoveDrawingTag(p.Text);
 
-                    int indexOfBegin = p.Text.IndexOf('{');
-                    string pre = string.Empty;
+                    var indexOfBegin = p.Text.IndexOf('{');
+                    var pre = string.Empty;
                     while (indexOfBegin >= 0 && p.Text.IndexOf('}') > indexOfBegin)
                     {
-                        string s = p.Text.Substring(indexOfBegin);
+                        var s = p.Text.Substring(indexOfBegin);
                         if (s.StartsWith("{\\an1}", StringComparison.Ordinal) ||
                             s.StartsWith("{\\an2}", StringComparison.Ordinal) ||
                             s.StartsWith("{\\an3}", StringComparison.Ordinal) ||
@@ -1825,7 +1898,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                         {
                             pre = s.Substring(0, 5) + "}";
                         }
-                        int indexOfEnd = p.Text.IndexOf('}');
+
+                        var indexOfEnd = p.Text.IndexOf('}');
                         p.Text = p.Text.Remove(indexOfBegin, indexOfEnd - indexOfBegin + 1);
 
                         indexOfBegin = p.Text.IndexOf('{');
@@ -1833,6 +1907,40 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                     p.Text = pre + p.Text;
                 }
             }
+        }
+
+        public static string RemoveDrawingTag(string input)
+        {
+            var s = input;
+            var p1Index = s.IndexOf("\\p1", StringComparison.Ordinal);
+            if (p1Index == -1 && s.Contains("\\p"))
+            {
+                var findDrawStart = new Regex(@"\\p[123456789]");
+                var match = findDrawStart.Match(s);
+                if (match.Success)
+                {
+                    p1Index = match.Index;
+                }
+            }
+
+            var p0Index = s.IndexOf("{\\p0}", StringComparison.Ordinal);
+            if (p1Index > 0 && (p0Index > p1Index || p0Index == -1))
+            {
+                var startTagIndex = s.Substring(0, p1Index).LastIndexOf('{');
+                if (startTagIndex >= 0)
+                {
+                    if (p0Index > p1Index)
+                    {
+                        s = s.Remove(startTagIndex, p0Index - startTagIndex + "{\\p0}".Length);
+                    }
+                    else
+                    {
+                        s = s.Remove(startTagIndex);
+                    }
+                }
+            }
+
+            return s;
         }
 
         private static string RemoveTag(string s, string tag)
@@ -1928,12 +2036,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
         {
             if (c.A >= 255)
             {
-                return $"&H{c.B:X2}{c.G:X2}{c.R:X2}";
+                return $"c&H{c.B:X2}{c.G:X2}{c.R:X2}";
             }
 
             var alpha = 255 - c.A; // ASS stores alpha in reverse (0=full intensity and 255=fully transparent)
-            return $"alpha&H{alpha:X2}&\\&H{c.B:X2}{c.G:X2}{c.R:X2}";
+            return $"alpha&H{alpha:X2}&\\c&H{c.B:X2}{c.G:X2}{c.R:X2}";
         }
+
+        public static string GetSsaColorStringNoTransparency(Color c) => $"&H{c.B:X2}{c.G:X2}{c.R:X2}";
 
         public static string CheckForErrors(string header)
         {
@@ -2332,46 +2442,46 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
         {
             var style = new SsaStyle { Name = styleName };
 
-            int nameIndex = -1;
-            int fontNameIndex = -1;
-            int fontsizeIndex = -1;
-            int primaryColourIndex = -1;
-            int secondaryColourIndex = -1;
-            int tertiaryColourIndex = -1;
-            int outlineColourIndex = -1;
-            int backColourIndex = -1;
-            int boldIndex = -1;
-            int italicIndex = -1;
-            int underlineIndex = -1;
-            int strikOutIndex = -1;
-            int outlineIndex = -1;
-            int shadowIndex = -1;
-            int alignmentIndex = -1;
-            int marginLIndex = -1;
-            int marginRIndex = -1;
-            int marginVIndex = -1;
-            int scaleXIndex = -1;
-            int scaleYIndex = -1;
-            int spacingIndex = -1;
-            int angleIndex = -1;
-            int borderStyleIndex = -1;
+            var nameIndex = -1;
+            var fontNameIndex = -1;
+            var fontSizeIndex = -1;
+            var primaryColourIndex = -1;
+            var secondaryColourIndex = -1;
+            var tertiaryColourIndex = -1;
+            var outlineColourIndex = -1;
+            var backColourIndex = -1;
+            var boldIndex = -1;
+            var italicIndex = -1;
+            var underlineIndex = -1;
+            var strikeOutIndex = -1;
+            var outlineIndex = -1;
+            var shadowIndex = -1;
+            var alignmentIndex = -1;
+            var marginLIndex = -1;
+            var marginRIndex = -1;
+            var marginVIndex = -1;
+            var scaleXIndex = -1;
+            var scaleYIndex = -1;
+            var spacingIndex = -1;
+            var angleIndex = -1;
+            var borderStyleIndex = -1;
 
             if (header == null)
             {
                 header = DefaultHeader;
             }
 
-            foreach (string line in header.SplitToLines())
+            foreach (var line in header.SplitToLines())
             {
-                string s = line.Trim().ToLowerInvariant();
+                var s = line.Trim().ToLowerInvariant();
                 if (s.StartsWith("format:", StringComparison.Ordinal))
                 {
                     if (line.Length > 10)
                     {
                         var format = line.ToLowerInvariant().Substring(8).Split(',');
-                        for (int i = 0; i < format.Length; i++)
+                        for (var i = 0; i < format.Length; i++)
                         {
-                            string f = format[i].Trim().ToLowerInvariant();
+                            var f = format[i].Trim().ToLowerInvariant();
                             if (f == "name")
                             {
                                 nameIndex = i;
@@ -2382,7 +2492,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                             }
                             else if (f == "fontsize")
                             {
-                                fontsizeIndex = i;
+                                fontSizeIndex = i;
                             }
                             else if (f == "primarycolour")
                             {
@@ -2418,7 +2528,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                             }
                             else if (f == "strikeout")
                             {
-                                strikOutIndex = i;
+                                strikeOutIndex = i;
                             }
                             else if (f == "outline")
                             {
@@ -2473,9 +2583,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                     {
                         style.RawLine = line;
                         var format = line.Substring(6).Split(',');
-                        for (int i = 0; i < format.Length; i++)
+                        for (var i = 0; i < format.Length; i++)
                         {
-                            string f = format[i].Trim();
+                            var f = format[i].Trim();
                             if (i == nameIndex)
                             {
                                 style.Name = format[i].Trim();
@@ -2484,9 +2594,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                             {
                                 style.FontName = f;
                             }
-                            else if (i == fontsizeIndex)
+                            else if (i == fontSizeIndex)
                             {
-                                if (float.TryParse(f, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var fOut))
+                                if (decimal.TryParse(f, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var fOut))
                                 {
                                     style.FontSize = fOut;
                                 }
@@ -2523,7 +2633,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
                             {
                                 style.Underline = f == "-1" || f == "1";
                             }
-                            else if (i == strikOutIndex)
+                            else if (i == strikeOutIndex)
                             {
                                 style.Strikeout = f == "-1" || f == "1";
                             }
@@ -2611,6 +2721,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
             }
 
             return new SsaStyle { Name = styleName };
+        }
+
+        public static string UpdateOrAddStyle(string header, SsaStyle style)
+        {
+            var styles = GetSsaStylesFromHeader(header).Where(p => p.Name != style.Name).ToList();
+            styles.Add(style);
+            return GetHeaderAndStylesFromAdvancedSubStationAlpha(header, styles);
         }
     }
 }

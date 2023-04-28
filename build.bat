@@ -99,7 +99,7 @@ SET "LanguageToolPath=src\UpdateLanguageFiles\bin\debug\UpdateLanguageFiles.exe"
 IF NOT EXIST "%LanguageToolPath%" (
   ECHO Compile UpdateLanguageFiles!
 )
-"%LanguageToolPath%" "LanguageMaster.xml" "src\ui\Logic\LanguageDeserializer.cs"
+"%LanguageToolPath%" "LanguageBaseEnglish.xml" "src\ui\Logic\LanguageDeserializer.cs"
 ECHO.
 
 "%MSBUILD%" SubtitleEdit.sln /r /t:%BUILDTYPE% /p:Configuration=Release /p:Platform="Any CPU"^
@@ -127,6 +127,20 @@ IF DEFINED INNOSETUP IF EXIST "%INNOSETUP%" (
 ) ELSE (
   ECHO Inno Setup wasn't found; the installer wasn't built.
 )
+
+
+
+
+SET "WinGetFix=src\UpdateAssemblyInfo\bin\debug\UpdateAssemblyInfo.exe"
+IF NOT EXIST "%WinGetFix%" (
+  ECHO Compile UpdateAssemblyInfo!
+)
+"%WinGetFix%" "winget" 
+ECHO.
+ECHO Validate with: winget validate --manifest C:\git\subtitleedit\winget
+ECHO Test with    : winget install --manifest C:\git\subtitleedit\winget
+ECHO Submit with  : wingetcreate submit C:\git\subtitleedit\winget
+pause
 
 
 :EndSuccessful
@@ -172,27 +186,34 @@ IF NOT EXIST "temp_zip"              MD "temp_zip"
 IF NOT EXIST "temp_zip\Languages"    MD "temp_zip\Languages"
 IF NOT EXIST "temp_zip\Dictionaries" MD "temp_zip\Dictionaries"
 IF NOT EXIST "temp_zip\Ocr"          MD "temp_zip\Ocr"
-IF NOT EXIST "temp_zip\Tesseract302"          MD "temp_zip\Tesseract302"
+IF NOT EXIST "temp_zip\Tesseract302" MD "temp_zip\Tesseract302"
+IF NOT EXIST "temp_zip\Icons"        MD "temp_zip\Icons"
 
 ECHO.
-COPY /Y /V "..\..\..\..\LICENSE.txt"      "temp_zip\"
-COPY /Y /V "..\..\..\..\Changelog.txt"    "temp_zip\"
-COPY /Y /V "..\..\..\..\preview.mkv"    "temp_zip\"
-COPY /Y /V "Hunspellx86.dll"           "temp_zip\"
-COPY /Y /V "Hunspellx64.dll"           "temp_zip\"
-COPY /Y /V "libse.dll"           "temp_zip\"
-COPY /Y /V "zlib.net.dll"           "temp_zip\"
-COPY /Y /V "NHunspell.dll"           "temp_zip\"
-COPY /Y /V "UtfUnknown.dll"           "temp_zip\"
-COPY /Y /V "..\..\DLLs\Interop.QuartzTypeLib.dll"           "temp_zip\"
-COPY /Y /V "System.Net.Http.Extensions.dll"           "temp_zip\"
-COPY /Y /V "Newtonsoft.Json.dll"           "temp_zip\"
-COPY /Y /V "System.Net.Http.Primitives.dll"           "temp_zip\"
-COPY /Y /V "SubtitleEdit.exe"          "temp_zip\"
-COPY /Y /V "Languages\*.xml"           "temp_zip\Languages\"
-COPY /Y /V "..\..\..\..\Dictionaries\*.*" "temp_zip\Dictionaries\"
-COPY /Y /V "..\..\..\..\Ocr\*.*"          "temp_zip\Ocr\"
-XCOPY /Y /V "..\..\..\..\Tesseract302\*.*"      "temp_zip\Tesseract302\" /S
+COPY /Y /V "..\..\..\..\LICENSE.txt"               "temp_zip\"
+COPY /Y /V "..\..\..\..\Changelog.txt"             "temp_zip\"
+COPY /Y /V "..\..\..\..\preview.mkv"               "temp_zip\"
+COPY /Y /V "Hunspellx86.dll"                       "temp_zip\"
+COPY /Y /V "Hunspellx64.dll"                       "temp_zip\"
+COPY /Y /V "libse.dll"                             "temp_zip\"
+COPY /Y /V "zlib.net.dll"                          "temp_zip\"
+COPY /Y /V "NHunspell.dll"                         "temp_zip\"
+COPY /Y /V "UtfUnknown.dll"                        "temp_zip\"
+COPY /Y /V "Vosk.dll"                              "temp_zip\"
+COPY /Y /V "NCalc.dll"                             "temp_zip\"
+COPY /Y /V "..\..\DLLs\Interop.QuartzTypeLib.dll"  "temp_zip\"
+COPY /Y /V "System.Net.Http.Extensions.dll"        "temp_zip\"
+COPY /Y /V "Newtonsoft.Json.dll"                   "temp_zip\"
+COPY /Y /V "System.Net.Http.Primitives.dll"        "temp_zip\"
+COPY /Y /V "NAudio.Core.dll"                       "temp_zip\"
+COPY /Y /V "NAudio.WinMM.dll"                      "temp_zip\"
+COPY /Y /V "Microsoft.Win32.Registry.dll"          "temp_zip\"
+COPY /Y /V "SubtitleEdit.exe"                      "temp_zip\"
+COPY /Y /V "Languages\*.xml"                       "temp_zip\Languages\"
+COPY /Y /V "..\..\..\..\Dictionaries\*.*"          "temp_zip\Dictionaries\"
+COPY /Y /V "..\..\..\..\Ocr\*.*"                   "temp_zip\Ocr\"
+XCOPY /Y /V "..\..\..\..\Tesseract302\*.*"         "temp_zip\Tesseract302\" /S
+COPY /Y /V "..\..\..\..\Icons\*.ico"               "temp_zip\Icons\"
 
 PUSHD "temp_zip"
 START "" /B /WAIT "%SEVENZIP%" a -tzip -mx=9 "SubtitleEdit-%VERSION%.zip" * >NUL

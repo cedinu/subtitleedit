@@ -27,6 +27,15 @@ namespace Nikse.SubtitleEdit.Core.Common
                     return new TimeSpan(0, hours, minutes, seconds, milliseconds).TotalMilliseconds;
                 }
             }
+
+            if (parts.Length == 3)
+            {
+                if (int.TryParse(parts[0], out var minutes) && int.TryParse(parts[1], out var seconds) && int.TryParse(parts[2], out var milliseconds))
+                {
+                    return new TimeSpan(0, 0, minutes, seconds, milliseconds).TotalMilliseconds;
+                }
+            }
+
             return 0;
         }
 
@@ -40,6 +49,20 @@ namespace Nikse.SubtitleEdit.Core.Common
                     return new TimeCode(hours, minutes, seconds, SubtitleFormat.FramesToMillisecondsMax999(frames)).TotalMilliseconds;
                 }
             }
+            return 0;
+        }
+
+        public static double ParseHHMMSSToMilliseconds(string text)
+        {
+            var parts = text.Split(TimeSplitChars, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 3)
+            {
+                if (int.TryParse(parts[0], out var hours) && int.TryParse(parts[1], out var minutes) && int.TryParse(parts[2], out var seconds))
+                {
+                    return new TimeCode(hours, minutes, seconds, 0).TotalMilliseconds;
+                }
+            }
+
             return 0;
         }
 
@@ -122,6 +145,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                 {
                     return new TimeSpan();
                 }
+
                 return TimeSpan.FromMilliseconds(TotalMilliseconds);
             }
             set => TotalMilliseconds = value.TotalMilliseconds;
@@ -132,8 +156,8 @@ namespace Nikse.SubtitleEdit.Core.Common
         public string ToString(bool localize)
         {
             var ts = TimeSpan;
-            string decimalSeparator = localize ? CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator : ",";
-            string s = $"{ts.Hours + ts.Days * 24:00}:{ts.Minutes:00}:{ts.Seconds:00}{decimalSeparator}{ts.Milliseconds:000}";
+            var decimalSeparator = localize ? CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator : ",";
+            var s = $"{ts.Hours + ts.Days * 24:00}:{ts.Minutes:00}:{ts.Seconds:00}{decimalSeparator}{ts.Milliseconds:000}";
 
             return PrefixSign(s);
         }
@@ -141,7 +165,7 @@ namespace Nikse.SubtitleEdit.Core.Common
         public string ToShortString(bool localize = false)
         {
             var ts = TimeSpan;
-            string decimalSeparator = localize ? CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator : ",";
+            var decimalSeparator = localize ? CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator : ",";
             string s;
             if (ts.Minutes == 0 && ts.Hours == 0 && ts.Days == 0)
             {
@@ -155,20 +179,22 @@ namespace Nikse.SubtitleEdit.Core.Common
             {
                 s = $"{ts.Hours + ts.Days * 24:0}:{ts.Minutes:00}:{ts.Seconds:00}{decimalSeparator}{ts.Milliseconds:000}";
             }
+
             return PrefixSign(s);
         }
 
         public string ToShortStringHHMMSSFF()
         {
-            string s = ToHHMMSSFF();
-            string pre = string.Empty;
+            var s = ToHHMMSSFF();
+            var pre = string.Empty;
             if (s.StartsWith('-'))
             {
                 pre = "-";
                 s = s.TrimStart('-');
             }
-            int j = 0;
-            int len = s.Length;
+
+            var j = 0;
+            var len = s.Length;
             while (j + 6 < len && s[j] == '0' && s[j + 1] == '0' && s[j + 2] == ':')
             {
                 j += 3;
@@ -191,6 +217,25 @@ namespace Nikse.SubtitleEdit.Core.Common
             else
             {
                 s = $"{ts.Days * 24 + ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}:{SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds):00}";
+            }
+
+            return PrefixSign(s);
+        }
+
+        public string ToHHMMSS()
+        {
+            string s;
+            var ts = TimeSpan;
+            var frames = Math.Round(ts.Milliseconds / (BaseUnit / Configuration.Settings.General.CurrentFrameRate));
+            if (frames >= Configuration.Settings.General.CurrentFrameRate - 0.001)
+            {
+                var newTs = new TimeSpan(ts.Ticks);
+                newTs = newTs.Add(new TimeSpan(0, 0, 1));
+                s = $"{newTs.Days * 24 + newTs.Hours:00}:{newTs.Minutes:00}:{newTs.Seconds:00}";
+            }
+            else
+            {
+                s = $"{ts.Days * 24 + ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}";
             }
             return PrefixSign(s);
         }
@@ -226,6 +271,7 @@ namespace Nikse.SubtitleEdit.Core.Common
             {
                 s = $"{ts.Seconds:00}:{SubtitleFormat.MillisecondsToFramesMaxFrameRate(ts.Milliseconds):00}";
             }
+
             return PrefixSign(s);
         }
 
@@ -279,6 +325,5 @@ namespace Nikse.SubtitleEdit.Core.Common
 
             return ToShortString(true);
         }
-
     }
 }

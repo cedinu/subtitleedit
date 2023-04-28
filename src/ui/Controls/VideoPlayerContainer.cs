@@ -4,10 +4,8 @@ using Nikse.SubtitleEdit.Core.SubtitleFormats;
 using Nikse.SubtitleEdit.Logic;
 using Nikse.SubtitleEdit.Logic.VideoPlayers;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Nikse.SubtitleEdit.Controls
@@ -46,6 +44,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         public event EventHandler OnButtonClicked;
         public event EventHandler OnEmptyPlayerClicked;
+        public event EventHandler OnPlayerClicked;
 
         public Panel PanelPlayer { get; private set; }
         private Panel _panelSubtitle;
@@ -85,6 +84,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         private bool _isMuted;
         private double? _muteOldVolume;
+        public bool PlayedWithCustomSpeed;
         private readonly System.ComponentModel.ComponentResourceManager _resources;
         public int ControlsHeight = 47;
         private const int OriginalSubtitlesHeight = 57;
@@ -124,17 +124,8 @@ namespace Nikse.SubtitleEdit.Controls
         private readonly ToolTip _currentPositionToolTip = new ToolTip();
         private int _lastCurrentPositionToolTipX;
         private int _lastCurrentPositionToolTipY;
-        private List<MatroskaChapter> _chapters = new List<MatroskaChapter>();
 
-        public List<MatroskaChapter> Chapters
-        {
-            get => _chapters;
-            set
-            {
-                _chapters = value;
-                Invalidate(true);
-            }
-        }
+        public MatroskaChapter[] Chapters { get; set; } 
 
         public RightToLeft TextRightToLeft
         {
@@ -200,8 +191,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         public VideoPlayerContainer()
         {
-            _chapters = new List<MatroskaChapter>();
-            SmpteMode = false;
+            Chapters = Array.Empty<MatroskaChapter>();
             FontSizeFactor = 1.0F;
             BorderStyle = BorderStyle.None;
             _resources = new System.ComponentModel.ComponentResourceManager(typeof(VideoPlayerContainer));
@@ -239,6 +229,15 @@ namespace Nikse.SubtitleEdit.Controls
 
             PictureBoxFastForwardMouseEnter(null, null);
             PictureBoxFastForwardOverMouseLeave(null, null);
+
+            _labelTimeCode.Click += LabelTimeCodeClick;
+        }
+
+        private bool _showDuration = true;
+        private void LabelTimeCodeClick(object sender, EventArgs e)
+        {
+            _showDuration = !_showDuration;
+            RefreshProgressBar();
         }
 
         private void ShowAllControls()
@@ -366,11 +365,12 @@ namespace Nikse.SubtitleEdit.Controls
         private void SubtitleTextBoxMouseClick(object sender, MouseEventArgs e)
         {
             TogglePlayPause();
+            OnPlayerClicked?.Invoke(sender, e);
         }
 
         public Paragraph LastParagraph { get; set; }
 
-        public void SetSubtitleText(string text, Paragraph p, Subtitle subtitle)
+        public void SetSubtitleText(string text, Paragraph p, Subtitle subtitle, SubtitleFormat format)
         {
             var mpv = VideoPlayer as LibMpvDynamic;
             LastParagraph = p;
@@ -382,7 +382,7 @@ namespace Nikse.SubtitleEdit.Controls
                     VideoPlayerContainerResize(null, null);
                 }
                 _subtitleText = text;
-                RefreshMpv(mpv, subtitle);
+                RefreshMpv(mpv, subtitle, format);
                 if (TextBox.Text.Length > 0)
                 {
                     TextBox.Text = string.Empty;
@@ -411,9 +411,11 @@ namespace Nikse.SubtitleEdit.Controls
                 FontSize = gs.VideoPlayerPreviewFontSize,
                 Bold = gs.VideoPlayerPreviewFontBold,
                 Primary = gs.MpvPreviewTextPrimaryColor,
+                Outline = gs.MpvPreviewTextOutlineColor,
+                Background = gs.MpvPreviewTextBackgroundColor,
                 OutlineWidth = gs.MpvPreviewTextOutlineWidth,
                 ShadowWidth = gs.MpvPreviewTextShadowWidth,
-                BorderStyle = gs.MpvPreviewTextOpaqueBox ? "3" : "1",
+                BorderStyle = gs.MpvPreviewTextOpaqueBoxStyle,
                 Alignment = gs.MpvPreviewTextAlignment,
                 MarginVertical = gs.MpvPreviewTextMarginVertical
             };
@@ -441,7 +443,7 @@ namespace Nikse.SubtitleEdit.Controls
         private int _mpvSubOldHash = -1;
         private string _mpvTextFileName;
         private int _retryCount = 3;
-        private void RefreshMpv(LibMpvDynamic mpv, Subtitle subtitle)
+        private void RefreshMpv(LibMpvDynamic mpv, Subtitle subtitle, SubtitleFormat uiFormat)
         {
             if (subtitle == null)
             {
@@ -450,9 +452,9 @@ namespace Nikse.SubtitleEdit.Controls
 
             try
             {
+                subtitle = new Subtitle(subtitle, false);
                 if (SmpteMode)
                 {
-                    subtitle = new Subtitle(subtitle, false);
                     foreach (var paragraph in subtitle.Paragraphs)
                     {
                         paragraph.StartTime.TotalMilliseconds *= 1.001;
@@ -469,11 +471,15 @@ namespace Nikse.SubtitleEdit.Controls
                 }
                 else
                 {
-                    if (subtitle.Header == null || !subtitle.Header.Contains("[V4+ Styles]"))
+                    if (subtitle.Header == null || !subtitle.Header.Contains("[V4+ Styles]") || uiFormat.Name != AdvancedSubStationAlpha.NameOfFormat)
                     {
+                        if (string.IsNullOrEmpty(subtitle.Header) && uiFormat.Name == SubStationAlpha.NameOfFormat)
+                        {
+                            subtitle.Header = SubStationAlpha.DefaultHeader;
+                        }
+
                         if (subtitle.Header != null && subtitle.Header.Contains("[V4 Styles]"))
                         {
-                            subtitle = new Subtitle(subtitle, false);
                             subtitle.Header = AdvancedSubStationAlpha.GetHeaderAndStylesFromSubStationAlpha(subtitle.Header);
                         }
 
@@ -491,7 +497,10 @@ namespace Nikse.SubtitleEdit.Controls
                             }
                         }
 
-                        subtitle.Header = MpvPreviewStyleHeader;
+                        if (subtitle.Header == null || !(subtitle.Header.Contains("[V4+ Styles]") && uiFormat.Name == SubStationAlpha.NameOfFormat))
+                        {
+                            subtitle.Header = MpvPreviewStyleHeader;
+                        }
 
                         if (oldSub.Header != null && oldSub.Header.Length > 20 && oldSub.Header.Substring(3, 3) == "STL")
                         {
@@ -570,232 +579,7 @@ namespace Nikse.SubtitleEdit.Controls
             set
             {
                 _subtitleText = value;
-
-                bool alignLeft = _subtitleText.StartsWith("{\\a1}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\a5}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\a9}", StringComparison.Ordinal) || // sub station alpha
-                                 _subtitleText.StartsWith("{\\an1}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\an4}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\an7}", StringComparison.Ordinal); // advanced sub station alpha
-
-                bool alignRight = _subtitleText.StartsWith("{\\a3}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\a7}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\a11}", StringComparison.Ordinal) || // sub station alpha
-                                  _subtitleText.StartsWith("{\\an3}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\an6}", StringComparison.Ordinal) || _subtitleText.StartsWith("{\\an9}", StringComparison.Ordinal); // advanced sub station alpha
-
-                // remove styles for display text (except italic)
-                string text = Utilities.RemoveSsaTags(_subtitleText);
-                text = text.Replace("<b></b>", string.Empty);
-                text = text.Replace("<i></i>", string.Empty);
-                text = text.Replace("<u></u>", string.Empty);
-
-                // display italic
-                var sb = new StringBuilder();
-                int i = 0;
-                bool isItalic = false;
-                bool isBold = false;
-                bool isUnderline = false;
-                bool isFontColor = false;
-                int fontColorBegin = 0;
-                TextBox.Text = string.Empty;
-                int letterCount = 0;
-                var fontColorLookups = new Dictionary<Point, Color>();
-                var styleLookups = new Dictionary<int, FontStyle>(text.Length);
-                for (int j = 0; j < text.Length; j++)
-                {
-                    styleLookups.Add(j, Configuration.Settings.General.VideoPlayerPreviewFontBold ? FontStyle.Bold : FontStyle.Regular);
-                }
-
-                Color fontColor = Color.White;
-                while (i < text.Length)
-                {
-                    if (text.Substring(i).StartsWith("<i>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        TextBox.AppendText(sb.ToString());
-                        sb.Clear();
-                        isItalic = true;
-                        i += 2;
-                    }
-                    else if (isItalic && text.Substring(i).StartsWith("</i>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        TextBox.AppendText(sb.ToString());
-                        sb.Clear();
-                        isItalic = false;
-                        i += 3;
-                    }
-                    else if (text.Substring(i).StartsWith("<b>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (!Configuration.Settings.General.VideoPlayerPreviewFontBold)
-                        {
-                            TextBox.AppendText(sb.ToString());
-                            sb.Clear();
-                            isBold = true;
-                        }
-                        i += 2;
-                    }
-                    else if (isBold && text.Substring(i).StartsWith("</b>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (!Configuration.Settings.General.VideoPlayerPreviewFontBold)
-                        {
-                            TextBox.AppendText(sb.ToString());
-                            sb.Clear();
-                            isBold = false;
-                        }
-                        i += 3;
-                    }
-                    else if (Configuration.Settings.General.VideoPlayerPreviewFontBold && text.Substring(i).StartsWith("</b>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        i += 3;
-                    }
-                    else if (text.Substring(i).StartsWith("<u>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        TextBox.AppendText(sb.ToString());
-                        sb.Clear();
-                        isUnderline = true;
-                        i += 2;
-                    }
-                    else if (isUnderline && text.Substring(i).StartsWith("</u>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        TextBox.AppendText(sb.ToString());
-                        sb.Clear();
-                        isUnderline = false;
-                        i += 3;
-                    }
-                    else if (text.Substring(i).StartsWith("<font ", StringComparison.OrdinalIgnoreCase))
-                    {
-                        string s = text.Substring(i);
-                        bool fontFound = false;
-                        int end = s.IndexOf('>');
-                        if (end > 0)
-                        {
-                            string f = s.Substring(0, end);
-                            int colorStart = f.IndexOf(" color=", StringComparison.OrdinalIgnoreCase);
-
-                            if (colorStart > 0)
-                            {
-                                int colorEnd = colorStart + " color=".Length + 1;
-                                if (colorEnd < f.Length)
-                                {
-                                    colorEnd = f.IndexOf('"', colorEnd);
-                                    if (colorEnd > 0 || colorEnd == -1)
-                                    {
-                                        if (colorEnd == -1)
-                                        {
-                                            s = f.Substring(colorStart);
-                                        }
-                                        else
-                                        {
-                                            s = f.Substring(colorStart, colorEnd - colorStart);
-                                        }
-
-                                        s = s.Remove(0, " color=".Length);
-                                        s = s.Trim('"');
-                                        s = s.Trim('\'');
-                                        try
-                                        {
-                                            fontColor = ColorTranslator.FromHtml(s);
-                                            fontFound = true;
-                                        }
-                                        catch
-                                        {
-                                            fontFound = false;
-                                            if (s.Length > 0)
-                                            {
-                                                try
-                                                {
-                                                    fontColor = ColorTranslator.FromHtml("#" + s);
-                                                    fontFound = true;
-                                                }
-                                                catch
-                                                {
-                                                    fontFound = false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            i += end;
-                        }
-                        if (fontFound)
-                        {
-                            TextBox.AppendText(sb.ToString());
-                            sb.Clear();
-                            isFontColor = true;
-                            fontColorBegin = letterCount;
-                        }
-                    }
-                    else if (isFontColor && text.Substring(i).StartsWith("</font>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        fontColorLookups.Add(new Point(fontColorBegin, TextBox.Text.Length + sb.ToString().Length - fontColorBegin), fontColor);
-                        TextBox.AppendText(sb.ToString());
-                        sb.Clear();
-                        isFontColor = false;
-                        i += 6;
-                    }
-                    else if (text.Substring(i).StartsWith("</font>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        i += 6;
-                    }
-                    else if (text[i] == '\n') // RichTextBox only count NewLine as one character!
-                    {
-                        sb.Append(text[i]);
-                    }
-                    else if (text[i] == '\r')
-                    {
-                        // skip carriage return (0xd / 13)
-                    }
-                    else
-                    {
-                        var idx = TextBox.TextLength + sb.Length;
-                        if (isBold)
-                        {
-                            styleLookups[idx] |= FontStyle.Bold;
-                        }
-
-                        if (isItalic)
-                        {
-                            styleLookups[idx] |= FontStyle.Italic;
-                        }
-
-                        if (isUnderline)
-                        {
-                            styleLookups[idx] |= FontStyle.Underline;
-                        }
-
-                        sb.Append(text[i]);
-                        letterCount++;
-                    }
-                    i++;
-                }
-                TextBox.Text += sb.ToString();
-                TextBox.SelectAll();
-
-                if (alignLeft)
-                {
-                    TextBox.SelectionAlignment = HorizontalAlignment.Left;
-                }
-                else if (alignRight)
-                {
-                    TextBox.SelectionAlignment = HorizontalAlignment.Right;
-                }
-                else
-                {
-                    TextBox.SelectionAlignment = HorizontalAlignment.Center;
-                }
-
-                TextBox.DeselectAll();
-
-                Font currentFont = TextBox.SelectionFont;
-                for (int k = 0; k < TextBox.TextLength; k++)
-                {
-                    TextBox.SelectionStart = k;
-                    TextBox.SelectionLength = 1;
-                    TextBox.SelectionFont = new Font(currentFont.FontFamily, currentFont.Size, styleLookups[k]);
-                    TextBox.DeselectAll();
-                }
-
-                foreach (var entry in fontColorLookups)
-                {
-                    TextBox.SelectionStart = entry.Key.X;
-                    TextBox.SelectionLength = entry.Key.Y;
-                    TextBox.SelectionColor = entry.Value;
-                    TextBox.DeselectAll();
-                }
+                SetRtbHtml.SetText(TextBox, value);
             }
         }
 
@@ -807,6 +591,7 @@ namespace Nikse.SubtitleEdit.Controls
             }
 
             TogglePlayPause();
+            OnPlayerClicked?.Invoke(sender, e);
         }
 
         public void InitializeVolume(double defaultVolume)
@@ -827,7 +612,15 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 _panelSubtitle.Height += ControlsHeight;
                 _panelControls.Visible = false;
+
+
+                var useCompleteFullscreen = VideoPlayer is LibMpvDynamic && Configuration.Settings.General.MpvHandlesPreviewText;
+                if (useCompleteFullscreen)
+                {
+                    PanelPlayer.Dock = DockStyle.Fill;
+                }
             }
+
             if (hideCursor)
             {
                 HideCursor();
@@ -841,7 +634,13 @@ namespace Nikse.SubtitleEdit.Controls
                 _panelControls.Visible = true;
                 _panelControls.BringToFront();
                 _panelSubtitle.Height -= ControlsHeight;
+
+                if (PanelPlayer.Dock == DockStyle.Fill)
+                {
+                    PanelPlayer.Dock = DockStyle.None;
+                }
             }
+
             ShowCursor();
         }
 
@@ -1237,7 +1036,7 @@ namespace Nikse.SubtitleEdit.Controls
             if (string.IsNullOrEmpty(_labelTimeCode.Text))
             {
                 var span = TimeCode.FromSeconds(1);
-                _labelTimeCode.Text = $"{span.ToDisplayString()} / {span.ToDisplayString()}{(SmpteMode ? " SMPTE" : string.Empty)}";
+                _labelTimeCode.Text = GetDisplayTimeCode(0, 0);
                 _labelTimeCode.Left = Width - _labelTimeCode.Width - 9;
                 if (_labelTimeCode.Top + _labelTimeCode.Height >= _panelControls.Height - 4)
                 {
@@ -1725,23 +1524,23 @@ namespace Nikse.SubtitleEdit.Controls
             double cursorVideoPosition = CursorVideoPosition(mouseX);
             string toolTiptext = TimeCode.FromSeconds(cursorVideoPosition + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit).ToDisplayString();
 
-            if (_chapters?.Count > 0)
+            if (Chapters?.Length > 0)
             {
                 toolTiptext += " - ";
 
-                for (int index = 0; index < _chapters.Count; index++)
+                for (int index = 0; index < Chapters.Length; index++)
                 {
-                    var chapterTime = _chapters[index].StartTime;
-                    var nextChapterTime = index + 1 < _chapters.Count ? _chapters[index + 1].StartTime : Duration;
+                    var chapterTime = Chapters[index].StartTime;
+                    var nextChapterTime = index + 1 < Chapters.Length ? Chapters[index + 1].StartTime : Duration;
 
                     if (cursorVideoPosition >= chapterTime && cursorVideoPosition < nextChapterTime)
                     {
-                        if (_chapters[index].Nested)
+                        if (Chapters[index].Nested)
                         {
                             toolTiptext += "+ ";
                         }
 
-                        toolTiptext += _chapters[index].Name;
+                        toolTiptext += Chapters[index].Name;
                         break;
                     }
                 }
@@ -1756,12 +1555,12 @@ namespace Nikse.SubtitleEdit.Controls
             {
                 int max = _pictureBoxProgressbarBackground.Width - 9;
                 int index = 0;
-                while (index < _chapters.Count)
+                while (index < Chapters.Length)
                 {
                     int pos;
                     try
                     {
-                        double time = _chapters[index++].StartTime;
+                        double time = Chapters[index++].StartTime;
                         pos = SecondsToXPosition(time) + mergin;
                     }
                     catch
@@ -1797,7 +1596,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         private void PictureBoxProgressbarBackgroundPaint(object sender, PaintEventArgs e)
         {
-            if (_chapters?.Count > 0)
+            if (Chapters?.Length > 0)
             {
                 DrawChapters(e.Graphics, 3, _pictureBoxProgressBar.Location.Y, _pictureBoxProgressBar.Location.Y + 3);
             }
@@ -1805,7 +1604,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         private void PictureBoxProgressBarPaint(object sender, PaintEventArgs e)
         {
-            if (_chapters?.Count > 0)
+            if (Chapters?.Length > 0)
             {
                 DrawChapters(e.Graphics, -1, 1, _pictureBoxProgressBar.Height);
             }
@@ -1856,7 +1655,9 @@ namespace Nikse.SubtitleEdit.Controls
         /// See https://blog.frame.io/2017/07/17/timecode-and-frame-rates/ and
         ///     https://backlothelp.netflix.com/hc/en-us/articles/215131928-How-do-I-know-whether-to-select-SMPTE-or-MEDIA-for-a-timing-reference-
         /// </summary>
-        public bool SmpteMode { get; set; }
+        public bool SmpteMode => Configuration.Settings.General.CurrentVideoIsSmpte;
+
+        public bool UsingFrontCenterAudioChannelOnly { get; set; } = false;
 
         public void RefreshProgressBar()
         {
@@ -1867,10 +1668,11 @@ namespace Nikse.SubtitleEdit.Controls
             }
             else
             {
-                int max = _pictureBoxProgressbarBackground.Width - 9;
-                double percent = (VideoPlayer.CurrentPosition * 100.0) / VideoPlayer.Duration;
+                var max = _pictureBoxProgressbarBackground.Width - 9;
+                var percent = (VideoPlayer.CurrentPosition * 100.0) / VideoPlayer.Duration;
                 _pictureBoxProgressBar.Width = (int)(max * percent / 100.0);
 
+                var duration = Duration;
                 if (Convert.ToInt64(Duration) == 0)
                 {
                     return;
@@ -1882,32 +1684,72 @@ namespace Nikse.SubtitleEdit.Controls
                     pos = 0;
                 }
 
-                var dur = TimeCode.FromSeconds(Duration + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
-                if (SmpteMode)
-                {
-                    var span = TimeCode.FromSeconds(pos + 0.017 + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
-                    _labelTimeCode.Text = $"{span.ToDisplayString()} / {dur.ToDisplayString()} SMPTE";
-                }
-                else
-                {
-                    var span = TimeCode.FromSeconds(pos + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
-                    _labelTimeCode.Text = $"{span.ToDisplayString()} / {dur.ToDisplayString()}";
-                }
                 ResizeTimeCode();
+                _labelTimeCode.Text = GetDisplayTimeCode(pos, duration);
 
                 RefreshPlayPauseButtons();
             }
         }
 
+        private string GetDisplayTimeCode(double positionInSeconds, double duration)
+        {
+            string displayTimeCode;
+            var dur = TimeCode.FromSeconds(duration + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
+            if (SmpteMode)
+            {
+                if (_showDuration || Configuration.Settings.General.CurrentVideoOffsetInMs != 0)
+                {
+                    var span = TimeCode.FromSeconds(positionInSeconds + 0.017 + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
+                    displayTimeCode = $"{span.ToDisplayString()} / {dur.ToDisplayString()} SMPTE";
+                }
+                else
+                {
+                    var pos = positionInSeconds + 0.017 + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit;
+                    var seconds = (pos - dur.TotalSeconds) * -1;
+                    if (seconds < 0)
+                    {
+                        seconds = 0;
+                    }
+
+                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()} SMPTE";
+                }
+            }
+            else
+            {
+                if (_showDuration || Configuration.Settings.General.CurrentVideoOffsetInMs != 0)
+                {
+                    var span = TimeCode.FromSeconds(positionInSeconds + Configuration.Settings.General.CurrentVideoOffsetInMs / TimeCode.BaseUnit);
+                    displayTimeCode = $"{span.ToDisplayString()} / {dur.ToDisplayString()}";
+                }
+                else
+                {
+                    var seconds = (positionInSeconds - Duration) * -1;
+                    if (seconds < 0)
+                    {
+                        seconds = 0;
+                    }
+
+                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()}";
+                }
+            }
+
+            if (UsingFrontCenterAudioChannelOnly)
+            {
+                displayTimeCode += " FC";
+            }
+
+            return displayTimeCode;
+        }
+
         private void SetVolumeBarPosition(int mouseX)
         {
-            int max = _pictureBoxVolumeBarBackground.Width - 18;
+            var max = _pictureBoxVolumeBarBackground.Width - 18;
             if (mouseX > max)
             {
                 mouseX = max;
             }
 
-            double percent = (mouseX * 100.0) / max;
+            var percent = (mouseX * 100.0) / max;
             _pictureBoxVolumeBar.Width = (int)(max * percent / 100.0);
             if (_videoPlayer != null)
             {
@@ -1935,11 +1777,14 @@ namespace Nikse.SubtitleEdit.Controls
             if (VideoPlayer == null)
             {
                 _pictureBoxVolumeBar.Width = 0;
+                _labelVolume.Text = "0%";
             }
             else
             {
-                int max = _pictureBoxVolumeBarBackground.Width - 18;
-                _pictureBoxVolumeBar.Width = (int)(max * Volume / 100.0);
+                var v = Volume;
+                var max = _pictureBoxVolumeBarBackground.Width - 18;
+                _pictureBoxVolumeBar.Width = (int)(max * v / 100.0);
+                _labelVolume.Text = v + "%";
             }
         }
 
@@ -1983,6 +1828,11 @@ namespace Nikse.SubtitleEdit.Controls
                 _pictureBoxPlay.Visible = true;
                 _pictureBoxPlay.BringToFront();
                 RefreshProgressBar();
+
+                if (PlayedWithCustomSpeed)
+                {
+                    VideoPlayer.PlayRate = 1.0;
+                }
             }
         }
 
@@ -2132,7 +1982,6 @@ namespace Nikse.SubtitleEdit.Controls
             DeleteTempMpvFileName();
             base.Dispose(disposing);
             _retryCount = 3;
-            SmpteMode = false;
         }
 
         public void PauseAndDisposePlayer()
@@ -2140,7 +1989,7 @@ namespace Nikse.SubtitleEdit.Controls
             PanelPlayer.Hide();
             Pause();
             SubtitleText = string.Empty;
-            Chapters = new List<MatroskaChapter>();
+            Chapters = Array.Empty<MatroskaChapter>();
             MpvPreviewStyleHeader = null;
             var temp = VideoPlayer;
             VideoPlayer = null;
@@ -2156,11 +2005,10 @@ namespace Nikse.SubtitleEdit.Controls
 
             DeleteTempMpvFileName();
             _retryCount = 3;
-            SmpteMode = false;
             RefreshProgressBar();
         }
 
-        private bool IsMouseOverControl(Control control, Point cursorLocation)
+        private static bool IsMouseOverControl(Control control, Point cursorLocation)
         {
             if (control.ClientRectangle.Contains(cursorLocation))
             {
@@ -2168,6 +2016,13 @@ namespace Nikse.SubtitleEdit.Controls
             }
 
             return false;
+        }
+
+        public void SetVolumeAndPlayerNameFont()
+        {
+            _labelVideoPlayerName.Font = new Font(_labelTimeCode.Font.FontFamily, 6);
+            _labelVolume.Font = new Font(_labelTimeCode.Font.FontFamily, 6);
+            _labelVolume.Top -= 2;
         }
     }
 }

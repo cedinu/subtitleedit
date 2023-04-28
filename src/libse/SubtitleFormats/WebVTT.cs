@@ -50,6 +50,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public override string Extension => ".vtt";
 
+        public override List<string> AlternateExtensions => new List<string> { ".webvtt" };
+
         public override string Name => "WebVTT";
 
         public override string ToText(Subtitle subtitle, string title)
@@ -71,9 +73,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
             foreach (var p in subtitle.Paragraphs)
             {
-                string start = string.Format(timeCodeFormatHours, p.StartTime.Hours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds);
-                string end = string.Format(timeCodeFormatHours, p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
-                string positionInfo = GetPositionInfoFromAssTag(p);
+                var start = string.Format(timeCodeFormatHours, p.StartTime.Hours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds);
+                var end = string.Format(timeCodeFormatHours, p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
+                var positionInfo = GetPositionInfoFromAssTag(p);
 
                 var style = string.Empty;
                 if (subtitle.Header != null && subtitle.Header.StartsWith("WEBVTT", StringComparison.Ordinal))
@@ -91,6 +93,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
                 sb.AppendLine(string.Format(paragraphWriteFormat, start, end, positionInfo, FormatText(p), style, Environment.NewLine));
             }
+
             return sb.ToString().Trim();
         }
 
@@ -139,7 +142,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         internal static string FormatText(Paragraph p)
         {
-            string text = Utilities.RemoveSsaTags(p.Text);
+            var text = Utilities.RemoveSsaTags(p.Text);
             while (text.Contains(Environment.NewLine + Environment.NewLine))
             {
                 text = text.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
@@ -154,9 +157,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         {
             _errorCount = 0;
             Paragraph p = null;
-            string positionInfo = string.Empty;
-            bool hadEmptyLine = false;
-            int numbers = 0;
+            var positionInfo = string.Empty;
+            var hadEmptyLine = false;
+            var numbers = 0;
             double addSeconds = 0;
             var noteOn = false;
             var styleOn = false;
@@ -164,13 +167,16 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             var header = new StringBuilder();
             header.AppendLine("WEBVTT");
             header.AppendLine();
+
             for (var index = 0; index < lines.Count; index++)
             {
-                string line = lines[index];
-                string next = string.Empty;
+                var line = lines[index];
+                var next = string.Empty;
+                var isNextTimeCode = false;
                 if (index < lines.Count - 1)
                 {
                     next = lines[index + 1];
+                    isNextTimeCode = next.Contains("-->");
                 }
 
                 if (index == 0 && line.StartsWith("WEBVTT", StringComparison.Ordinal))
@@ -226,10 +232,21 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     continue;
                 }
 
-                if (index > 1 && (line.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) || line == "WEBVTT"))
+                if (index > 1)
                 {
-                    // badly formatted web vtt file
-                    continue;
+                    if (Configuration.Settings.SubtitleSettings.WebVttUseMultipleXTimestampMap &&
+                        line.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) &&
+                        line.IndexOf("MPEGTS:", StringComparison.OrdinalIgnoreCase) > 0)
+                    {
+                        addSeconds = GetXTimeStampSeconds(line);
+                        continue;
+                    }
+
+                    if (line == "WEBVTT")
+                    {
+                        // badly formatted web vtt file
+                        continue;
+                    }
                 }
 
                 noteOn = false;
@@ -237,7 +254,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 regionOn = false;
 
                 var s = line;
-                bool isTimeCode = line.Contains("-->");
+                var isTimeCode = line.Contains("-->");
                 if (isTimeCode && RegexTimeCodesMiddle.IsMatch(s))
                 {
                     s = "00:" + s; // start is without hours, end is with hours
@@ -248,8 +265,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     s = "00:" + s.Replace("--> ", "--> 00:");
                 }
 
-                if (index == 1 && s.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) &&
-                    s.IndexOf("MPEGTS:", StringComparison.OrdinalIgnoreCase) > 0)
+                if (isNextTimeCode && Utilities.IsNumber(s) && p?.Text.Length > 0)
+                {
+                    numbers++;
+                }
+                else if (index == 1 && s.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) &&
+                         s.IndexOf("MPEGTS:", StringComparison.OrdinalIgnoreCase) > 0)
                 {
                     addSeconds = GetXTimeStampSeconds(s);
                 }
@@ -269,6 +290,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             StartTime = GetTimeCodeFromString(parts[0]),
                             EndTime = GetTimeCodeFromString(parts[1])
                         };
+
+                        p.StartTime.TotalMilliseconds += addSeconds * 1000;
+                        p.EndTime.TotalMilliseconds += addSeconds * 1000;
+
                         positionInfo = GetPositionInfo(s);
                         p.Region = GetRegion(s);
                     }
@@ -291,7 +316,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
                 else if (p != null)
                 {
-                    string text = positionInfo + line.Trim();
+                    var text = positionInfo + line.Trim();
                     if (string.IsNullOrEmpty(text))
                     {
                         hadEmptyLine = true;
@@ -316,7 +341,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 subtitle.Paragraphs.Add(p);
             }
 
-            if (subtitle.Paragraphs.Count > 5 &&
+            if (subtitle.Paragraphs.Count > 3 &&
                 numbers >= subtitle.Paragraphs.Count - 1 &&
                 lines[0] == "WEBVTT FILE")
             {
@@ -329,11 +354,18 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             {
                 paragraph.Text = ColorWebVttToHtml(paragraph.Text);
                 paragraph.Text = EscapeDecodeText(paragraph.Text);
-                paragraph.Text = RemoveWeirdReatingHeader(paragraph.Text);
-                paragraph.StartTime.TotalMilliseconds += addSeconds * 1000;
-                paragraph.EndTime.TotalMilliseconds += addSeconds * 1000;
+                paragraph.Text = RemoveWeirdRepeatingHeader(paragraph.Text);
             }
+
+            if (Configuration.Settings.SubtitleSettings.WebVttMergeLinesWithSameText)
+            {
+                var merged = MergeLinesSameTextUtils.MergeLinesWithSameTextInSubtitle(subtitle, false, 1);
+                subtitle.Paragraphs.Clear();
+                subtitle.Paragraphs.AddRange(merged.Paragraphs);
+            }
+
             subtitle.Renumber();
+
             if (header.Length > 0)
             {
                 subtitle.Header = header
@@ -343,7 +375,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             }
         }
 
-        private string RemoveWeirdReatingHeader(string input)
+        private static string RemoveWeirdRepeatingHeader(string input)
         {
             var text = input;
             text = text.Replace(" " + Environment.NewLine, Environment.NewLine);
@@ -352,18 +384,18 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             {
                 if (text.TrimEnd().EndsWith('}') && text.Contains("STYLE"))
                 {
-                    text = text.Remove(text.IndexOf(Environment.NewLine + "WEBVTT")).Trim();
+                    text = text.Remove(text.IndexOf(Environment.NewLine + "WEBVTT", StringComparison.Ordinal)).Trim();
                 }
             }
             else if (text.TrimEnd().EndsWith(Environment.NewLine + "WEBVTT", StringComparison.Ordinal))
             {
-                text = text.Remove(text.LastIndexOf(Environment.NewLine + "WEBVTT")).Trim();
+                text = text.Remove(text.LastIndexOf(Environment.NewLine + "WEBVTT", StringComparison.Ordinal)).Trim();
             }
             else if (text.Contains(Environment.NewLine + "STYLE" + Environment.NewLine))
             {
                 if (text.TrimEnd().EndsWith("}"))
                 {
-                    text = text.Remove(text.IndexOf(Environment.NewLine + "STYLE" + Environment.NewLine)).Trim();
+                    text = text.Remove(text.IndexOf(Environment.NewLine + "STYLE" + Environment.NewLine, StringComparison.Ordinal)).Trim();
                 }
             }
 
@@ -378,11 +410,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             }
 
             var s = input.RemoveChar(' ');
-
             var subtractSeconds = 0d;
             var startIndex = s.IndexOf("LOCAL:", StringComparison.OrdinalIgnoreCase);
             var localSb = new StringBuilder();
-            for (int i = startIndex + 6; i < s.Length; i++)
+            for (var i = startIndex + 6; i < s.Length; i++)
             {
                 var ch = s[i];
                 if (char.IsNumber(ch) || ch == ':' || ch == '.')
@@ -394,6 +425,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     break;
                 }
             }
+
             var parts = localSb.ToString().Split(':', '.');
             if (parts.Length == 3)
             {
@@ -419,15 +451,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
             }
 
-            if (tsSb.Length > 0)
+            if (tsSb.Length > 0 && long.TryParse(tsSb.ToString(), out var number))
             {
-                if (long.TryParse(tsSb.ToString(), out var number))
+                var seconds = (double)number / Configuration.Settings.SubtitleSettings.WebVttTimescale - subtractSeconds;
+                if (seconds > 0 && seconds < 90000) // max 25 hours - or wrong timescale
                 {
-                    var seconds = (double)number / Configuration.Settings.SubtitleSettings.WebVttTimescale - subtractSeconds;
-                    if (seconds > 0 && seconds < 90000) // max 25 hours - or wrong timescale
-                    {
-                        return seconds;
-                    }
+                    return seconds;
                 }
             }
 
@@ -441,23 +470,21 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             var pos = GetTag(s, "position:");
             var line = GetTag(s, "line:");
             var positionInfo = string.Empty;
-            bool hAlignLeft = false;
-            bool hAlignRight = false;
-            bool vAlignTop = false;
-            bool vAlignMiddle = false;
+            var hAlignLeft = false;
+            var hAlignRight = false;
+            var vAlignTop = false;
+            var vAlignMiddle = false;
+            double number;
 
-            if (!string.IsNullOrEmpty(pos) && pos.EndsWith('%'))
+            if (!string.IsNullOrEmpty(pos) && pos.EndsWith('%') && double.TryParse(pos.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
             {
-                if (double.TryParse(pos.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number))
+                if (number < 25)
                 {
-                    if (number < 25)
-                    {
-                        hAlignLeft = true;
-                    }
-                    else if (number > 75)
-                    {
-                        hAlignRight = true;
-                    }
+                    hAlignLeft = true;
+                }
+                else if (number > 75)
+                {
+                    hAlignRight = true;
                 }
             }
 
@@ -466,7 +493,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 line = line.Trim();
                 if (line.EndsWith('%'))
                 {
-                    if (double.TryParse(line.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number))
+                    if (double.TryParse(line.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
                     {
                         if (number < 25)
                         {
@@ -480,7 +507,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
                 else
                 {
-                    if (double.TryParse(line, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number))
+                    if (double.TryParse(line, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
                     {
                         if (number >= 0 && number <= 7)
                         {
@@ -500,10 +527,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     return "{\\an7}";
                 }
+
                 if (vAlignMiddle)
                 {
                     return "{\\an4}";
                 }
+
                 return "{\\an1}";
             }
 
@@ -513,10 +542,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     return "{\\an9}";
                 }
+
                 if (vAlignMiddle)
                 {
                     return "{\\an6}";
                 }
+
                 return "{\\an3}";
             }
 
@@ -550,67 +581,71 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     v = v.Remove(end + 1);
                 }
+
                 end = v.IndexOf(' ');
                 if (end >= 0)
                 {
                     v = v.Remove(end);
                 }
+
                 return v;
             }
+
             return null;
         }
 
         public override void RemoveNativeFormatting(Subtitle subtitle, SubtitleFormat newFormat)
         {
-            var regexWebVttColorMulti = new Regex(@"<c.[a-z0-9_\.]*>", RegexOptions.Compiled);
-            var regexRemoveCTags = new Regex(@"\</?c([a-zA-Z\._\d]*)\>", RegexOptions.Compiled);
+            var regexRemoveCTags = new Regex(@"\</?c([a-zA-Z\._\-\d%#]*)\>", RegexOptions.Compiled);
             var regexRemoveTimeCodes = new Regex(@"\<\d+:\d+:\d+\.\d+\>", RegexOptions.Compiled); // <00:00:10.049>
             var regexTagsPlusWhiteSpace = new Regex(@"(\{\\an\d\})[\s\r\n]+", RegexOptions.Compiled); // <00:00:10.049>
 
-            foreach (Paragraph p in subtitle.Paragraphs)
+            var cueStyles = GetCueStyles(subtitle.Header);
+            var italicStyles = GetStylesWith(cueStyles, "font-style:italic;");
+            var boldStyles = GetStylesWith(cueStyles, "font-weight:bold;");
+
+            foreach (var p in subtitle.Paragraphs)
             {
                 if (p.Text.Contains('<') || p.Text.Contains('&'))
                 {
                     var text = p.Text.Replace("&rlm;", string.Empty).Replace("&lrm;", string.Empty); // or use rlm=\u202B, lrm=\u202A ?
-                    foreach (var knownLanguage in KnownLanguages)
-                    {
-                        text = text.Replace("<c." + knownLanguage + ">", string.Empty).Replace("</c." + knownLanguage + ">", string.Empty);
-                    }
                     text = System.Net.WebUtility.HtmlDecode(text);
-
-                    var match = regexWebVttColorMulti.Match(text);                    
+                    var match = regexRemoveCTags.Match(text);
                     while (match.Success)
                     {
-                        var tag = match.Value.Substring(3, match.Value.Length - 4);
-                        tag = FindBestColorTagOrDefault(tag);
-                        if (tag == null)
+                        var start = match.Index + 1;
+                        var styles = GetStyles(match.Value);
+                        var hasItalic = italicStyles.Any(st => styles.Contains(st));
+                        var hasBold = boldStyles.Any(st => styles.Contains(st));
+                        var colorTag = FindBestColorTagOrDefault(styles.ToList());
+                        if (hasItalic)
                         {
-                            text = text.Replace(match.Value, string.Empty);
-                            text = text.Replace(match.Value.Insert(1, "/"), string.Empty);
-                            match = regexWebVttColorMulti.Match(text);
-                            continue;
+                            text = text.Insert(match.Index, "<i>");
+                            start += 3;
                         }
-                        var fontString = "<font color=\"" + tag + "\">";
-                        fontString = fontString.Trim('"').Trim('\'');
-                        text = text.Remove(match.Index, match.Length).Insert(match.Index, fontString);
-                        var endIndex = text.IndexOf("</c>", match.Index, StringComparison.OrdinalIgnoreCase);
-                        if (endIndex >= 0)
+                        if (hasBold)
                         {
-                            text = text.Remove(endIndex, 4).Insert(endIndex, "</font>");
+                            text = text.Insert(match.Index, "<b>");
+                            start += 3;
                         }
-                        else
+                        if (colorTag != null)
                         {
-                            endIndex = text.IndexOf("</c.", match.Index, StringComparison.OrdinalIgnoreCase);
-                            if (endIndex >= 0)
-                            {
-                                var endEndIndex = text.IndexOf('>', endIndex);
-                                if (endEndIndex > 0)
-                                {
-                                    text = text.Remove(endIndex, endEndIndex - endIndex).Insert(endIndex, "</font>");
-                                }
-                            }
+                            var fontString = "<font color=\"" + colorTag + "\">";
+                            fontString = fontString.Trim('"').Trim('\'');
+                            text = text.Insert(match.Index, fontString);
+                            start += fontString.Length;
+                            text = SetEndTag(text, text.IndexOf("<c", match.Index, StringComparison.Ordinal), "</font>");
                         }
-                        match = regexWebVttColorMulti.Match(text);
+                        if (hasItalic)
+                        {
+                            text = SetEndTag(text, text.IndexOf("<c", match.Index, StringComparison.Ordinal), "</i>");
+                        }
+                        if (hasBold)
+                        {
+                            text = SetEndTag(text, text.IndexOf("<c", match.Index, StringComparison.Ordinal), "</b>");
+                        }
+
+                        match = regexRemoveCTags.Match(text, start);
                     }
 
                     text = RemoveTag("v", text);
@@ -625,9 +660,94 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             }
         }
 
-        private string FindBestColorTagOrDefault(string tag)
+        /// <summary>
+        /// Set end tag taking nested level into account.
+        /// </summary>
+        private static string SetEndTag(string text, int matchIndex, string endTag)
         {
-            var tags = tag.Split('.').ToList();
+            var level = 0;
+            var startLevel = -1;
+            for (var i = 0; i < text.Length - 2; i++)
+            {
+                if (text[i] == '<')
+                {
+                    if (text[i + 1] == 'c' && text[i + 2] == '.')
+                    {
+                        if (i == matchIndex)
+                        {
+                            startLevel = level;
+                        }
+
+                        level++;
+                    }
+                    else if (text[i + 1] == '/' && text[i + 2] == 'c')
+                    {
+                        level--;
+
+                        if (startLevel == level)
+                        {
+                            text = text.Insert(i, endTag);
+                            return text;
+                        }
+                    }
+                }
+            }
+
+            return text + endTag; //TODO: fix
+        }
+
+        private static List<string> GetStylesWith(Dictionary<string, string> cueStyles, string searchText)
+        {
+            var styleList = new List<string>();
+
+            foreach (var cueStyle in cueStyles)
+            {
+                if (cueStyle.Value.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                {
+                    styleList.Add(cueStyle.Key);
+                }
+            }
+
+            return styleList;
+        }
+
+        private Dictionary<string, string> GetCueStyles(string header)
+        {
+            var dic = new Dictionary<string, string>();
+
+            if (string.IsNullOrEmpty(header))
+            {
+                return dic;
+            }
+
+            var matches = new Regex(@"::cue\(([a-zA-Z\._\-\d%#]*)\)\s*{").Matches(header);
+            for (var i = 0; i < matches.Count; i++)
+            {
+                var match = matches[i];
+                var cueName = match.Value
+                    .Replace(" ", string.Empty)
+                    .Replace("::cue(", string.Empty)
+                    .TrimEnd('{')
+                    .TrimEnd(')')
+                    .TrimStart('.');
+                var end = header.IndexOf('}', match.Index + match.Length);
+                if (end > 0)
+                {
+                    var content = header.Substring(match.Index + match.Length, end - (match.Index + match.Length));
+                    dic.Add(cueName, content.Trim().Replace(" ", string.Empty));
+                }
+            }
+
+            return dic;
+        }
+
+        private static string[] GetStyles(string cTag)
+        {
+            return cTag.Replace("<c.", string.Empty).TrimEnd('>').Split('.');
+        }
+
+        private static string FindBestColorTagOrDefault(List<string> tags)
+        {
             tags.Reverse();
             foreach (var s in tags)
             {
@@ -642,6 +762,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     return "#" + l.Remove(0, 5);
                 }
             }
+
             return null;
         }
 
@@ -677,7 +798,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     {
                         res = res.Remove(endIndex, 4).Insert(endIndex, "</font>");
                     }
-                    else 
+                    else
                     {
                         var findString = $"</c.{value}>";
                         endIndex = res.IndexOf(findString, match.Index, StringComparison.OrdinalIgnoreCase);
@@ -740,7 +861,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             try
             {
                 var c = ColorTranslator.FromHtml("#" + tag.Trim('#'));
-                int maxDiff = 25;
+                const int maxDiff = 25;
                 foreach (var kvp in DefaultColorClasses)
                 {
                     if (Math.Abs(kvp.Value.R - c.R) <= maxDiff &&
@@ -755,6 +876,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             {
                 return null;
             }
+
             return null;
         }
 
@@ -763,16 +885,16 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             var list = new List<string>();
             if (subtitle?.Paragraphs != null)
             {
-                foreach (Paragraph p in subtitle.Paragraphs)
+                foreach (var p in subtitle.Paragraphs)
                 {
-                    string s = p.Text;
+                    var s = p.Text;
                     var startIndex = s.IndexOf("<v ", StringComparison.Ordinal);
                     while (startIndex >= 0)
                     {
-                        int endIndex = s.IndexOf('>', startIndex);
+                        var endIndex = s.IndexOf('>', startIndex);
                         if (endIndex > startIndex)
                         {
-                            string voice = s.Substring(startIndex + 2, endIndex - startIndex - 2).Trim();
+                            var voice = s.Substring(startIndex + 2, endIndex - startIndex - 2).Trim();
                             if (!list.Contains(voice))
                             {
                                 list.Add(voice);
@@ -796,10 +918,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         public static string RemoveTag(string tag, string text)
         {
             var res = text;
-            int indexOfTag = res.IndexOf("<" + tag + " ", StringComparison.Ordinal);
+            var indexOfTag = res.IndexOf("<" + tag + " ", StringComparison.Ordinal);
             if (indexOfTag >= 0)
             {
-                int indexOfEnd = res.IndexOf('>', indexOfTag);
+                var indexOfEnd = res.IndexOf('>', indexOfTag);
                 if (indexOfEnd > 0)
                 {
                     res = res.Remove(indexOfTag, indexOfEnd - indexOfTag + 1);
@@ -817,7 +939,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             }
             var sb = new StringBuilder(input.Length);
             var max = input.Length;
-            int i = 0;
+            var i = 0;
             var tagOn = false;
             while (i < max)
             {
@@ -898,6 +1020,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     i++;
                 }
             }
+
             return sb.ToString();
         }
 

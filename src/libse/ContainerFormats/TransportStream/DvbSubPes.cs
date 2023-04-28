@@ -14,7 +14,7 @@ namespace Nikse.SubtitleEdit.Core.ContainerFormats.TransportStream
         public static readonly int DefaultScreenHeight = 576;
 
         public int Length { get; }
-        public ulong? PresentationTimestamp { get; }
+        public ulong? PresentationTimestamp { get; set; }
         public ulong? DecodeTimestamp { get; }
         public int? SubPictureStreamId { get; }
         public uint StartCode { get; }
@@ -472,6 +472,41 @@ namespace Nikse.SubtitleEdit.Core.ContainerFormats.TransportStream
             return bmp;
         }
 
+        public Position GetPosition()
+        {
+            if (SubtitleSegments == null)
+            {
+                ParseSegments();
+            }
+
+            var minX = int.MaxValue;
+            var minY = int.MaxValue;
+            foreach (var ods in ObjectDataList)
+            {
+                var cds = GetClutDefinitionSegment(ods);
+                var pos = ods.FindPosition(_dataBuffer, ods.BufferIndex, cds);
+                if (pos != null)
+                {
+                    var odsPoint = GetImagePosition(ods);
+
+                    var x = pos.Left + odsPoint.X;
+                    if (x < minX)
+                    {
+                        minX = x;
+                    }
+
+                    var y = pos.Top + odsPoint.Y;
+                    if (y < minY)
+                    {
+                        minY = y;
+                    }
+                }
+            }
+
+            return new Position(minX == int.MaxValue ? 0 : minX, minY == int.MaxValue ? 0 : minY);
+        }
+
+
         public Size GetScreenSize()
         {
             if (SubtitleSegments == null)
@@ -545,6 +580,11 @@ namespace Nikse.SubtitleEdit.Core.ContainerFormats.TransportStream
 
         public void WriteToStream(Stream stream)
         {
+            if (_dataBuffer == null)
+            {
+                return;
+            }
+
             stream.Write(_dataBuffer, 0, _dataBuffer.Length);
         }
     }

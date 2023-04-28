@@ -20,7 +20,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
 
         public void Fix(Subtitle subtitle, IFixCallbacks callbacks)
         {
-            int fixCount = 0;
+            var fixCount = 0;
 
             var isLanguageWithoutCaseDistinction = ContinuationUtilities.IsLanguageWithoutCaseDistinction(callbacks.Language);
 
@@ -30,29 +30,12 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                 SetContinuationProfile(Configuration.Settings.General.ContinuationStyle);
             }
 
-            // Quick fix for Portuguese
-            if (callbacks.Language == "pt")
-            {
-                _continuationProfile.SuffixApplyIfComma = false;
-                _continuationProfile.GapSuffixApplyIfComma = false;
+            var minGapMs = ContinuationUtilities.GetMinimumGapMs();
 
-                if (_continuationProfile.Prefix == "..." || _continuationProfile.Prefix == "…")
-                {
-                    _continuationProfile.PrefixAddSpace = true;
-                }
-
-                if (_continuationProfile.GapPrefix == "..." || _continuationProfile.GapPrefix == "…")
-                {
-                    _continuationProfile.GapPrefixAddSpace = true;
-                }
-            }
-
-            int minGapMs = ContinuationUtilities.GetMinimumGapMs();
-
-            bool inSentence = false;
+            var inSentence = false;
             bool? inItalicSentence = null;
 
-            for (int i = 0; i < subtitle.Paragraphs.Count - 1; i++)
+            for (var i = 0; i < subtitle.Paragraphs.Count - 1; i++)
             {
                 var p = subtitle.Paragraphs[i];
                 var pNext = subtitle.Paragraphs[i + 1];
@@ -64,7 +47,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                 var shouldProcess = true;
 
                 // Detect gap
-                bool gap = pNext.StartTime.TotalMilliseconds - p.EndTime.TotalMilliseconds >= minGapMs;
+                var gap = pNext.StartTime.TotalMilliseconds - p.EndTime.TotalMilliseconds >= minGapMs;
 
                 // Convert for Arabic
                 if (callbacks.Language == "ar")
@@ -136,11 +119,11 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     var textNextWithoutPrefix = ContinuationUtilities.SanitizeString(oldTextNextWithoutPrefix, true);
 
                     // Get last word of this paragraph
-                    string lastWord = ContinuationUtilities.GetLastWord(text);
+                    var lastWord = ContinuationUtilities.GetLastWord(text);
 
 
                     // If ends with dots (possible interruptions), or nothing, check if next sentence is new sentence, otherwise don't check by default
-                    if (text.EndsWith("..") || text.EndsWith("…") || ContinuationUtilities.EndsWithNothing(text, _continuationProfile))
+                    if (text.EndsWith("..", StringComparison.Ordinal) || text.EndsWith('…') || ContinuationUtilities.EndsWithNothing(text, _continuationProfile))
                     {
                         if (!HasPrefix(textNext) && ((!isLanguageWithoutCaseDistinction && ContinuationUtilities.IsNewSentence(textNext, true)) || string.IsNullOrEmpty(textNext)))
                         {
@@ -152,7 +135,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                             //                                          or:  This is something   Marty can do.
                             // If both sentences are all caps, DO show them.
                             if (Configuration.Settings.General.FixContinuationStyleHideContinuationCandidatesWithoutName
-                                && !(textNextWithoutPrefix.StartsWith("I ") || textNextWithoutPrefix.StartsWith("I'"))
+                                && !(textNextWithoutPrefix.StartsWith("I ", StringComparison.Ordinal) || textNextWithoutPrefix.StartsWith("I'", StringComparison.Ordinal))
                                 && !StartsWithName(textNextWithoutPrefix, callbacks.Language)
                                 && !(ContinuationUtilities.IsAllCaps(text) && ContinuationUtilities.IsAllCaps(textNext)))
                             {
@@ -169,9 +152,14 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                         // and profile states to NOT replace comma,
                         // and next sentence starts with conjunction,
                         // try to re-add comma
-                        bool addComma = lastWord.EndsWith(",") || HasSuffix(text)
+                        var addComma = lastWord.EndsWith(',') || HasSuffix(text)
                                         && (gap ? !_continuationProfile.GapSuffixReplaceComma : !_continuationProfile.SuffixReplaceComma)
                                         && ContinuationUtilities.StartsWithConjunction(textNextWithoutPrefix, callbacks.Language);
+                        if (addComma && (_continuationProfile.Suffix == "..." || _continuationProfile.Suffix == "…"))
+                        {
+                            addComma = false;
+                        }
+
 
                         // Make new last word
                         var newText = ContinuationUtilities.AddSuffixIfNeeded(oldTextWithoutSuffix, _continuationProfile, gap, addComma);
@@ -190,6 +178,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                             {
                                 p.Text = newText;
                             }
+
                             fixCount++;
                             callbacks.AddFixToListView(p, FixAction, oldText, newText, isChecked);
                         }
@@ -214,6 +203,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                             {
                                 pNext.Text = newTextNext;
                             }
+
                             fixCount++;
                             callbacks.AddFixToListView(pNext, FixAction + " ", oldTextNext, newTextNext, isChecked);
                         }
@@ -280,16 +270,18 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             {
                 var nameList = new NameList(Configuration.DictionariesDirectory, language, Configuration.Settings.WordLists.UseOnlineNames, Configuration.Settings.WordLists.NamesUrl);
                 _names = nameList.GetAllNames();
+
+                if (_names == null)
+                {
+                    return false;
+                }
             }
 
-            if (_names != null)
+            foreach (var name in _names)
             {
-                foreach (var name in _names)
+                if (input.StartsWith(name + " ", StringComparison.Ordinal) || input.StartsWith(name + ",", StringComparison.Ordinal) || input.StartsWith(name + ":", StringComparison.Ordinal))
                 {
-                    if (input.StartsWith(name + " ", StringComparison.Ordinal) || input.StartsWith(name + ",", StringComparison.Ordinal) || input.StartsWith(name + ":", StringComparison.Ordinal))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 

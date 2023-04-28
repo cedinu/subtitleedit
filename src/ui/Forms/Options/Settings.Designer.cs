@@ -34,18 +34,23 @@
             this.listBoxSection = new System.Windows.Forms.ListBox();
             this.panelGeneral = new System.Windows.Forms.Panel();
             this.groupBoxMiscellaneous = new System.Windows.Forms.GroupBox();
+            this.buttonTranslationAutoSuffix = new System.Windows.Forms.Button();
+            this.comboBoxTranslationAutoSuffix = new System.Windows.Forms.ComboBox();
+            this.labelTranslationAutoSuffix = new System.Windows.Forms.Label();
             this.labelSplitBehavior = new System.Windows.Forms.Label();
             this.comboBoxSplitBehavior = new System.Windows.Forms.ComboBox();
             this.checkBoxAutoSave = new System.Windows.Forms.CheckBox();
             this.comboBoxSaveAsFileNameFrom = new System.Windows.Forms.ComboBox();
             this.labelSaveAsFileNameFrom = new System.Windows.Forms.Label();
             this.groupBoxGeneralRules = new System.Windows.Forms.GroupBox();
+            this.buttonEditCustomContinuationStyle = new System.Windows.Forms.Button();
+            this.comboBoxCpsLineLenCalc = new System.Windows.Forms.ComboBox();
+            this.labelCpsLineLenCalc = new System.Windows.Forms.Label();
             this.buttonGapChoose = new System.Windows.Forms.Button();
             this.comboBoxContinuationStyle = new System.Windows.Forms.ComboBox();
             this.labelContinuationStyle = new System.Windows.Forms.Label();
             this.labelDialogStyle = new System.Windows.Forms.Label();
             this.comboBoxDialogStyle = new System.Windows.Forms.ComboBox();
-            this.checkBoxCpsIncludeWhiteSpace = new System.Windows.Forms.CheckBox();
             this.buttonEditProfile = new System.Windows.Forms.Button();
             this.comboBoxRulesProfileName = new System.Windows.Forms.ComboBox();
             this.labelRulesProfileName = new System.Windows.Forms.Label();
@@ -138,6 +143,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.importShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAsHtmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelShortcut = new System.Windows.Forms.Label();
             this.panelSyntaxColoring = new System.Windows.Forms.Panel();
             this.groupBoxListViewSyntaxColoring = new System.Windows.Forms.GroupBox();
@@ -170,8 +176,19 @@
             this.labelCustomSearch = new System.Windows.Forms.Label();
             this.comboBoxCustomSearch1 = new System.Windows.Forms.ComboBox();
             this.groupBoxVideoPlayerDefault = new System.Windows.Forms.GroupBox();
-            this.labelVideoPlayerPreviewFontColor = new System.Windows.Forms.Label();
-            this.panelVideoPlayerPreviewFontColor = new System.Windows.Forms.Panel();
+            this.panelMpvBackColor = new System.Windows.Forms.Panel();
+            this.buttonMpvBackColor = new System.Windows.Forms.Button();
+            this.panelMpvOutlineColor = new System.Windows.Forms.Panel();
+            this.buttonMpvOutlineColor = new System.Windows.Forms.Button();
+            this.panelMpvPrimaryColor = new System.Windows.Forms.Panel();
+            this.buttonMpvPrimaryColor = new System.Windows.Forms.Button();
+            this.groupBoxMpvBorder = new System.Windows.Forms.GroupBox();
+            this.comboBoxOpaqueBoxStyle = new System.Windows.Forms.ComboBox();
+            this.radioButtonMpvOpaqueBox = new System.Windows.Forms.RadioButton();
+            this.radioButtonMpvOutline = new System.Windows.Forms.RadioButton();
+            this.numericUpDownMpvShadowWidth = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMpvOutline = new System.Windows.Forms.NumericUpDown();
+            this.labelMpvShadow = new System.Windows.Forms.Label();
             this.checkBoxAllowVolumeBoost = new System.Windows.Forms.CheckBox();
             this.checkBoxVideoAutoOpen = new System.Windows.Forms.CheckBox();
             this.checkBoxVideoPlayerPreviewFontBold = new System.Windows.Forms.CheckBox();
@@ -179,7 +196,6 @@
             this.checkBoxVideoPlayerShowMuteButton = new System.Windows.Forms.CheckBox();
             this.labelVideoPlayerPreviewFontName = new System.Windows.Forms.Label();
             this.comboBoxVideoPlayerPreviewFontName = new System.Windows.Forms.ComboBox();
-            this.checkBoxMpvPreviewOpaqueBox = new System.Windows.Forms.CheckBox();
             this.labelVideoPlayerPreviewFontSize = new System.Windows.Forms.Label();
             this.comboBoxlVideoPlayerPreviewFontSize = new System.Windows.Forms.ComboBox();
             this.checkBoxVideoPlayerShowStopButton = new System.Windows.Forms.CheckBox();
@@ -201,6 +217,7 @@
             this.radioButtonVideoPlayerMpcHc = new System.Windows.Forms.RadioButton();
             this.panelWaveform = new System.Windows.Forms.Panel();
             this.groupBoxFfmpeg = new System.Windows.Forms.GroupBox();
+            this.checkBoxFfmpegUseCenterChannel = new System.Windows.Forms.CheckBox();
             this.buttonDownloadFfmpeg = new System.Windows.Forms.Button();
             this.buttonBrowseToFFmpeg = new System.Windows.Forms.Button();
             this.textBoxFFmpegPath = new System.Windows.Forms.TextBox();
@@ -214,9 +231,10 @@
             this.buttonWaveformsFolderEmpty = new System.Windows.Forms.Button();
             this.labelWaveformsFolderInfo = new System.Windows.Forms.Label();
             this.groupBoxWaveformAppearence = new System.Windows.Forms.GroupBox();
+            this.checkBoxWaveformAutoGen = new System.Windows.Forms.CheckBox();
             this.panelWaveformCursorColor = new System.Windows.Forms.Panel();
             this.buttonWaveformCursorColor = new System.Windows.Forms.Button();
-            this.checkBoxWaveformSnapToSceneChanges = new System.Windows.Forms.CheckBox();
+            this.checkBoxWaveformSnapToShotChanges = new System.Windows.Forms.CheckBox();
             this.checkBoxWaveformSingleClickSelect = new System.Windows.Forms.CheckBox();
             this.checkBoxWaveformShowWpm = new System.Windows.Forms.CheckBox();
             this.checkBoxWaveformShowCps = new System.Windows.Forms.CheckBox();
@@ -243,6 +261,13 @@
             this.buttonWaveformSelectedColor = new System.Windows.Forms.Button();
             this.checkBoxWaveformShowGrid = new System.Windows.Forms.CheckBox();
             this.panelTools = new System.Windows.Forms.Panel();
+            this.groupBoxToolsMisc = new System.Windows.Forms.GroupBox();
+            this.comboBoxCustomToggleEnd = new System.Windows.Forms.ComboBox();
+            this.comboBoxCustomToggleStart = new System.Windows.Forms.ComboBox();
+            this.labelShortcutCustomToggle = new System.Windows.Forms.Label();
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox = new System.Windows.Forms.CheckBox();
+            this.comboBoxBDOpensIn = new System.Windows.Forms.ComboBox();
+            this.labelBDOpensIn = new System.Windows.Forms.Label();
             this.groupBoxGoogleTranslate = new System.Windows.Forms.GroupBox();
             this.labelGoogleTranslateApiKey = new System.Windows.Forms.Label();
             this.textBoxGoogleTransleApiKey = new System.Windows.Forms.TextBox();
@@ -273,6 +298,8 @@
             this.checkBoxSpellCheckOneLetterWords = new System.Windows.Forms.CheckBox();
             this.checkBoxSpellCheckAutoChangeNames = new System.Windows.Forms.CheckBox();
             this.groupBoxFixCommonErrors = new System.Windows.Forms.GroupBox();
+            this.checkBoxUseWordSplitListAvoidPropercase = new System.Windows.Forms.CheckBox();
+            this.checkBoxUseWordSplitList = new System.Windows.Forms.CheckBox();
             this.buttonFixContinuationStyleSettings = new System.Windows.Forms.Button();
             this.checkBoxFceSkipStep1 = new System.Windows.Forms.CheckBox();
             this.checkBoxFixShortDisplayTimesAllowMoveStartTime = new System.Windows.Forms.CheckBox();
@@ -288,35 +315,16 @@
             this.comboBoxToolsStartSceneIndex = new System.Windows.Forms.ComboBox();
             this.comboBoxToolsVerifySeconds = new System.Windows.Forms.ComboBox();
             this.labelVerifyButton = new System.Windows.Forms.Label();
-            this.panelWordLists = new System.Windows.Forms.Panel();
-            this.groupBoxWordLists = new System.Windows.Forms.GroupBox();
-            this.linkLabelOpenDictionaryFolder = new System.Windows.Forms.LinkLabel();
-            this.groupBoxOcrFixList = new System.Windows.Forms.GroupBox();
-            this.textBoxOcrFixValue = new System.Windows.Forms.TextBox();
-            this.buttonRemoveOcrFix = new System.Windows.Forms.Button();
-            this.listBoxOcrFixList = new System.Windows.Forms.ListBox();
-            this.textBoxOcrFixKey = new System.Windows.Forms.TextBox();
-            this.buttonAddOcrFix = new System.Windows.Forms.Button();
-            this.groupBoxUserWordList = new System.Windows.Forms.GroupBox();
-            this.buttonRemoveUserWord = new System.Windows.Forms.Button();
-            this.listBoxUserWordLists = new System.Windows.Forms.ListBox();
-            this.textBoxUserWord = new System.Windows.Forms.TextBox();
-            this.buttonAddUserWord = new System.Windows.Forms.Button();
-            this.groupBoxWordListLocation = new System.Windows.Forms.GroupBox();
-            this.checkBoxNamesOnline = new System.Windows.Forms.CheckBox();
-            this.textBoxNamesOnline = new System.Windows.Forms.TextBox();
-            this.groupBoxNamesIgonoreLists = new System.Windows.Forms.GroupBox();
-            this.listViewNames = new System.Windows.Forms.ListView();
-            this.columnHeaderNames = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.buttonRemoveNameEtc = new System.Windows.Forms.Button();
-            this.textBoxNameEtc = new System.Windows.Forms.TextBox();
-            this.buttonAddNames = new System.Windows.Forms.Button();
-            this.labelWordListLanguage = new System.Windows.Forms.Label();
-            this.comboBoxWordListLanguage = new System.Windows.Forms.ComboBox();
             this.panelToolBar = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxShowFrameRate = new System.Windows.Forms.CheckBox();
             this.groupBoxShowToolBarButtons = new System.Windows.Forms.GroupBox();
+            this.labelToggleSourceView = new System.Windows.Forms.Label();
+            this.pictureBoxToggleSourceView = new System.Windows.Forms.PictureBox();
+            this.checkBoxTBToggleSourceView = new System.Windows.Forms.CheckBox();
+            this.labelTBBurnIn = new System.Windows.Forms.Label();
+            this.pictureBoxTBBurnIn = new System.Windows.Forms.PictureBox();
+            this.checkBoxTBBurnIn = new System.Windows.Forms.CheckBox();
             this.labelTBNetflixQualityCheck = new System.Windows.Forms.Label();
             this.pictureBoxNetflixQualityCheck = new System.Windows.Forms.PictureBox();
             this.checkBoxNetflixQualityCheck = new System.Windows.Forms.CheckBox();
@@ -396,6 +404,9 @@
             this.labelNetworkSessionNewMessageSound = new System.Windows.Forms.Label();
             this.groupBoxProxySettings = new System.Windows.Forms.GroupBox();
             this.groupBoxProxyAuthentication = new System.Windows.Forms.GroupBox();
+            this.labelProxyAuthType = new System.Windows.Forms.Label();
+            this.checkBoxProxyUseDefaultCredentials = new System.Windows.Forms.CheckBox();
+            this.comboBoxProxyAuthType = new System.Windows.Forms.ComboBox();
             this.textBoxProxyDomain = new System.Windows.Forms.TextBox();
             this.labelProxyDomain = new System.Windows.Forms.Label();
             this.textBoxProxyUserName = new System.Windows.Forms.TextBox();
@@ -410,9 +421,14 @@
             this.buttonReset = new System.Windows.Forms.Button();
             this.toolTipContinuationPreview = new System.Windows.Forms.ToolTip(this.components);
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.groupBoxToolsMisc = new System.Windows.Forms.GroupBox();
-            this.labelBDOpensIn = new System.Windows.Forms.Label();
-            this.comboBoxBDOpensIn = new System.Windows.Forms.ComboBox();
+            this.panelFileTypeAssociations = new System.Windows.Forms.Panel();
+            this.buttonUpdateFileTypeAssociations = new System.Windows.Forms.Button();
+            this.listViewFileTypeAssociations = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.labelUpdateFileTypeAssociationsStatus = new System.Windows.Forms.Label();
+            this.imageListFileTypeAssociations = new System.Windows.Forms.ImageList(this.components);
+            this.toolTipDialogStylePreview = new System.Windows.Forms.ToolTip(this.components);
             this.panelGeneral.SuspendLayout();
             this.groupBoxMiscellaneous.SuspendLayout();
             this.groupBoxGeneralRules.SuspendLayout();
@@ -436,6 +452,9 @@
             this.panelVideoPlayer.SuspendLayout();
             this.groupBoxMainWindowVideoControls.SuspendLayout();
             this.groupBoxVideoPlayerDefault.SuspendLayout();
+            this.groupBoxMpvBorder.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMpvShadowWidth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMpvOutline)).BeginInit();
             this.groupBoxVideoEngine.SuspendLayout();
             this.panelWaveform.SuspendLayout();
             this.groupBoxFfmpeg.SuspendLayout();
@@ -444,6 +463,7 @@
             this.groupBoxWaveformAppearence.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaveformBorderHitMs)).BeginInit();
             this.panelTools.SuspendLayout();
+            this.groupBoxToolsMisc.SuspendLayout();
             this.groupBoxGoogleTranslate.SuspendLayout();
             this.groupBoxBing.SuspendLayout();
             this.groupBoxToolsAutoBr.SuspendLayout();
@@ -451,15 +471,11 @@
             this.groupBoxSpellCheck.SuspendLayout();
             this.groupBoxFixCommonErrors.SuspendLayout();
             this.groupBoxToolsVisualSync.SuspendLayout();
-            this.panelWordLists.SuspendLayout();
-            this.groupBoxWordLists.SuspendLayout();
-            this.groupBoxOcrFixList.SuspendLayout();
-            this.groupBoxUserWordList.SuspendLayout();
-            this.groupBoxWordListLocation.SuspendLayout();
-            this.groupBoxNamesIgonoreLists.SuspendLayout();
             this.panelToolBar.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBoxShowToolBarButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxToggleSourceView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTBBurnIn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNetflixQualityCheck)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTBRemoveTextForHi)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTBFixCommonErrors)).BeginInit();
@@ -484,7 +500,7 @@
             this.groupBoxNetworkSession.SuspendLayout();
             this.groupBoxProxySettings.SuspendLayout();
             this.groupBoxProxyAuthentication.SuspendLayout();
-            this.groupBoxToolsMisc.SuspendLayout();
+            this.panelFileTypeAssociations.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -524,10 +540,10 @@
             "Video player",
             "Waveform/spectrogram",
             "Tools",
-            "Wordlists",
             "Toolbar",
             "Font",
-            "Network"});
+            "Network",
+            "File type associations"});
             this.listBoxSection.Location = new System.Drawing.Point(10, 10);
             this.listBoxSection.Name = "listBoxSection";
             this.listBoxSection.Size = new System.Drawing.Size(214, 516);
@@ -550,6 +566,9 @@
             this.groupBoxMiscellaneous.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxMiscellaneous.Controls.Add(this.buttonTranslationAutoSuffix);
+            this.groupBoxMiscellaneous.Controls.Add(this.comboBoxTranslationAutoSuffix);
+            this.groupBoxMiscellaneous.Controls.Add(this.labelTranslationAutoSuffix);
             this.groupBoxMiscellaneous.Controls.Add(this.labelSplitBehavior);
             this.groupBoxMiscellaneous.Controls.Add(this.comboBoxSplitBehavior);
             this.groupBoxMiscellaneous.Controls.Add(this.checkBoxAutoSave);
@@ -591,6 +610,39 @@
             this.groupBoxMiscellaneous.TabStop = false;
             this.groupBoxMiscellaneous.Text = "Miscellaneous";
             // 
+            // buttonTranslationAutoSuffix
+            // 
+            this.buttonTranslationAutoSuffix.Location = new System.Drawing.Point(692, 420);
+            this.buttonTranslationAutoSuffix.Name = "buttonTranslationAutoSuffix";
+            this.buttonTranslationAutoSuffix.Size = new System.Drawing.Size(28, 23);
+            this.buttonTranslationAutoSuffix.TabIndex = 26;
+            this.buttonTranslationAutoSuffix.Text = "...";
+            this.buttonTranslationAutoSuffix.UseVisualStyleBackColor = true;
+            this.buttonTranslationAutoSuffix.Click += new System.EventHandler(this.buttonTranslationAutoSuffix_Click);
+            // 
+            // comboBoxTranslationAutoSuffix
+            // 
+            this.comboBoxTranslationAutoSuffix.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTranslationAutoSuffix.FormattingEnabled = true;
+            this.comboBoxTranslationAutoSuffix.Items.AddRange(new object[] {
+            "None",
+            "Every minute",
+            "Every 5 minutes",
+            "Every 15 minutes"});
+            this.comboBoxTranslationAutoSuffix.Location = new System.Drawing.Point(562, 421);
+            this.comboBoxTranslationAutoSuffix.Name = "comboBoxTranslationAutoSuffix";
+            this.comboBoxTranslationAutoSuffix.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxTranslationAutoSuffix.TabIndex = 25;
+            // 
+            // labelTranslationAutoSuffix
+            // 
+            this.labelTranslationAutoSuffix.AutoSize = true;
+            this.labelTranslationAutoSuffix.Location = new System.Drawing.Point(438, 424);
+            this.labelTranslationAutoSuffix.Name = "labelTranslationAutoSuffix";
+            this.labelTranslationAutoSuffix.Size = new System.Drawing.Size(115, 13);
+            this.labelTranslationAutoSuffix.TabIndex = 32;
+            this.labelTranslationAutoSuffix.Text = "Translation auto suffix";
+            // 
             // labelSplitBehavior
             // 
             this.labelSplitBehavior.AutoSize = true;
@@ -612,7 +664,7 @@
             // checkBoxAutoSave
             // 
             this.checkBoxAutoSave.AutoSize = true;
-            this.checkBoxAutoSave.Location = new System.Drawing.Point(441, 453);
+            this.checkBoxAutoSave.Location = new System.Drawing.Point(443, 491);
             this.checkBoxAutoSave.Name = "checkBoxAutoSave";
             this.checkBoxAutoSave.Size = new System.Drawing.Size(75, 17);
             this.checkBoxAutoSave.TabIndex = 30;
@@ -626,7 +678,7 @@
             this.comboBoxSaveAsFileNameFrom.Location = new System.Drawing.Point(441, 386);
             this.comboBoxSaveAsFileNameFrom.Name = "comboBoxSaveAsFileNameFrom";
             this.comboBoxSaveAsFileNameFrom.Size = new System.Drawing.Size(332, 21);
-            this.comboBoxSaveAsFileNameFrom.TabIndex = 25;
+            this.comboBoxSaveAsFileNameFrom.TabIndex = 24;
             // 
             // labelSaveAsFileNameFrom
             // 
@@ -639,12 +691,14 @@
             // 
             // groupBoxGeneralRules
             // 
+            this.groupBoxGeneralRules.Controls.Add(this.buttonEditCustomContinuationStyle);
+            this.groupBoxGeneralRules.Controls.Add(this.comboBoxCpsLineLenCalc);
+            this.groupBoxGeneralRules.Controls.Add(this.labelCpsLineLenCalc);
             this.groupBoxGeneralRules.Controls.Add(this.buttonGapChoose);
             this.groupBoxGeneralRules.Controls.Add(this.comboBoxContinuationStyle);
             this.groupBoxGeneralRules.Controls.Add(this.labelContinuationStyle);
             this.groupBoxGeneralRules.Controls.Add(this.labelDialogStyle);
             this.groupBoxGeneralRules.Controls.Add(this.comboBoxDialogStyle);
-            this.groupBoxGeneralRules.Controls.Add(this.checkBoxCpsIncludeWhiteSpace);
             this.groupBoxGeneralRules.Controls.Add(this.buttonEditProfile);
             this.groupBoxGeneralRules.Controls.Add(this.comboBoxRulesProfileName);
             this.groupBoxGeneralRules.Controls.Add(this.labelRulesProfileName);
@@ -673,9 +727,41 @@
             this.groupBoxGeneralRules.TabStop = false;
             this.groupBoxGeneralRules.Text = "Rules";
             // 
+            // buttonEditCustomContinuationStyle
+            // 
+            this.buttonEditCustomContinuationStyle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEditCustomContinuationStyle.Location = new System.Drawing.Point(346, 323);
+            this.buttonEditCustomContinuationStyle.Name = "buttonEditCustomContinuationStyle";
+            this.buttonEditCustomContinuationStyle.Size = new System.Drawing.Size(28, 23);
+            this.buttonEditCustomContinuationStyle.TabIndex = 59;
+            this.buttonEditCustomContinuationStyle.Text = "...";
+            this.buttonEditCustomContinuationStyle.UseVisualStyleBackColor = true;
+            this.buttonEditCustomContinuationStyle.Visible = false;
+            this.buttonEditCustomContinuationStyle.Click += new System.EventHandler(this.buttonEditCustomContinuationStyle_Click);
+            // 
+            // comboBoxCpsLineLenCalc
+            // 
+            this.comboBoxCpsLineLenCalc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxCpsLineLenCalc.DropDownWidth = 220;
+            this.comboBoxCpsLineLenCalc.FormattingEnabled = true;
+            this.comboBoxCpsLineLenCalc.Location = new System.Drawing.Point(203, 351);
+            this.comboBoxCpsLineLenCalc.Name = "comboBoxCpsLineLenCalc";
+            this.comboBoxCpsLineLenCalc.Size = new System.Drawing.Size(170, 21);
+            this.comboBoxCpsLineLenCalc.TabIndex = 65;
+            this.comboBoxCpsLineLenCalc.SelectedIndexChanged += new System.EventHandler(this.ProfileUiValueChanged);
+            // 
+            // labelCpsLineLenCalc
+            // 
+            this.labelCpsLineLenCalc.AutoSize = true;
+            this.labelCpsLineLenCalc.Location = new System.Drawing.Point(6, 354);
+            this.labelCpsLineLenCalc.Name = "labelCpsLineLenCalc";
+            this.labelCpsLineLenCalc.Size = new System.Drawing.Size(104, 13);
+            this.labelCpsLineLenCalc.TabIndex = 64;
+            this.labelCpsLineLenCalc.Text = "Cps/line length style";
+            // 
             // buttonGapChoose
             // 
-            this.buttonGapChoose.Location = new System.Drawing.Point(264, 213);
+            this.buttonGapChoose.Location = new System.Drawing.Point(265, 214);
             this.buttonGapChoose.Name = "buttonGapChoose";
             this.buttonGapChoose.Size = new System.Drawing.Size(28, 23);
             this.buttonGapChoose.TabIndex = 46;
@@ -726,17 +812,6 @@
             this.comboBoxDialogStyle.Size = new System.Drawing.Size(170, 21);
             this.comboBoxDialogStyle.TabIndex = 57;
             this.comboBoxDialogStyle.SelectedIndexChanged += new System.EventHandler(this.ProfileUiValueChanged);
-            // 
-            // checkBoxCpsIncludeWhiteSpace
-            // 
-            this.checkBoxCpsIncludeWhiteSpace.AutoSize = true;
-            this.checkBoxCpsIncludeWhiteSpace.Location = new System.Drawing.Point(9, 354);
-            this.checkBoxCpsIncludeWhiteSpace.Name = "checkBoxCpsIncludeWhiteSpace";
-            this.checkBoxCpsIncludeWhiteSpace.Size = new System.Drawing.Size(271, 17);
-            this.checkBoxCpsIncludeWhiteSpace.TabIndex = 65;
-            this.checkBoxCpsIncludeWhiteSpace.Text = "Characters per second (CPS) includes white spaces";
-            this.checkBoxCpsIncludeWhiteSpace.UseVisualStyleBackColor = true;
-            this.checkBoxCpsIncludeWhiteSpace.CheckedChanged += new System.EventHandler(this.ProfileUiValueChanged);
             // 
             // buttonEditProfile
             // 
@@ -863,7 +938,7 @@
             // 
             this.numericUpDownMaxNumberOfLines.Location = new System.Drawing.Point(203, 242);
             this.numericUpDownMaxNumberOfLines.Maximum = new decimal(new int[] {
-            25,
+            999,
             0,
             0,
             0});
@@ -904,7 +979,7 @@
             // 
             this.numericUpDownDurationMin.Location = new System.Drawing.Point(203, 163);
             this.numericUpDownDurationMin.Maximum = new decimal(new int[] {
-            3000,
+            10000,
             0,
             0,
             0});
@@ -1047,7 +1122,7 @@
             "1 month",
             "3 months",
             "6 months"});
-            this.comboBoxAutoBackupDeleteAfter.Location = new System.Drawing.Point(707, 421);
+            this.comboBoxAutoBackupDeleteAfter.Location = new System.Drawing.Point(709, 459);
             this.comboBoxAutoBackupDeleteAfter.Name = "comboBoxAutoBackupDeleteAfter";
             this.comboBoxAutoBackupDeleteAfter.Size = new System.Drawing.Size(88, 21);
             this.comboBoxAutoBackupDeleteAfter.TabIndex = 29;
@@ -1055,7 +1130,7 @@
             // labelAutoBackupDeleteAfter
             // 
             this.labelAutoBackupDeleteAfter.AutoSize = true;
-            this.labelAutoBackupDeleteAfter.Location = new System.Drawing.Point(639, 424);
+            this.labelAutoBackupDeleteAfter.Location = new System.Drawing.Point(641, 462);
             this.labelAutoBackupDeleteAfter.Name = "labelAutoBackupDeleteAfter";
             this.labelAutoBackupDeleteAfter.Size = new System.Drawing.Size(65, 13);
             this.labelAutoBackupDeleteAfter.TabIndex = 28;
@@ -1064,7 +1139,7 @@
             // checkBoxCheckForUpdates
             // 
             this.checkBoxCheckForUpdates.AutoSize = true;
-            this.checkBoxCheckForUpdates.Location = new System.Drawing.Point(522, 453);
+            this.checkBoxCheckForUpdates.Location = new System.Drawing.Point(524, 491);
             this.checkBoxCheckForUpdates.Name = "checkBoxCheckForUpdates";
             this.checkBoxCheckForUpdates.Size = new System.Drawing.Size(114, 17);
             this.checkBoxCheckForUpdates.TabIndex = 31;
@@ -1185,7 +1260,7 @@
             "Every minute",
             "Every 5 minutes",
             "Every 15 minutes"});
-            this.comboBoxAutoBackup.Location = new System.Drawing.Point(512, 421);
+            this.comboBoxAutoBackup.Location = new System.Drawing.Point(514, 459);
             this.comboBoxAutoBackup.Name = "comboBoxAutoBackup";
             this.comboBoxAutoBackup.Size = new System.Drawing.Size(121, 21);
             this.comboBoxAutoBackup.TabIndex = 27;
@@ -1193,7 +1268,7 @@
             // labelAutoBackup
             // 
             this.labelAutoBackup.AutoSize = true;
-            this.labelAutoBackup.Location = new System.Drawing.Point(438, 424);
+            this.labelAutoBackup.Location = new System.Drawing.Point(440, 462);
             this.labelAutoBackup.Name = "labelAutoBackup";
             this.labelAutoBackup.Size = new System.Drawing.Size(68, 13);
             this.labelAutoBackup.TabIndex = 26;
@@ -1883,35 +1958,43 @@
             this.toolStripMenuItemShortcutsCollapse,
             this.toolStripSeparator1,
             this.importShortcutsToolStripMenuItem,
-            this.exportShortcutsToolStripMenuItem});
+            this.exportShortcutsToolStripMenuItem,
+            this.exportAsHtmlToolStripMenuItem});
             this.contextMenuStripShortcuts.Name = "contextMenuStripShortcuts";
-            this.contextMenuStripShortcuts.Size = new System.Drawing.Size(120, 76);
+            this.contextMenuStripShortcuts.Size = new System.Drawing.Size(160, 98);
             // 
             // toolStripMenuItemShortcutsCollapse
             // 
             this.toolStripMenuItemShortcutsCollapse.Name = "toolStripMenuItemShortcutsCollapse";
-            this.toolStripMenuItemShortcutsCollapse.Size = new System.Drawing.Size(119, 22);
+            this.toolStripMenuItemShortcutsCollapse.Size = new System.Drawing.Size(159, 22);
             this.toolStripMenuItemShortcutsCollapse.Text = "Collapse";
             this.toolStripMenuItemShortcutsCollapse.Click += new System.EventHandler(this.toolStripMenuItemShortcutsCollapse_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(116, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(156, 6);
             // 
             // importShortcutsToolStripMenuItem
             // 
             this.importShortcutsToolStripMenuItem.Name = "importShortcutsToolStripMenuItem";
-            this.importShortcutsToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.importShortcutsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.importShortcutsToolStripMenuItem.Text = "Import...";
             this.importShortcutsToolStripMenuItem.Click += new System.EventHandler(this.importShortcutsToolStripMenuItem_Click);
             // 
             // exportShortcutsToolStripMenuItem
             // 
             this.exportShortcutsToolStripMenuItem.Name = "exportShortcutsToolStripMenuItem";
-            this.exportShortcutsToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.exportShortcutsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.exportShortcutsToolStripMenuItem.Text = "Export...";
             this.exportShortcutsToolStripMenuItem.Click += new System.EventHandler(this.exportShortcutsToolStripMenuItem_Click);
+            // 
+            // exportAsHtmlToolStripMenuItem
+            // 
+            this.exportAsHtmlToolStripMenuItem.Name = "exportAsHtmlToolStripMenuItem";
+            this.exportAsHtmlToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.exportAsHtmlToolStripMenuItem.Text = "Export as html...";
+            this.exportAsHtmlToolStripMenuItem.Click += new System.EventHandler(this.exportAsHtmlToolStripMenuItem_Click);
             // 
             // labelShortcut
             // 
@@ -2087,9 +2170,9 @@
             this.groupBoxMainWindowVideoControls.Controls.Add(this.textBoxCustomSearchUrl1);
             this.groupBoxMainWindowVideoControls.Controls.Add(this.labelCustomSearch);
             this.groupBoxMainWindowVideoControls.Controls.Add(this.comboBoxCustomSearch1);
-            this.groupBoxMainWindowVideoControls.Location = new System.Drawing.Point(0, 313);
+            this.groupBoxMainWindowVideoControls.Location = new System.Drawing.Point(0, 323);
             this.groupBoxMainWindowVideoControls.Name = "groupBoxMainWindowVideoControls";
-            this.groupBoxMainWindowVideoControls.Size = new System.Drawing.Size(851, 207);
+            this.groupBoxMainWindowVideoControls.Size = new System.Drawing.Size(851, 197);
             this.groupBoxMainWindowVideoControls.TabIndex = 15;
             this.groupBoxMainWindowVideoControls.TabStop = false;
             this.groupBoxMainWindowVideoControls.Text = "Main window video controls";
@@ -2277,8 +2360,13 @@
             // 
             this.groupBoxVideoPlayerDefault.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxVideoPlayerDefault.Controls.Add(this.labelVideoPlayerPreviewFontColor);
-            this.groupBoxVideoPlayerDefault.Controls.Add(this.panelVideoPlayerPreviewFontColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.panelMpvBackColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.buttonMpvBackColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.panelMpvOutlineColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.buttonMpvOutlineColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.panelMpvPrimaryColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.buttonMpvPrimaryColor);
+            this.groupBoxVideoPlayerDefault.Controls.Add(this.groupBoxMpvBorder);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.checkBoxAllowVolumeBoost);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.checkBoxVideoAutoOpen);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.checkBoxVideoPlayerPreviewFontBold);
@@ -2286,33 +2374,153 @@
             this.groupBoxVideoPlayerDefault.Controls.Add(this.checkBoxVideoPlayerShowMuteButton);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.labelVideoPlayerPreviewFontName);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.comboBoxVideoPlayerPreviewFontName);
-            this.groupBoxVideoPlayerDefault.Controls.Add(this.checkBoxMpvPreviewOpaqueBox);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.labelVideoPlayerPreviewFontSize);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.comboBoxlVideoPlayerPreviewFontSize);
             this.groupBoxVideoPlayerDefault.Controls.Add(this.checkBoxVideoPlayerShowStopButton);
             this.groupBoxVideoPlayerDefault.Location = new System.Drawing.Point(0, 160);
             this.groupBoxVideoPlayerDefault.Name = "groupBoxVideoPlayerDefault";
-            this.groupBoxVideoPlayerDefault.Size = new System.Drawing.Size(851, 147);
+            this.groupBoxVideoPlayerDefault.Size = new System.Drawing.Size(851, 160);
             this.groupBoxVideoPlayerDefault.TabIndex = 14;
             this.groupBoxVideoPlayerDefault.TabStop = false;
             // 
-            // labelVideoPlayerPreviewFontColor
+            // panelMpvBackColor
             // 
-            this.labelVideoPlayerPreviewFontColor.AutoSize = true;
-            this.labelVideoPlayerPreviewFontColor.Location = new System.Drawing.Point(331, 111);
-            this.labelVideoPlayerPreviewFontColor.Name = "labelVideoPlayerPreviewFontColor";
-            this.labelVideoPlayerPreviewFontColor.Size = new System.Drawing.Size(133, 13);
-            this.labelVideoPlayerPreviewFontColor.TabIndex = 12;
-            this.labelVideoPlayerPreviewFontColor.Text = "Subtitle preview font color";
+            this.panelMpvBackColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelMpvBackColor.Location = new System.Drawing.Point(399, 125);
+            this.panelMpvBackColor.Name = "panelMpvBackColor";
+            this.panelMpvBackColor.Size = new System.Drawing.Size(21, 20);
+            this.panelMpvBackColor.TabIndex = 19;
+            this.panelMpvBackColor.Click += new System.EventHandler(this.buttonMpvBackColor_Click);
             // 
-            // panelVideoPlayerPreviewFontColor
+            // buttonMpvBackColor
             // 
-            this.panelVideoPlayerPreviewFontColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelVideoPlayerPreviewFontColor.Location = new System.Drawing.Point(471, 107);
-            this.panelVideoPlayerPreviewFontColor.Name = "panelVideoPlayerPreviewFontColor";
-            this.panelVideoPlayerPreviewFontColor.Size = new System.Drawing.Size(21, 20);
-            this.panelVideoPlayerPreviewFontColor.TabIndex = 11;
-            this.panelVideoPlayerPreviewFontColor.Click += new System.EventHandler(this.panelVideoPlayerPreviewFontColor_Click);
+            this.buttonMpvBackColor.Location = new System.Drawing.Point(325, 124);
+            this.buttonMpvBackColor.Name = "buttonMpvBackColor";
+            this.buttonMpvBackColor.Size = new System.Drawing.Size(69, 23);
+            this.buttonMpvBackColor.TabIndex = 18;
+            this.buttonMpvBackColor.Text = "Shadow";
+            this.buttonMpvBackColor.UseVisualStyleBackColor = true;
+            this.buttonMpvBackColor.Click += new System.EventHandler(this.buttonMpvBackColor_Click);
+            // 
+            // panelMpvOutlineColor
+            // 
+            this.panelMpvOutlineColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelMpvOutlineColor.Location = new System.Drawing.Point(387, 96);
+            this.panelMpvOutlineColor.Name = "panelMpvOutlineColor";
+            this.panelMpvOutlineColor.Size = new System.Drawing.Size(21, 20);
+            this.panelMpvOutlineColor.TabIndex = 17;
+            this.panelMpvOutlineColor.Click += new System.EventHandler(this.buttonMpvOutlineColor_Click);
+            // 
+            // buttonMpvOutlineColor
+            // 
+            this.buttonMpvOutlineColor.Location = new System.Drawing.Point(325, 95);
+            this.buttonMpvOutlineColor.Name = "buttonMpvOutlineColor";
+            this.buttonMpvOutlineColor.Size = new System.Drawing.Size(58, 23);
+            this.buttonMpvOutlineColor.TabIndex = 16;
+            this.buttonMpvOutlineColor.Text = "Outline";
+            this.buttonMpvOutlineColor.UseVisualStyleBackColor = true;
+            this.buttonMpvOutlineColor.Click += new System.EventHandler(this.buttonMpvOutlineColor_Click);
+            // 
+            // panelMpvPrimaryColor
+            // 
+            this.panelMpvPrimaryColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelMpvPrimaryColor.Location = new System.Drawing.Point(403, 67);
+            this.panelMpvPrimaryColor.Name = "panelMpvPrimaryColor";
+            this.panelMpvPrimaryColor.Size = new System.Drawing.Size(21, 20);
+            this.panelMpvPrimaryColor.TabIndex = 15;
+            this.panelMpvPrimaryColor.Click += new System.EventHandler(this.buttonMpvPrimaryColor_Click);
+            // 
+            // buttonMpvPrimaryColor
+            // 
+            this.buttonMpvPrimaryColor.Location = new System.Drawing.Point(325, 66);
+            this.buttonMpvPrimaryColor.Name = "buttonMpvPrimaryColor";
+            this.buttonMpvPrimaryColor.Size = new System.Drawing.Size(72, 23);
+            this.buttonMpvPrimaryColor.TabIndex = 14;
+            this.buttonMpvPrimaryColor.Text = "&Primary";
+            this.buttonMpvPrimaryColor.UseVisualStyleBackColor = true;
+            this.buttonMpvPrimaryColor.Click += new System.EventHandler(this.buttonMpvPrimaryColor_Click);
+            // 
+            // groupBoxMpvBorder
+            // 
+            this.groupBoxMpvBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxMpvBorder.Controls.Add(this.comboBoxOpaqueBoxStyle);
+            this.groupBoxMpvBorder.Controls.Add(this.radioButtonMpvOpaqueBox);
+            this.groupBoxMpvBorder.Controls.Add(this.radioButtonMpvOutline);
+            this.groupBoxMpvBorder.Controls.Add(this.numericUpDownMpvShadowWidth);
+            this.groupBoxMpvBorder.Controls.Add(this.numericUpDownMpvOutline);
+            this.groupBoxMpvBorder.Controls.Add(this.labelMpvShadow);
+            this.groupBoxMpvBorder.Location = new System.Drawing.Point(547, 45);
+            this.groupBoxMpvBorder.Name = "groupBoxMpvBorder";
+            this.groupBoxMpvBorder.Size = new System.Drawing.Size(285, 105);
+            this.groupBoxMpvBorder.TabIndex = 13;
+            this.groupBoxMpvBorder.TabStop = false;
+            this.groupBoxMpvBorder.Text = "Border";
+            // 
+            // comboBoxOpaqueBoxStyle
+            // 
+            this.comboBoxOpaqueBoxStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxOpaqueBoxStyle.DropDownWidth = 300;
+            this.comboBoxOpaqueBoxStyle.FormattingEnabled = true;
+            this.comboBoxOpaqueBoxStyle.Location = new System.Drawing.Point(35, 69);
+            this.comboBoxOpaqueBoxStyle.Name = "comboBoxOpaqueBoxStyle";
+            this.comboBoxOpaqueBoxStyle.Size = new System.Drawing.Size(212, 21);
+            this.comboBoxOpaqueBoxStyle.TabIndex = 5;
+            // 
+            // radioButtonMpvOpaqueBox
+            // 
+            this.radioButtonMpvOpaqueBox.AutoSize = true;
+            this.radioButtonMpvOpaqueBox.Location = new System.Drawing.Point(12, 50);
+            this.radioButtonMpvOpaqueBox.Name = "radioButtonMpvOpaqueBox";
+            this.radioButtonMpvOpaqueBox.Size = new System.Drawing.Size(84, 17);
+            this.radioButtonMpvOpaqueBox.TabIndex = 4;
+            this.radioButtonMpvOpaqueBox.Text = "Opaque bo&x";
+            this.radioButtonMpvOpaqueBox.UseVisualStyleBackColor = false;
+            // 
+            // radioButtonMpvOutline
+            // 
+            this.radioButtonMpvOutline.AutoSize = true;
+            this.radioButtonMpvOutline.Location = new System.Drawing.Point(12, 24);
+            this.radioButtonMpvOutline.Name = "radioButtonMpvOutline";
+            this.radioButtonMpvOutline.Size = new System.Drawing.Size(59, 17);
+            this.radioButtonMpvOutline.TabIndex = 0;
+            this.radioButtonMpvOutline.Text = "Outline";
+            this.radioButtonMpvOutline.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownMpvShadowWidth
+            // 
+            this.numericUpDownMpvShadowWidth.DecimalPlaces = 1;
+            this.numericUpDownMpvShadowWidth.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numericUpDownMpvShadowWidth.Location = new System.Drawing.Point(134, 24);
+            this.numericUpDownMpvShadowWidth.Name = "numericUpDownMpvShadowWidth";
+            this.numericUpDownMpvShadowWidth.Size = new System.Drawing.Size(52, 21);
+            this.numericUpDownMpvShadowWidth.TabIndex = 2;
+            // 
+            // numericUpDownMpvOutline
+            // 
+            this.numericUpDownMpvOutline.DecimalPlaces = 1;
+            this.numericUpDownMpvOutline.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numericUpDownMpvOutline.Location = new System.Drawing.Point(76, 24);
+            this.numericUpDownMpvOutline.Name = "numericUpDownMpvOutline";
+            this.numericUpDownMpvOutline.Size = new System.Drawing.Size(52, 21);
+            this.numericUpDownMpvOutline.TabIndex = 1;
+            // 
+            // labelMpvShadow
+            // 
+            this.labelMpvShadow.AutoSize = true;
+            this.labelMpvShadow.Location = new System.Drawing.Point(134, 11);
+            this.labelMpvShadow.Name = "labelMpvShadow";
+            this.labelMpvShadow.Size = new System.Drawing.Size(45, 13);
+            this.labelMpvShadow.TabIndex = 2;
+            this.labelMpvShadow.Text = "Shadow";
             // 
             // checkBoxAllowVolumeBoost
             // 
@@ -2337,10 +2545,10 @@
             // checkBoxVideoPlayerPreviewFontBold
             // 
             this.checkBoxVideoPlayerPreviewFontBold.AutoSize = true;
-            this.checkBoxVideoPlayerPreviewFontBold.Location = new System.Drawing.Point(471, 67);
+            this.checkBoxVideoPlayerPreviewFontBold.Location = new System.Drawing.Point(660, 17);
             this.checkBoxVideoPlayerPreviewFontBold.Name = "checkBoxVideoPlayerPreviewFontBold";
             this.checkBoxVideoPlayerPreviewFontBold.Size = new System.Drawing.Size(46, 17);
-            this.checkBoxVideoPlayerPreviewFontBold.TabIndex = 9;
+            this.checkBoxVideoPlayerPreviewFontBold.TabIndex = 7;
             this.checkBoxVideoPlayerPreviewFontBold.Text = "Bold";
             this.checkBoxVideoPlayerPreviewFontBold.UseVisualStyleBackColor = true;
             // 
@@ -2367,35 +2575,25 @@
             // labelVideoPlayerPreviewFontName
             // 
             this.labelVideoPlayerPreviewFontName.AutoSize = true;
-            this.labelVideoPlayerPreviewFontName.Location = new System.Drawing.Point(331, 16);
+            this.labelVideoPlayerPreviewFontName.Location = new System.Drawing.Point(324, 16);
             this.labelVideoPlayerPreviewFontName.Name = "labelVideoPlayerPreviewFontName";
-            this.labelVideoPlayerPreviewFontName.Size = new System.Drawing.Size(128, 13);
+            this.labelVideoPlayerPreviewFontName.Size = new System.Drawing.Size(136, 13);
             this.labelVideoPlayerPreviewFontName.TabIndex = 5;
-            this.labelVideoPlayerPreviewFontName.Text = "Subtitle preview font size";
+            this.labelVideoPlayerPreviewFontName.Text = "Subtitle preview font name";
             // 
             // comboBoxVideoPlayerPreviewFontName
             // 
             this.comboBoxVideoPlayerPreviewFontName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxVideoPlayerPreviewFontName.FormattingEnabled = true;
-            this.comboBoxVideoPlayerPreviewFontName.Location = new System.Drawing.Point(471, 13);
+            this.comboBoxVideoPlayerPreviewFontName.Location = new System.Drawing.Point(465, 13);
             this.comboBoxVideoPlayerPreviewFontName.Name = "comboBoxVideoPlayerPreviewFontName";
             this.comboBoxVideoPlayerPreviewFontName.Size = new System.Drawing.Size(188, 21);
             this.comboBoxVideoPlayerPreviewFontName.TabIndex = 6;
             // 
-            // checkBoxMpvPreviewOpaqueBox
-            // 
-            this.checkBoxMpvPreviewOpaqueBox.AutoSize = true;
-            this.checkBoxMpvPreviewOpaqueBox.Location = new System.Drawing.Point(471, 87);
-            this.checkBoxMpvPreviewOpaqueBox.Name = "checkBoxMpvPreviewOpaqueBox";
-            this.checkBoxMpvPreviewOpaqueBox.Size = new System.Drawing.Size(85, 17);
-            this.checkBoxMpvPreviewOpaqueBox.TabIndex = 10;
-            this.checkBoxMpvPreviewOpaqueBox.Text = "Opaque box";
-            this.checkBoxMpvPreviewOpaqueBox.UseVisualStyleBackColor = true;
-            // 
             // labelVideoPlayerPreviewFontSize
             // 
             this.labelVideoPlayerPreviewFontSize.AutoSize = true;
-            this.labelVideoPlayerPreviewFontSize.Location = new System.Drawing.Point(331, 43);
+            this.labelVideoPlayerPreviewFontSize.Location = new System.Drawing.Point(324, 43);
             this.labelVideoPlayerPreviewFontSize.Name = "labelVideoPlayerPreviewFontSize";
             this.labelVideoPlayerPreviewFontSize.Size = new System.Drawing.Size(128, 13);
             this.labelVideoPlayerPreviewFontSize.TabIndex = 7;
@@ -2429,10 +2627,10 @@
             "28",
             "29",
             "30"});
-            this.comboBoxlVideoPlayerPreviewFontSize.Location = new System.Drawing.Point(471, 40);
+            this.comboBoxlVideoPlayerPreviewFontSize.Location = new System.Drawing.Point(465, 40);
             this.comboBoxlVideoPlayerPreviewFontSize.Name = "comboBoxlVideoPlayerPreviewFontSize";
-            this.comboBoxlVideoPlayerPreviewFontSize.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxlVideoPlayerPreviewFontSize.TabIndex = 8;
+            this.comboBoxlVideoPlayerPreviewFontSize.Size = new System.Drawing.Size(70, 21);
+            this.comboBoxlVideoPlayerPreviewFontSize.TabIndex = 7;
             // 
             // checkBoxVideoPlayerShowStopButton
             // 
@@ -2473,10 +2671,10 @@
             // checkBoxMpvHandlesPreviewText
             // 
             this.checkBoxMpvHandlesPreviewText.AutoSize = true;
-            this.checkBoxMpvHandlesPreviewText.Location = new System.Drawing.Point(169, 114);
+            this.checkBoxMpvHandlesPreviewText.Location = new System.Drawing.Point(164, 43);
             this.checkBoxMpvHandlesPreviewText.Name = "checkBoxMpvHandlesPreviewText";
             this.checkBoxMpvHandlesPreviewText.Size = new System.Drawing.Size(150, 17);
-            this.checkBoxMpvHandlesPreviewText.TabIndex = 31;
+            this.checkBoxMpvHandlesPreviewText.TabIndex = 3;
             this.checkBoxMpvHandlesPreviewText.Text = "mpv handles preview text";
             this.checkBoxMpvHandlesPreviewText.UseVisualStyleBackColor = true;
             this.checkBoxMpvHandlesPreviewText.CheckedChanged += new System.EventHandler(this.checkBoxMpvHandlesPreviewText_CheckedChanged);
@@ -2486,7 +2684,7 @@
             this.labelMpvSettings.AutoSize = true;
             this.labelMpvSettings.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMpvSettings.ForeColor = System.Drawing.Color.Gray;
-            this.labelMpvSettings.Location = new System.Drawing.Point(709, 93);
+            this.labelMpvSettings.Location = new System.Drawing.Point(709, 26);
             this.labelMpvSettings.Name = "labelMpvSettings";
             this.labelMpvSettings.Size = new System.Drawing.Size(40, 13);
             this.labelMpvSettings.TabIndex = 30;
@@ -2494,19 +2692,20 @@
             // 
             // buttonMpvSettings
             // 
-            this.buttonMpvSettings.Location = new System.Drawing.Point(510, 89);
+            this.buttonMpvSettings.Location = new System.Drawing.Point(510, 22);
             this.buttonMpvSettings.Name = "buttonMpvSettings";
             this.buttonMpvSettings.Size = new System.Drawing.Size(179, 23);
-            this.buttonMpvSettings.TabIndex = 29;
+            this.buttonMpvSettings.TabIndex = 2;
             this.buttonMpvSettings.Text = "Download mpv dll";
             this.buttonMpvSettings.UseVisualStyleBackColor = true;
             this.buttonMpvSettings.Click += new System.EventHandler(this.buttonMpvSettings_Click);
             // 
             // labelPlatform
             // 
+            this.labelPlatform.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelPlatform.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelPlatform.ForeColor = System.Drawing.Color.Gray;
-            this.labelPlatform.Location = new System.Drawing.Point(724, 13);
+            this.labelPlatform.Location = new System.Drawing.Point(766, 13);
             this.labelPlatform.Name = "labelPlatform";
             this.labelPlatform.Size = new System.Drawing.Size(83, 11);
             this.labelPlatform.TabIndex = 27;
@@ -2515,27 +2714,27 @@
             // 
             // buttonVlcPathBrowse
             // 
-            this.buttonVlcPathBrowse.Location = new System.Drawing.Point(778, 45);
+            this.buttonVlcPathBrowse.Location = new System.Drawing.Point(779, 105);
             this.buttonVlcPathBrowse.Name = "buttonVlcPathBrowse";
             this.buttonVlcPathBrowse.Size = new System.Drawing.Size(29, 21);
-            this.buttonVlcPathBrowse.TabIndex = 26;
+            this.buttonVlcPathBrowse.TabIndex = 7;
             this.buttonVlcPathBrowse.Text = "...";
             this.buttonVlcPathBrowse.UseVisualStyleBackColor = true;
             this.buttonVlcPathBrowse.Click += new System.EventHandler(this.buttonVlcPathBrowse_Click);
             // 
             // textBoxVlcPath
             // 
-            this.textBoxVlcPath.Location = new System.Drawing.Point(410, 45);
+            this.textBoxVlcPath.Location = new System.Drawing.Point(411, 105);
             this.textBoxVlcPath.MaxLength = 1000;
             this.textBoxVlcPath.Name = "textBoxVlcPath";
             this.textBoxVlcPath.Size = new System.Drawing.Size(362, 21);
-            this.textBoxVlcPath.TabIndex = 25;
+            this.textBoxVlcPath.TabIndex = 6;
             this.textBoxVlcPath.MouseLeave += new System.EventHandler(this.textBoxVlcPath_MouseLeave);
             // 
             // labelVlcPath
             // 
             this.labelVlcPath.AutoSize = true;
-            this.labelVlcPath.Location = new System.Drawing.Point(410, 29);
+            this.labelVlcPath.Location = new System.Drawing.Point(414, 89);
             this.labelVlcPath.Name = "labelVlcPath";
             this.labelVlcPath.Size = new System.Drawing.Size(315, 13);
             this.labelVlcPath.TabIndex = 24;
@@ -2546,7 +2745,7 @@
             this.labelVideoPlayerVLC.AutoSize = true;
             this.labelVideoPlayerVLC.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelVideoPlayerVLC.ForeColor = System.Drawing.Color.Gray;
-            this.labelVideoPlayerVLC.Location = new System.Drawing.Point(167, 49);
+            this.labelVideoPlayerVLC.Location = new System.Drawing.Point(164, 109);
             this.labelVideoPlayerVLC.Name = "labelVideoPlayerVLC";
             this.labelVideoPlayerVLC.Size = new System.Drawing.Size(237, 13);
             this.labelVideoPlayerVLC.TabIndex = 13;
@@ -2555,10 +2754,10 @@
             // radioButtonVideoPlayerVLC
             // 
             this.radioButtonVideoPlayerVLC.AutoSize = true;
-            this.radioButtonVideoPlayerVLC.Location = new System.Drawing.Point(10, 46);
+            this.radioButtonVideoPlayerVLC.Location = new System.Drawing.Point(9, 106);
             this.radioButtonVideoPlayerVLC.Name = "radioButtonVideoPlayerVLC";
             this.radioButtonVideoPlayerVLC.Size = new System.Drawing.Size(43, 17);
-            this.radioButtonVideoPlayerVLC.TabIndex = 4;
+            this.radioButtonVideoPlayerVLC.TabIndex = 5;
             this.radioButtonVideoPlayerVLC.TabStop = true;
             this.radioButtonVideoPlayerVLC.Text = "VLC";
             this.radioButtonVideoPlayerVLC.UseVisualStyleBackColor = true;
@@ -2568,7 +2767,7 @@
             this.labelVideoPlayerMPlayer.AutoSize = true;
             this.labelVideoPlayerMPlayer.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelVideoPlayerMPlayer.ForeColor = System.Drawing.Color.Gray;
-            this.labelVideoPlayerMPlayer.Location = new System.Drawing.Point(167, 93);
+            this.labelVideoPlayerMPlayer.Location = new System.Drawing.Point(164, 26);
             this.labelVideoPlayerMPlayer.Name = "labelVideoPlayerMPlayer";
             this.labelVideoPlayerMPlayer.Size = new System.Drawing.Size(337, 13);
             this.labelVideoPlayerMPlayer.TabIndex = 11;
@@ -2579,7 +2778,7 @@
             this.labelDirectShowDescription.AutoSize = true;
             this.labelDirectShowDescription.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelDirectShowDescription.ForeColor = System.Drawing.Color.Gray;
-            this.labelDirectShowDescription.Location = new System.Drawing.Point(167, 26);
+            this.labelDirectShowDescription.Location = new System.Drawing.Point(164, 75);
             this.labelDirectShowDescription.Name = "labelDirectShowDescription";
             this.labelDirectShowDescription.Size = new System.Drawing.Size(114, 13);
             this.labelDirectShowDescription.TabIndex = 10;
@@ -2590,7 +2789,7 @@
             this.labelMpcHcDescription.AutoSize = true;
             this.labelMpcHcDescription.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMpcHcDescription.ForeColor = System.Drawing.Color.Gray;
-            this.labelMpcHcDescription.Location = new System.Drawing.Point(167, 70);
+            this.labelMpcHcDescription.Location = new System.Drawing.Point(164, 138);
             this.labelMpcHcDescription.Name = "labelMpcHcDescription";
             this.labelMpcHcDescription.Size = new System.Drawing.Size(178, 13);
             this.labelMpcHcDescription.TabIndex = 9;
@@ -2599,10 +2798,11 @@
             // radioButtonVideoPlayerMPV
             // 
             this.radioButtonVideoPlayerMPV.AutoSize = true;
-            this.radioButtonVideoPlayerMPV.Location = new System.Drawing.Point(10, 89);
+            this.radioButtonVideoPlayerMPV.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonVideoPlayerMPV.Location = new System.Drawing.Point(9, 22);
             this.radioButtonVideoPlayerMPV.Name = "radioButtonVideoPlayerMPV";
-            this.radioButtonVideoPlayerMPV.Size = new System.Drawing.Size(45, 17);
-            this.radioButtonVideoPlayerMPV.TabIndex = 28;
+            this.radioButtonVideoPlayerMPV.Size = new System.Drawing.Size(50, 17);
+            this.radioButtonVideoPlayerMPV.TabIndex = 1;
             this.radioButtonVideoPlayerMPV.TabStop = true;
             this.radioButtonVideoPlayerMPV.Text = "mpv";
             this.radioButtonVideoPlayerMPV.UseVisualStyleBackColor = true;
@@ -2611,10 +2811,10 @@
             // radioButtonVideoPlayerDirectShow
             // 
             this.radioButtonVideoPlayerDirectShow.AutoSize = true;
-            this.radioButtonVideoPlayerDirectShow.Location = new System.Drawing.Point(10, 23);
+            this.radioButtonVideoPlayerDirectShow.Location = new System.Drawing.Point(9, 72);
             this.radioButtonVideoPlayerDirectShow.Name = "radioButtonVideoPlayerDirectShow";
             this.radioButtonVideoPlayerDirectShow.Size = new System.Drawing.Size(82, 17);
-            this.radioButtonVideoPlayerDirectShow.TabIndex = 1;
+            this.radioButtonVideoPlayerDirectShow.TabIndex = 4;
             this.radioButtonVideoPlayerDirectShow.TabStop = true;
             this.radioButtonVideoPlayerDirectShow.Text = "DirectShow ";
             this.radioButtonVideoPlayerDirectShow.UseVisualStyleBackColor = true;
@@ -2622,10 +2822,10 @@
             // radioButtonVideoPlayerMpcHc
             // 
             this.radioButtonVideoPlayerMpcHc.AutoSize = true;
-            this.radioButtonVideoPlayerMpcHc.Location = new System.Drawing.Point(10, 66);
+            this.radioButtonVideoPlayerMpcHc.Location = new System.Drawing.Point(9, 135);
             this.radioButtonVideoPlayerMpcHc.Name = "radioButtonVideoPlayerMpcHc";
             this.radioButtonVideoPlayerMpcHc.Size = new System.Drawing.Size(64, 17);
-            this.radioButtonVideoPlayerMpcHc.TabIndex = 27;
+            this.radioButtonVideoPlayerMpcHc.TabIndex = 8;
             this.radioButtonVideoPlayerMpcHc.TabStop = true;
             this.radioButtonVideoPlayerMpcHc.Text = "MPC-HC";
             this.radioButtonVideoPlayerMpcHc.UseVisualStyleBackColor = true;
@@ -2647,6 +2847,7 @@
             this.groupBoxFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxFfmpeg.Controls.Add(this.checkBoxFfmpegUseCenterChannel);
             this.groupBoxFfmpeg.Controls.Add(this.buttonDownloadFfmpeg);
             this.groupBoxFfmpeg.Controls.Add(this.buttonBrowseToFFmpeg);
             this.groupBoxFfmpeg.Controls.Add(this.textBoxFFmpegPath);
@@ -2654,10 +2855,20 @@
             this.groupBoxFfmpeg.Controls.Add(this.checkBoxUseFFmpeg);
             this.groupBoxFfmpeg.Location = new System.Drawing.Point(400, 293);
             this.groupBoxFfmpeg.Name = "groupBoxFfmpeg";
-            this.groupBoxFfmpeg.Size = new System.Drawing.Size(451, 119);
+            this.groupBoxFfmpeg.Size = new System.Drawing.Size(451, 133);
             this.groupBoxFfmpeg.TabIndex = 2;
             this.groupBoxFfmpeg.TabStop = false;
             this.groupBoxFfmpeg.Text = "FFmpeg";
+            // 
+            // checkBoxFfmpegUseCenterChannel
+            // 
+            this.checkBoxFfmpegUseCenterChannel.AutoSize = true;
+            this.checkBoxFfmpegUseCenterChannel.Location = new System.Drawing.Point(6, 99);
+            this.checkBoxFfmpegUseCenterChannel.Name = "checkBoxFfmpegUseCenterChannel";
+            this.checkBoxFfmpegUseCenterChannel.Size = new System.Drawing.Size(219, 17);
+            this.checkBoxFfmpegUseCenterChannel.TabIndex = 24;
+            this.checkBoxFfmpegUseCenterChannel.Text = "Use center channel only for audio tracks";
+            this.checkBoxFfmpegUseCenterChannel.UseVisualStyleBackColor = true;
             // 
             // buttonDownloadFfmpeg
             // 
@@ -2715,7 +2926,7 @@
             this.groupBoxSpectrogram.Controls.Add(this.checkBoxGenerateSpectrogram);
             this.groupBoxSpectrogram.Location = new System.Drawing.Point(0, 293);
             this.groupBoxSpectrogram.Name = "groupBoxSpectrogram";
-            this.groupBoxSpectrogram.Size = new System.Drawing.Size(393, 118);
+            this.groupBoxSpectrogram.Size = new System.Drawing.Size(393, 132);
             this.groupBoxSpectrogram.TabIndex = 1;
             this.groupBoxSpectrogram.TabStop = false;
             this.groupBoxSpectrogram.Text = "Spectrogram";
@@ -2757,9 +2968,9 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxSpectrogramClean.Controls.Add(this.buttonWaveformsFolderEmpty);
             this.groupBoxSpectrogramClean.Controls.Add(this.labelWaveformsFolderInfo);
-            this.groupBoxSpectrogramClean.Location = new System.Drawing.Point(0, 411);
+            this.groupBoxSpectrogramClean.Location = new System.Drawing.Point(0, 431);
             this.groupBoxSpectrogramClean.Name = "groupBoxSpectrogramClean";
-            this.groupBoxSpectrogramClean.Size = new System.Drawing.Size(852, 109);
+            this.groupBoxSpectrogramClean.Size = new System.Drawing.Size(852, 89);
             this.groupBoxSpectrogramClean.TabIndex = 3;
             this.groupBoxSpectrogramClean.TabStop = false;
             // 
@@ -2786,9 +2997,10 @@
             // 
             this.groupBoxWaveformAppearence.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxWaveformAppearence.Controls.Add(this.checkBoxWaveformAutoGen);
             this.groupBoxWaveformAppearence.Controls.Add(this.panelWaveformCursorColor);
             this.groupBoxWaveformAppearence.Controls.Add(this.buttonWaveformCursorColor);
-            this.groupBoxWaveformAppearence.Controls.Add(this.checkBoxWaveformSnapToSceneChanges);
+            this.groupBoxWaveformAppearence.Controls.Add(this.checkBoxWaveformSnapToShotChanges);
             this.groupBoxWaveformAppearence.Controls.Add(this.checkBoxWaveformSingleClickSelect);
             this.groupBoxWaveformAppearence.Controls.Add(this.checkBoxWaveformShowWpm);
             this.groupBoxWaveformAppearence.Controls.Add(this.checkBoxWaveformShowCps);
@@ -2821,6 +3033,16 @@
             this.groupBoxWaveformAppearence.TabStop = false;
             this.groupBoxWaveformAppearence.Text = "Waveform appearance";
             // 
+            // checkBoxWaveformAutoGen
+            // 
+            this.checkBoxWaveformAutoGen.AutoSize = true;
+            this.checkBoxWaveformAutoGen.Location = new System.Drawing.Point(262, 186);
+            this.checkBoxWaveformAutoGen.Name = "checkBoxWaveformAutoGen";
+            this.checkBoxWaveformAutoGen.Size = new System.Drawing.Size(220, 17);
+            this.checkBoxWaveformAutoGen.TabIndex = 27;
+            this.checkBoxWaveformAutoGen.Text = "Auto gen waveform when opening video";
+            this.checkBoxWaveformAutoGen.UseVisualStyleBackColor = true;
+            // 
             // panelWaveformCursorColor
             // 
             this.panelWaveformCursorColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -2840,15 +3062,15 @@
             this.buttonWaveformCursorColor.UseVisualStyleBackColor = true;
             this.buttonWaveformCursorColor.Click += new System.EventHandler(this.buttonWaveformCursorColor_Click);
             // 
-            // checkBoxWaveformSnapToSceneChanges
+            // checkBoxWaveformSnapToShotChanges
             // 
-            this.checkBoxWaveformSnapToSceneChanges.AutoSize = true;
-            this.checkBoxWaveformSnapToSceneChanges.Location = new System.Drawing.Point(262, 161);
-            this.checkBoxWaveformSnapToSceneChanges.Name = "checkBoxWaveformSnapToSceneChanges";
-            this.checkBoxWaveformSnapToSceneChanges.Size = new System.Drawing.Size(249, 17);
-            this.checkBoxWaveformSnapToSceneChanges.TabIndex = 26;
-            this.checkBoxWaveformSnapToSceneChanges.Text = "Snap to scene changes (hold Shift to override)";
-            this.checkBoxWaveformSnapToSceneChanges.UseVisualStyleBackColor = true;
+            this.checkBoxWaveformSnapToShotChanges.AutoSize = true;
+            this.checkBoxWaveformSnapToShotChanges.Location = new System.Drawing.Point(262, 161);
+            this.checkBoxWaveformSnapToShotChanges.Name = "checkBoxWaveformSnapToShotChanges";
+            this.checkBoxWaveformSnapToShotChanges.Size = new System.Drawing.Size(242, 17);
+            this.checkBoxWaveformSnapToShotChanges.TabIndex = 26;
+            this.checkBoxWaveformSnapToShotChanges.Text = "Snap to shot changes (hold Shift to override)";
+            this.checkBoxWaveformSnapToShotChanges.UseVisualStyleBackColor = true;
             // 
             // checkBoxWaveformSingleClickSelect
             // 
@@ -2863,7 +3085,7 @@
             // checkBoxWaveformShowWpm
             // 
             this.checkBoxWaveformShowWpm.AutoSize = true;
-            this.checkBoxWaveformShowWpm.Location = new System.Drawing.Point(16, 256);
+            this.checkBoxWaveformShowWpm.Location = new System.Drawing.Point(16, 249);
             this.checkBoxWaveformShowWpm.Name = "checkBoxWaveformShowWpm";
             this.checkBoxWaveformShowWpm.Size = new System.Drawing.Size(104, 17);
             this.checkBoxWaveformShowWpm.TabIndex = 8;
@@ -2873,7 +3095,7 @@
             // checkBoxWaveformShowCps
             // 
             this.checkBoxWaveformShowCps.AutoSize = true;
-            this.checkBoxWaveformShowCps.Location = new System.Drawing.Point(16, 233);
+            this.checkBoxWaveformShowCps.Location = new System.Drawing.Point(16, 226);
             this.checkBoxWaveformShowCps.Name = "checkBoxWaveformShowCps";
             this.checkBoxWaveformShowCps.Size = new System.Drawing.Size(96, 17);
             this.checkBoxWaveformShowCps.TabIndex = 7;
@@ -2893,7 +3115,7 @@
             // labelWaveformTextSize
             // 
             this.labelWaveformTextSize.AutoSize = true;
-            this.labelWaveformTextSize.Location = new System.Drawing.Point(259, 194);
+            this.labelWaveformTextSize.Location = new System.Drawing.Point(259, 220);
             this.labelWaveformTextSize.Name = "labelWaveformTextSize";
             this.labelWaveformTextSize.Size = new System.Drawing.Size(73, 13);
             this.labelWaveformTextSize.TabIndex = 27;
@@ -2902,7 +3124,7 @@
             // checkBoxWaveformTextBold
             // 
             this.checkBoxWaveformTextBold.AutoSize = true;
-            this.checkBoxWaveformTextBold.Location = new System.Drawing.Point(463, 195);
+            this.checkBoxWaveformTextBold.Location = new System.Drawing.Point(463, 221);
             this.checkBoxWaveformTextBold.Name = "checkBoxWaveformTextBold";
             this.checkBoxWaveformTextBold.Size = new System.Drawing.Size(46, 17);
             this.checkBoxWaveformTextBold.TabIndex = 29;
@@ -2928,7 +3150,7 @@
             "18",
             "19",
             "20"});
-            this.comboBoxWaveformTextSize.Location = new System.Drawing.Point(336, 191);
+            this.comboBoxWaveformTextSize.Location = new System.Drawing.Point(336, 217);
             this.comboBoxWaveformTextSize.Name = "comboBoxWaveformTextSize";
             this.comboBoxWaveformTextSize.Size = new System.Drawing.Size(121, 21);
             this.comboBoxWaveformTextSize.TabIndex = 28;
@@ -2957,7 +3179,7 @@
             // labelWaveformBorderHitMs2
             // 
             this.labelWaveformBorderHitMs2.AutoSize = true;
-            this.labelWaveformBorderHitMs2.Location = new System.Drawing.Point(454, 224);
+            this.labelWaveformBorderHitMs2.Location = new System.Drawing.Point(454, 250);
             this.labelWaveformBorderHitMs2.Name = "labelWaveformBorderHitMs2";
             this.labelWaveformBorderHitMs2.Size = new System.Drawing.Size(62, 13);
             this.labelWaveformBorderHitMs2.TabIndex = 32;
@@ -2965,7 +3187,7 @@
             // 
             // numericUpDownWaveformBorderHitMs
             // 
-            this.numericUpDownWaveformBorderHitMs.Location = new System.Drawing.Point(392, 222);
+            this.numericUpDownWaveformBorderHitMs.Location = new System.Drawing.Point(392, 248);
             this.numericUpDownWaveformBorderHitMs.Minimum = new decimal(new int[] {
             10,
             0,
@@ -2983,7 +3205,7 @@
             // labelWaveformBorderHitMs1
             // 
             this.labelWaveformBorderHitMs1.AutoSize = true;
-            this.labelWaveformBorderHitMs1.Location = new System.Drawing.Point(259, 224);
+            this.labelWaveformBorderHitMs1.Location = new System.Drawing.Point(259, 250);
             this.labelWaveformBorderHitMs1.Name = "labelWaveformBorderHitMs1";
             this.labelWaveformBorderHitMs1.Size = new System.Drawing.Size(127, 13);
             this.labelWaveformBorderHitMs1.TabIndex = 30;
@@ -3129,6 +3351,83 @@
             this.panelTools.Size = new System.Drawing.Size(864, 521);
             this.panelTools.TabIndex = 7;
             this.panelTools.Text = "Tools";
+            // 
+            // groupBoxToolsMisc
+            // 
+            this.groupBoxToolsMisc.Controls.Add(this.comboBoxCustomToggleEnd);
+            this.groupBoxToolsMisc.Controls.Add(this.comboBoxCustomToggleStart);
+            this.groupBoxToolsMisc.Controls.Add(this.labelShortcutCustomToggle);
+            this.groupBoxToolsMisc.Controls.Add(this.checkBoxShortcutsAllowLetterOrNumberInTextBox);
+            this.groupBoxToolsMisc.Controls.Add(this.comboBoxBDOpensIn);
+            this.groupBoxToolsMisc.Controls.Add(this.labelBDOpensIn);
+            this.groupBoxToolsMisc.Location = new System.Drawing.Point(418, 180);
+            this.groupBoxToolsMisc.Name = "groupBoxToolsMisc";
+            this.groupBoxToolsMisc.Size = new System.Drawing.Size(434, 109);
+            this.groupBoxToolsMisc.TabIndex = 6;
+            this.groupBoxToolsMisc.TabStop = false;
+            this.groupBoxToolsMisc.Text = "Misc";
+            // 
+            // comboBoxCustomToggleEnd
+            // 
+            this.comboBoxCustomToggleEnd.FormattingEnabled = true;
+            this.comboBoxCustomToggleEnd.Items.AddRange(new object[] {
+            ")",
+            "♪"});
+            this.comboBoxCustomToggleEnd.Location = new System.Drawing.Point(230, 76);
+            this.comboBoxCustomToggleEnd.Name = "comboBoxCustomToggleEnd";
+            this.comboBoxCustomToggleEnd.Size = new System.Drawing.Size(42, 21);
+            this.comboBoxCustomToggleEnd.TabIndex = 64;
+            // 
+            // comboBoxCustomToggleStart
+            // 
+            this.comboBoxCustomToggleStart.FormattingEnabled = true;
+            this.comboBoxCustomToggleStart.Items.AddRange(new object[] {
+            "(",
+            "♪"});
+            this.comboBoxCustomToggleStart.Location = new System.Drawing.Point(182, 76);
+            this.comboBoxCustomToggleStart.Name = "comboBoxCustomToggleStart";
+            this.comboBoxCustomToggleStart.Size = new System.Drawing.Size(42, 21);
+            this.comboBoxCustomToggleStart.TabIndex = 63;
+            // 
+            // labelShortcutCustomToggle
+            // 
+            this.labelShortcutCustomToggle.AutoSize = true;
+            this.labelShortcutCustomToggle.Location = new System.Drawing.Point(6, 79);
+            this.labelShortcutCustomToggle.Name = "labelShortcutCustomToggle";
+            this.labelShortcutCustomToggle.Size = new System.Drawing.Size(169, 13);
+            this.labelShortcutCustomToggle.TabIndex = 62;
+            this.labelShortcutCustomToggle.Text = "Shortcut toggle custom  start/end";
+            // 
+            // checkBoxShortcutsAllowLetterOrNumberInTextBox
+            // 
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.AutoSize = true;
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.Name = "checkBoxShortcutsAllowLetterOrNumberInTextBox";
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.Size = new System.Drawing.Size(223, 17);
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.TabIndex = 61;
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.Text = "Allow letter/number shortcuts in text box";
+            this.checkBoxShortcutsAllowLetterOrNumberInTextBox.UseVisualStyleBackColor = true;
+            // 
+            // comboBoxBDOpensIn
+            // 
+            this.comboBoxBDOpensIn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxBDOpensIn.FormattingEnabled = true;
+            this.comboBoxBDOpensIn.Items.AddRange(new object[] {
+            "OCR",
+            "BD SUP EDIIT"});
+            this.comboBoxBDOpensIn.Location = new System.Drawing.Point(158, 25);
+            this.comboBoxBDOpensIn.Name = "comboBoxBDOpensIn";
+            this.comboBoxBDOpensIn.Size = new System.Drawing.Size(221, 21);
+            this.comboBoxBDOpensIn.TabIndex = 1;
+            // 
+            // labelBDOpensIn
+            // 
+            this.labelBDOpensIn.AutoSize = true;
+            this.labelBDOpensIn.Location = new System.Drawing.Point(6, 27);
+            this.labelBDOpensIn.Name = "labelBDOpensIn";
+            this.labelBDOpensIn.Size = new System.Drawing.Size(146, 13);
+            this.labelBDOpensIn.TabIndex = 0;
+            this.labelBDOpensIn.Text = "Blu-ray sup/bdn-xml opens in";
             // 
             // groupBoxGoogleTranslate
             // 
@@ -3410,9 +3709,9 @@
             this.groupBoxSpellCheck.Controls.Add(this.checkBoxTreatINQuoteAsING);
             this.groupBoxSpellCheck.Controls.Add(this.checkBoxSpellCheckOneLetterWords);
             this.groupBoxSpellCheck.Controls.Add(this.checkBoxSpellCheckAutoChangeNames);
-            this.groupBoxSpellCheck.Location = new System.Drawing.Point(0, 348);
+            this.groupBoxSpellCheck.Location = new System.Drawing.Point(0, 389);
             this.groupBoxSpellCheck.Name = "groupBoxSpellCheck";
-            this.groupBoxSpellCheck.Size = new System.Drawing.Size(408, 172);
+            this.groupBoxSpellCheck.Size = new System.Drawing.Size(408, 131);
             this.groupBoxSpellCheck.TabIndex = 4;
             this.groupBoxSpellCheck.TabStop = false;
             this.groupBoxSpellCheck.Text = "Spell check";
@@ -3469,6 +3768,8 @@
             // 
             // groupBoxFixCommonErrors
             // 
+            this.groupBoxFixCommonErrors.Controls.Add(this.checkBoxUseWordSplitListAvoidPropercase);
+            this.groupBoxFixCommonErrors.Controls.Add(this.checkBoxUseWordSplitList);
             this.groupBoxFixCommonErrors.Controls.Add(this.buttonFixContinuationStyleSettings);
             this.groupBoxFixCommonErrors.Controls.Add(this.checkBoxFceSkipStep1);
             this.groupBoxFixCommonErrors.Controls.Add(this.checkBoxFixShortDisplayTimesAllowMoveStartTime);
@@ -3479,17 +3780,37 @@
             this.groupBoxFixCommonErrors.Controls.Add(this.labelToolsMusicSymbol);
             this.groupBoxFixCommonErrors.Location = new System.Drawing.Point(0, 123);
             this.groupBoxFixCommonErrors.Name = "groupBoxFixCommonErrors";
-            this.groupBoxFixCommonErrors.Size = new System.Drawing.Size(408, 225);
+            this.groupBoxFixCommonErrors.Size = new System.Drawing.Size(408, 260);
             this.groupBoxFixCommonErrors.TabIndex = 3;
             this.groupBoxFixCommonErrors.TabStop = false;
             this.groupBoxFixCommonErrors.Text = "Fix common errors";
             // 
+            // checkBoxUseWordSplitListAvoidPropercase
+            // 
+            this.checkBoxUseWordSplitListAvoidPropercase.AutoSize = true;
+            this.checkBoxUseWordSplitListAvoidPropercase.Location = new System.Drawing.Point(34, 146);
+            this.checkBoxUseWordSplitListAvoidPropercase.Name = "checkBoxUseWordSplitListAvoidPropercase";
+            this.checkBoxUseWordSplitListAvoidPropercase.Size = new System.Drawing.Size(102, 17);
+            this.checkBoxUseWordSplitListAvoidPropercase.TabIndex = 4;
+            this.checkBoxUseWordSplitListAvoidPropercase.Text = "Skip propercase";
+            this.checkBoxUseWordSplitListAvoidPropercase.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxUseWordSplitList
+            // 
+            this.checkBoxUseWordSplitList.AutoSize = true;
+            this.checkBoxUseWordSplitList.Location = new System.Drawing.Point(15, 125);
+            this.checkBoxUseWordSplitList.Name = "checkBoxUseWordSplitList";
+            this.checkBoxUseWordSplitList.Size = new System.Drawing.Size(231, 17);
+            this.checkBoxUseWordSplitList.TabIndex = 3;
+            this.checkBoxUseWordSplitList.Text = "Fix common OCR errors - use word split list";
+            this.checkBoxUseWordSplitList.UseVisualStyleBackColor = true;
+            // 
             // buttonFixContinuationStyleSettings
             // 
-            this.buttonFixContinuationStyleSettings.Location = new System.Drawing.Point(15, 189);
+            this.buttonFixContinuationStyleSettings.Location = new System.Drawing.Point(16, 220);
             this.buttonFixContinuationStyleSettings.Name = "buttonFixContinuationStyleSettings";
             this.buttonFixContinuationStyleSettings.Size = new System.Drawing.Size(271, 23);
-            this.buttonFixContinuationStyleSettings.TabIndex = 37;
+            this.buttonFixContinuationStyleSettings.TabIndex = 7;
             this.buttonFixContinuationStyleSettings.Text = "Edit settings for fixing continuation style...";
             this.buttonFixContinuationStyleSettings.UseVisualStyleBackColor = true;
             this.buttonFixContinuationStyleSettings.Click += new System.EventHandler(this.buttonFixContinuationStyleSettings_Click);
@@ -3497,27 +3818,27 @@
             // checkBoxFceSkipStep1
             // 
             this.checkBoxFceSkipStep1.AutoSize = true;
-            this.checkBoxFceSkipStep1.Location = new System.Drawing.Point(15, 161);
+            this.checkBoxFceSkipStep1.Location = new System.Drawing.Point(15, 193);
             this.checkBoxFceSkipStep1.Name = "checkBoxFceSkipStep1";
             this.checkBoxFceSkipStep1.Size = new System.Drawing.Size(176, 17);
-            this.checkBoxFceSkipStep1.TabIndex = 36;
+            this.checkBoxFceSkipStep1.TabIndex = 6;
             this.checkBoxFceSkipStep1.Text = "Skip step one (choose fix rules)";
             this.checkBoxFceSkipStep1.UseVisualStyleBackColor = true;
             // 
             // checkBoxFixShortDisplayTimesAllowMoveStartTime
             // 
             this.checkBoxFixShortDisplayTimesAllowMoveStartTime.AutoSize = true;
-            this.checkBoxFixShortDisplayTimesAllowMoveStartTime.Location = new System.Drawing.Point(15, 138);
+            this.checkBoxFixShortDisplayTimesAllowMoveStartTime.Location = new System.Drawing.Point(15, 170);
             this.checkBoxFixShortDisplayTimesAllowMoveStartTime.Name = "checkBoxFixShortDisplayTimesAllowMoveStartTime";
             this.checkBoxFixShortDisplayTimesAllowMoveStartTime.Size = new System.Drawing.Size(252, 17);
-            this.checkBoxFixShortDisplayTimesAllowMoveStartTime.TabIndex = 35;
+            this.checkBoxFixShortDisplayTimesAllowMoveStartTime.TabIndex = 5;
             this.checkBoxFixShortDisplayTimesAllowMoveStartTime.Text = "Fix short display time - allow move of start time";
             this.checkBoxFixShortDisplayTimesAllowMoveStartTime.UseVisualStyleBackColor = true;
             // 
             // checkBoxFixCommonOcrErrorsUsingHardcodedRules
             // 
             this.checkBoxFixCommonOcrErrorsUsingHardcodedRules.AutoSize = true;
-            this.checkBoxFixCommonOcrErrorsUsingHardcodedRules.Location = new System.Drawing.Point(15, 115);
+            this.checkBoxFixCommonOcrErrorsUsingHardcodedRules.Location = new System.Drawing.Point(15, 103);
             this.checkBoxFixCommonOcrErrorsUsingHardcodedRules.Name = "checkBoxFixCommonOcrErrorsUsingHardcodedRules";
             this.checkBoxFixCommonOcrErrorsUsingHardcodedRules.Size = new System.Drawing.Size(268, 17);
             this.checkBoxFixCommonOcrErrorsUsingHardcodedRules.TabIndex = 2;
@@ -3543,7 +3864,7 @@
             this.textBoxMusicSymbolsToReplace.Location = new System.Drawing.Point(11, 41);
             this.textBoxMusicSymbolsToReplace.MaxLength = 100;
             this.textBoxMusicSymbolsToReplace.Name = "textBoxMusicSymbolsToReplace";
-            this.textBoxMusicSymbolsToReplace.Size = new System.Drawing.Size(274, 21);
+            this.textBoxMusicSymbolsToReplace.Size = new System.Drawing.Size(275, 21);
             this.textBoxMusicSymbolsToReplace.TabIndex = 0;
             // 
             // labelToolsMusicSymbolsToReplace
@@ -3650,273 +3971,6 @@
             this.labelVerifyButton.TabIndex = 3;
             this.labelVerifyButton.Text = "Play X seconds and back, X is";
             // 
-            // panelWordLists
-            // 
-            this.panelWordLists.Controls.Add(this.groupBoxWordLists);
-            this.panelWordLists.Location = new System.Drawing.Point(230, 6);
-            this.panelWordLists.Name = "panelWordLists";
-            this.panelWordLists.Padding = new System.Windows.Forms.Padding(3);
-            this.panelWordLists.Size = new System.Drawing.Size(864, 521);
-            this.panelWordLists.TabIndex = 8;
-            this.panelWordLists.Text = "Word lists";
-            // 
-            // groupBoxWordLists
-            // 
-            this.groupBoxWordLists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxWordLists.Controls.Add(this.linkLabelOpenDictionaryFolder);
-            this.groupBoxWordLists.Controls.Add(this.groupBoxOcrFixList);
-            this.groupBoxWordLists.Controls.Add(this.groupBoxUserWordList);
-            this.groupBoxWordLists.Controls.Add(this.groupBoxWordListLocation);
-            this.groupBoxWordLists.Controls.Add(this.groupBoxNamesIgonoreLists);
-            this.groupBoxWordLists.Controls.Add(this.labelWordListLanguage);
-            this.groupBoxWordLists.Controls.Add(this.comboBoxWordListLanguage);
-            this.groupBoxWordLists.Location = new System.Drawing.Point(0, 0);
-            this.groupBoxWordLists.Name = "groupBoxWordLists";
-            this.groupBoxWordLists.Size = new System.Drawing.Size(851, 521);
-            this.groupBoxWordLists.TabIndex = 2;
-            this.groupBoxWordLists.TabStop = false;
-            this.groupBoxWordLists.Text = "Word lists";
-            // 
-            // linkLabelOpenDictionaryFolder
-            // 
-            this.linkLabelOpenDictionaryFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.linkLabelOpenDictionaryFolder.AutoSize = true;
-            this.linkLabelOpenDictionaryFolder.Location = new System.Drawing.Point(6, 496);
-            this.linkLabelOpenDictionaryFolder.Name = "linkLabelOpenDictionaryFolder";
-            this.linkLabelOpenDictionaryFolder.Size = new System.Drawing.Size(126, 13);
-            this.linkLabelOpenDictionaryFolder.TabIndex = 29;
-            this.linkLabelOpenDictionaryFolder.TabStop = true;
-            this.linkLabelOpenDictionaryFolder.Text = "Open \'Dictionaries\' folder";
-            this.linkLabelOpenDictionaryFolder.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelOpenDictionaryFolder_LinkClicked);
-            // 
-            // groupBoxOcrFixList
-            // 
-            this.groupBoxOcrFixList.Controls.Add(this.textBoxOcrFixValue);
-            this.groupBoxOcrFixList.Controls.Add(this.buttonRemoveOcrFix);
-            this.groupBoxOcrFixList.Controls.Add(this.listBoxOcrFixList);
-            this.groupBoxOcrFixList.Controls.Add(this.textBoxOcrFixKey);
-            this.groupBoxOcrFixList.Controls.Add(this.buttonAddOcrFix);
-            this.groupBoxOcrFixList.Location = new System.Drawing.Point(510, 43);
-            this.groupBoxOcrFixList.Name = "groupBoxOcrFixList";
-            this.groupBoxOcrFixList.Size = new System.Drawing.Size(293, 334);
-            this.groupBoxOcrFixList.TabIndex = 6;
-            this.groupBoxOcrFixList.TabStop = false;
-            this.groupBoxOcrFixList.Text = "OCR fix list";
-            // 
-            // textBoxOcrFixValue
-            // 
-            this.textBoxOcrFixValue.Location = new System.Drawing.Point(99, 298);
-            this.textBoxOcrFixValue.Name = "textBoxOcrFixValue";
-            this.textBoxOcrFixValue.Size = new System.Drawing.Size(85, 21);
-            this.textBoxOcrFixValue.TabIndex = 45;
-            this.textBoxOcrFixValue.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxOcrFixValueKeyDown);
-            // 
-            // buttonRemoveOcrFix
-            // 
-            this.buttonRemoveOcrFix.Location = new System.Drawing.Point(191, 16);
-            this.buttonRemoveOcrFix.Name = "buttonRemoveOcrFix";
-            this.buttonRemoveOcrFix.Size = new System.Drawing.Size(75, 23);
-            this.buttonRemoveOcrFix.TabIndex = 42;
-            this.buttonRemoveOcrFix.Text = "Remove";
-            this.buttonRemoveOcrFix.UseVisualStyleBackColor = true;
-            this.buttonRemoveOcrFix.Click += new System.EventHandler(this.ButtonRemoveOcrFixClick);
-            // 
-            // listBoxOcrFixList
-            // 
-            this.listBoxOcrFixList.FormattingEnabled = true;
-            this.listBoxOcrFixList.Location = new System.Drawing.Point(6, 16);
-            this.listBoxOcrFixList.Name = "listBoxOcrFixList";
-            this.listBoxOcrFixList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxOcrFixList.Size = new System.Drawing.Size(179, 277);
-            this.listBoxOcrFixList.TabIndex = 40;
-            this.listBoxOcrFixList.SelectedIndexChanged += new System.EventHandler(this.ListBoxOcrFixListSelectedIndexChanged);
-            this.listBoxOcrFixList.DoubleClick += new System.EventHandler(this.listBoxOcrFixList_DoubleClick);
-            this.listBoxOcrFixList.Enter += new System.EventHandler(this.ListBoxSearchReset);
-            this.listBoxOcrFixList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBoxKeyDownSearch);
-            // 
-            // textBoxOcrFixKey
-            // 
-            this.textBoxOcrFixKey.Location = new System.Drawing.Point(5, 298);
-            this.textBoxOcrFixKey.Name = "textBoxOcrFixKey";
-            this.textBoxOcrFixKey.Size = new System.Drawing.Size(88, 21);
-            this.textBoxOcrFixKey.TabIndex = 44;
-            // 
-            // buttonAddOcrFix
-            // 
-            this.buttonAddOcrFix.Location = new System.Drawing.Point(190, 296);
-            this.buttonAddOcrFix.Name = "buttonAddOcrFix";
-            this.buttonAddOcrFix.Size = new System.Drawing.Size(75, 23);
-            this.buttonAddOcrFix.TabIndex = 46;
-            this.buttonAddOcrFix.Text = "Add pair";
-            this.buttonAddOcrFix.UseVisualStyleBackColor = true;
-            this.buttonAddOcrFix.Click += new System.EventHandler(this.ButtonAddOcrFixClick);
-            // 
-            // groupBoxUserWordList
-            // 
-            this.groupBoxUserWordList.Controls.Add(this.buttonRemoveUserWord);
-            this.groupBoxUserWordList.Controls.Add(this.listBoxUserWordLists);
-            this.groupBoxUserWordList.Controls.Add(this.textBoxUserWord);
-            this.groupBoxUserWordList.Controls.Add(this.buttonAddUserWord);
-            this.groupBoxUserWordList.Location = new System.Drawing.Point(259, 43);
-            this.groupBoxUserWordList.Name = "groupBoxUserWordList";
-            this.groupBoxUserWordList.Size = new System.Drawing.Size(241, 334);
-            this.groupBoxUserWordList.TabIndex = 4;
-            this.groupBoxUserWordList.TabStop = false;
-            this.groupBoxUserWordList.Text = "User word list";
-            // 
-            // buttonRemoveUserWord
-            // 
-            this.buttonRemoveUserWord.Location = new System.Drawing.Point(159, 16);
-            this.buttonRemoveUserWord.Name = "buttonRemoveUserWord";
-            this.buttonRemoveUserWord.Size = new System.Drawing.Size(75, 23);
-            this.buttonRemoveUserWord.TabIndex = 32;
-            this.buttonRemoveUserWord.Text = "Remove";
-            this.buttonRemoveUserWord.UseVisualStyleBackColor = true;
-            this.buttonRemoveUserWord.Click += new System.EventHandler(this.ButtonRemoveUserWordClick);
-            // 
-            // listBoxUserWordLists
-            // 
-            this.listBoxUserWordLists.FormattingEnabled = true;
-            this.listBoxUserWordLists.Location = new System.Drawing.Point(3, 16);
-            this.listBoxUserWordLists.Name = "listBoxUserWordLists";
-            this.listBoxUserWordLists.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxUserWordLists.Size = new System.Drawing.Size(150, 277);
-            this.listBoxUserWordLists.TabIndex = 30;
-            this.listBoxUserWordLists.SelectedIndexChanged += new System.EventHandler(this.ListBoxUserWordListsSelectedIndexChanged);
-            this.listBoxUserWordLists.DoubleClick += new System.EventHandler(this.listBoxUserWordLists_DoubleClick);
-            this.listBoxUserWordLists.Enter += new System.EventHandler(this.ListBoxSearchReset);
-            this.listBoxUserWordLists.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBoxKeyDownSearch);
-            // 
-            // textBoxUserWord
-            // 
-            this.textBoxUserWord.Location = new System.Drawing.Point(2, 298);
-            this.textBoxUserWord.Name = "textBoxUserWord";
-            this.textBoxUserWord.Size = new System.Drawing.Size(150, 21);
-            this.textBoxUserWord.TabIndex = 34;
-            this.textBoxUserWord.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxUserWordKeyDown);
-            // 
-            // buttonAddUserWord
-            // 
-            this.buttonAddUserWord.Location = new System.Drawing.Point(159, 296);
-            this.buttonAddUserWord.Name = "buttonAddUserWord";
-            this.buttonAddUserWord.Size = new System.Drawing.Size(75, 23);
-            this.buttonAddUserWord.TabIndex = 36;
-            this.buttonAddUserWord.Text = "Add word";
-            this.buttonAddUserWord.UseVisualStyleBackColor = true;
-            this.buttonAddUserWord.Click += new System.EventHandler(this.ButtonAddUserWordClick);
-            // 
-            // groupBoxWordListLocation
-            // 
-            this.groupBoxWordListLocation.Controls.Add(this.checkBoxNamesOnline);
-            this.groupBoxWordListLocation.Controls.Add(this.textBoxNamesOnline);
-            this.groupBoxWordListLocation.Location = new System.Drawing.Point(6, 386);
-            this.groupBoxWordListLocation.Name = "groupBoxWordListLocation";
-            this.groupBoxWordListLocation.Size = new System.Drawing.Size(797, 92);
-            this.groupBoxWordListLocation.TabIndex = 8;
-            this.groupBoxWordListLocation.TabStop = false;
-            this.groupBoxWordListLocation.Text = "Location";
-            // 
-            // checkBoxNamesOnline
-            // 
-            this.checkBoxNamesOnline.AutoSize = true;
-            this.checkBoxNamesOnline.Location = new System.Drawing.Point(7, 22);
-            this.checkBoxNamesOnline.Name = "checkBoxNamesOnline";
-            this.checkBoxNamesOnline.Size = new System.Drawing.Size(145, 17);
-            this.checkBoxNamesOnline.TabIndex = 26;
-            this.checkBoxNamesOnline.Text = "Use online names xml file";
-            this.checkBoxNamesOnline.UseVisualStyleBackColor = true;
-            // 
-            // textBoxNamesOnline
-            // 
-            this.textBoxNamesOnline.Location = new System.Drawing.Point(6, 45);
-            this.textBoxNamesOnline.Name = "textBoxNamesOnline";
-            this.textBoxNamesOnline.Size = new System.Drawing.Size(764, 21);
-            this.textBoxNamesOnline.TabIndex = 28;
-            this.textBoxNamesOnline.Text = "https://raw.githubusercontent.com/SubtitleEdit/subtitleedit/master/Dictionaries/n" +
-    "ames.xml";
-            // 
-            // groupBoxNamesIgonoreLists
-            // 
-            this.groupBoxNamesIgonoreLists.Controls.Add(this.listViewNames);
-            this.groupBoxNamesIgonoreLists.Controls.Add(this.buttonRemoveNameEtc);
-            this.groupBoxNamesIgonoreLists.Controls.Add(this.textBoxNameEtc);
-            this.groupBoxNamesIgonoreLists.Controls.Add(this.buttonAddNames);
-            this.groupBoxNamesIgonoreLists.Location = new System.Drawing.Point(6, 43);
-            this.groupBoxNamesIgonoreLists.Name = "groupBoxNamesIgonoreLists";
-            this.groupBoxNamesIgonoreLists.Size = new System.Drawing.Size(241, 334);
-            this.groupBoxNamesIgonoreLists.TabIndex = 2;
-            this.groupBoxNamesIgonoreLists.TabStop = false;
-            this.groupBoxNamesIgonoreLists.Text = "Names/ignore lists";
-            // 
-            // listViewNames
-            // 
-            this.listViewNames.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeaderNames});
-            this.listViewNames.FullRowSelect = true;
-            this.listViewNames.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listViewNames.HideSelection = false;
-            this.listViewNames.Location = new System.Drawing.Point(3, 21);
-            this.listViewNames.Name = "listViewNames";
-            this.listViewNames.Size = new System.Drawing.Size(148, 270);
-            this.listViewNames.TabIndex = 27;
-            this.listViewNames.UseCompatibleStateImageBehavior = false;
-            this.listViewNames.View = System.Windows.Forms.View.Details;
-            this.listViewNames.SelectedIndexChanged += new System.EventHandler(this.ListViewNamesSelectedIndexChanged);
-            this.listViewNames.DoubleClick += new System.EventHandler(this.listViewNames_DoubleClick);
-            this.listViewNames.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewNames_KeyDown);
-            // 
-            // columnHeaderNames
-            // 
-            this.columnHeaderNames.Width = 144;
-            // 
-            // buttonRemoveNameEtc
-            // 
-            this.buttonRemoveNameEtc.Location = new System.Drawing.Point(159, 16);
-            this.buttonRemoveNameEtc.Name = "buttonRemoveNameEtc";
-            this.buttonRemoveNameEtc.Size = new System.Drawing.Size(75, 23);
-            this.buttonRemoveNameEtc.TabIndex = 22;
-            this.buttonRemoveNameEtc.Text = "Remove";
-            this.buttonRemoveNameEtc.UseVisualStyleBackColor = true;
-            this.buttonRemoveNameEtc.Click += new System.EventHandler(this.ButtonRemoveNameEtcClick);
-            // 
-            // textBoxNameEtc
-            // 
-            this.textBoxNameEtc.Location = new System.Drawing.Point(3, 298);
-            this.textBoxNameEtc.Name = "textBoxNameEtc";
-            this.textBoxNameEtc.Size = new System.Drawing.Size(151, 21);
-            this.textBoxNameEtc.TabIndex = 24;
-            this.textBoxNameEtc.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxNameEtcKeyDown);
-            // 
-            // buttonAddNames
-            // 
-            this.buttonAddNames.Location = new System.Drawing.Point(157, 296);
-            this.buttonAddNames.Name = "buttonAddNames";
-            this.buttonAddNames.Size = new System.Drawing.Size(75, 23);
-            this.buttonAddNames.TabIndex = 26;
-            this.buttonAddNames.Text = "Add name";
-            this.buttonAddNames.UseVisualStyleBackColor = true;
-            this.buttonAddNames.Click += new System.EventHandler(this.ButtonAddNamesClick);
-            // 
-            // labelWordListLanguage
-            // 
-            this.labelWordListLanguage.AutoSize = true;
-            this.labelWordListLanguage.Location = new System.Drawing.Point(6, 19);
-            this.labelWordListLanguage.Name = "labelWordListLanguage";
-            this.labelWordListLanguage.Size = new System.Drawing.Size(54, 13);
-            this.labelWordListLanguage.TabIndex = 1;
-            this.labelWordListLanguage.Text = "Language";
-            // 
-            // comboBoxWordListLanguage
-            // 
-            this.comboBoxWordListLanguage.FormattingEnabled = true;
-            this.comboBoxWordListLanguage.Location = new System.Drawing.Point(67, 16);
-            this.comboBoxWordListLanguage.Name = "comboBoxWordListLanguage";
-            this.comboBoxWordListLanguage.Size = new System.Drawing.Size(155, 21);
-            this.comboBoxWordListLanguage.TabIndex = 0;
-            this.comboBoxWordListLanguage.SelectedIndexChanged += new System.EventHandler(this.ComboBoxWordListLanguageSelectedIndexChanged);
-            // 
             // panelToolBar
             // 
             this.panelToolBar.Controls.Add(this.groupBox2);
@@ -3934,9 +3988,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.checkBoxShowFrameRate);
-            this.groupBox2.Location = new System.Drawing.Point(0, 242);
+            this.groupBox2.Location = new System.Drawing.Point(0, 340);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(850, 277);
+            this.groupBox2.Size = new System.Drawing.Size(850, 179);
             this.groupBox2.TabIndex = 35;
             this.groupBox2.TabStop = false;
             // 
@@ -3946,7 +4000,7 @@
             this.checkBoxShowFrameRate.Location = new System.Drawing.Point(16, 20);
             this.checkBoxShowFrameRate.Name = "checkBoxShowFrameRate";
             this.checkBoxShowFrameRate.Size = new System.Drawing.Size(154, 17);
-            this.checkBoxShowFrameRate.TabIndex = 34;
+            this.checkBoxShowFrameRate.TabIndex = 47;
             this.checkBoxShowFrameRate.Text = "Show frame rate in toolbar";
             this.checkBoxShowFrameRate.UseVisualStyleBackColor = true;
             // 
@@ -3954,6 +4008,12 @@
             // 
             this.groupBoxShowToolBarButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxShowToolBarButtons.Controls.Add(this.labelToggleSourceView);
+            this.groupBoxShowToolBarButtons.Controls.Add(this.pictureBoxToggleSourceView);
+            this.groupBoxShowToolBarButtons.Controls.Add(this.checkBoxTBToggleSourceView);
+            this.groupBoxShowToolBarButtons.Controls.Add(this.labelTBBurnIn);
+            this.groupBoxShowToolBarButtons.Controls.Add(this.pictureBoxTBBurnIn);
+            this.groupBoxShowToolBarButtons.Controls.Add(this.checkBoxTBBurnIn);
             this.groupBoxShowToolBarButtons.Controls.Add(this.labelTBNetflixQualityCheck);
             this.groupBoxShowToolBarButtons.Controls.Add(this.pictureBoxNetflixQualityCheck);
             this.groupBoxShowToolBarButtons.Controls.Add(this.checkBoxNetflixQualityCheck);
@@ -3995,15 +4055,69 @@
             this.groupBoxShowToolBarButtons.Controls.Add(this.checkBoxToolbarNew);
             this.groupBoxShowToolBarButtons.Location = new System.Drawing.Point(0, 0);
             this.groupBoxShowToolBarButtons.Name = "groupBoxShowToolBarButtons";
-            this.groupBoxShowToolBarButtons.Size = new System.Drawing.Size(851, 236);
+            this.groupBoxShowToolBarButtons.Size = new System.Drawing.Size(851, 341);
             this.groupBoxShowToolBarButtons.TabIndex = 0;
             this.groupBoxShowToolBarButtons.TabStop = false;
             this.groupBoxShowToolBarButtons.Text = "Show toolbar buttons";
             // 
+            // labelToggleSourceView
+            // 
+            this.labelToggleSourceView.AutoSize = true;
+            this.labelToggleSourceView.Location = new System.Drawing.Point(11, 253);
+            this.labelToggleSourceView.Name = "labelToggleSourceView";
+            this.labelToggleSourceView.Size = new System.Drawing.Size(99, 13);
+            this.labelToggleSourceView.TabIndex = 48;
+            this.labelToggleSourceView.Text = "Toggle source view";
+            // 
+            // pictureBoxToggleSourceView
+            // 
+            this.pictureBoxToggleSourceView.Location = new System.Drawing.Point(24, 272);
+            this.pictureBoxToggleSourceView.Name = "pictureBoxToggleSourceView";
+            this.pictureBoxToggleSourceView.Size = new System.Drawing.Size(32, 32);
+            this.pictureBoxToggleSourceView.TabIndex = 47;
+            this.pictureBoxToggleSourceView.TabStop = false;
+            // 
+            // checkBoxTBToggleSourceView
+            // 
+            this.checkBoxTBToggleSourceView.AutoSize = true;
+            this.checkBoxTBToggleSourceView.Location = new System.Drawing.Point(27, 311);
+            this.checkBoxTBToggleSourceView.Name = "checkBoxTBToggleSourceView";
+            this.checkBoxTBToggleSourceView.Size = new System.Drawing.Size(55, 17);
+            this.checkBoxTBToggleSourceView.TabIndex = 46;
+            this.checkBoxTBToggleSourceView.Text = "Visible";
+            this.checkBoxTBToggleSourceView.UseVisualStyleBackColor = true;
+            // 
+            // labelTBBurnIn
+            // 
+            this.labelTBBurnIn.AutoSize = true;
+            this.labelTBBurnIn.Location = new System.Drawing.Point(243, 142);
+            this.labelTBBurnIn.Name = "labelTBBurnIn";
+            this.labelTBBurnIn.Size = new System.Drawing.Size(40, 13);
+            this.labelTBBurnIn.TabIndex = 45;
+            this.labelTBBurnIn.Text = "Burn in";
+            // 
+            // pictureBoxTBBurnIn
+            // 
+            this.pictureBoxTBBurnIn.Location = new System.Drawing.Point(256, 159);
+            this.pictureBoxTBBurnIn.Name = "pictureBoxTBBurnIn";
+            this.pictureBoxTBBurnIn.Size = new System.Drawing.Size(32, 32);
+            this.pictureBoxTBBurnIn.TabIndex = 44;
+            this.pictureBoxTBBurnIn.TabStop = false;
+            // 
+            // checkBoxTBBurnIn
+            // 
+            this.checkBoxTBBurnIn.AutoSize = true;
+            this.checkBoxTBBurnIn.Location = new System.Drawing.Point(259, 198);
+            this.checkBoxTBBurnIn.Name = "checkBoxTBBurnIn";
+            this.checkBoxTBBurnIn.Size = new System.Drawing.Size(55, 17);
+            this.checkBoxTBBurnIn.TabIndex = 20;
+            this.checkBoxTBBurnIn.Text = "Visible";
+            this.checkBoxTBBurnIn.UseVisualStyleBackColor = true;
+            // 
             // labelTBNetflixQualityCheck
             // 
             this.labelTBNetflixQualityCheck.AutoSize = true;
-            this.labelTBNetflixQualityCheck.Location = new System.Drawing.Point(636, 136);
+            this.labelTBNetflixQualityCheck.Location = new System.Drawing.Point(647, 143);
             this.labelTBNetflixQualityCheck.Name = "labelTBNetflixQualityCheck";
             this.labelTBNetflixQualityCheck.Size = new System.Drawing.Size(103, 13);
             this.labelTBNetflixQualityCheck.TabIndex = 42;
@@ -4011,7 +4125,7 @@
             // 
             // pictureBoxNetflixQualityCheck
             // 
-            this.pictureBoxNetflixQualityCheck.Location = new System.Drawing.Point(649, 155);
+            this.pictureBoxNetflixQualityCheck.Location = new System.Drawing.Point(660, 160);
             this.pictureBoxNetflixQualityCheck.Name = "pictureBoxNetflixQualityCheck";
             this.pictureBoxNetflixQualityCheck.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxNetflixQualityCheck.TabIndex = 41;
@@ -4020,7 +4134,7 @@
             // checkBoxNetflixQualityCheck
             // 
             this.checkBoxNetflixQualityCheck.AutoSize = true;
-            this.checkBoxNetflixQualityCheck.Location = new System.Drawing.Point(652, 195);
+            this.checkBoxNetflixQualityCheck.Location = new System.Drawing.Point(663, 198);
             this.checkBoxNetflixQualityCheck.Name = "checkBoxNetflixQualityCheck";
             this.checkBoxNetflixQualityCheck.Size = new System.Drawing.Size(55, 17);
             this.checkBoxNetflixQualityCheck.TabIndex = 40;
@@ -4030,7 +4144,7 @@
             // labelTBRemoveTextForHi
             // 
             this.labelTBRemoveTextForHi.AutoSize = true;
-            this.labelTBRemoveTextForHi.Location = new System.Drawing.Point(124, 136);
+            this.labelTBRemoveTextForHi.Location = new System.Drawing.Point(9, 143);
             this.labelTBRemoveTextForHi.Name = "labelTBRemoveTextForHi";
             this.labelTBRemoveTextForHi.Size = new System.Drawing.Size(100, 13);
             this.labelTBRemoveTextForHi.TabIndex = 39;
@@ -4038,7 +4152,7 @@
             // 
             // pictureBoxTBRemoveTextForHi
             // 
-            this.pictureBoxTBRemoveTextForHi.Location = new System.Drawing.Point(137, 155);
+            this.pictureBoxTBRemoveTextForHi.Location = new System.Drawing.Point(22, 161);
             this.pictureBoxTBRemoveTextForHi.Name = "pictureBoxTBRemoveTextForHi";
             this.pictureBoxTBRemoveTextForHi.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxTBRemoveTextForHi.TabIndex = 38;
@@ -4047,7 +4161,7 @@
             // checkBoxTBRemoveTextForHi
             // 
             this.checkBoxTBRemoveTextForHi.AutoSize = true;
-            this.checkBoxTBRemoveTextForHi.Location = new System.Drawing.Point(140, 195);
+            this.checkBoxTBRemoveTextForHi.Location = new System.Drawing.Point(25, 198);
             this.checkBoxTBRemoveTextForHi.Name = "checkBoxTBRemoveTextForHi";
             this.checkBoxTBRemoveTextForHi.Size = new System.Drawing.Size(55, 17);
             this.checkBoxTBRemoveTextForHi.TabIndex = 18;
@@ -4057,7 +4171,7 @@
             // labelTBFixCommonErrors
             // 
             this.labelTBFixCommonErrors.AutoSize = true;
-            this.labelTBFixCommonErrors.Location = new System.Drawing.Point(9, 136);
+            this.labelTBFixCommonErrors.Location = new System.Drawing.Point(597, 22);
             this.labelTBFixCommonErrors.Name = "labelTBFixCommonErrors";
             this.labelTBFixCommonErrors.Size = new System.Drawing.Size(95, 13);
             this.labelTBFixCommonErrors.TabIndex = 36;
@@ -4065,7 +4179,7 @@
             // 
             // pictureBoxTBFixCommonErrors
             // 
-            this.pictureBoxTBFixCommonErrors.Location = new System.Drawing.Point(22, 155);
+            this.pictureBoxTBFixCommonErrors.Location = new System.Drawing.Point(610, 41);
             this.pictureBoxTBFixCommonErrors.Name = "pictureBoxTBFixCommonErrors";
             this.pictureBoxTBFixCommonErrors.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxTBFixCommonErrors.TabIndex = 35;
@@ -4074,7 +4188,7 @@
             // checkBoxTBFixCommonErrors
             // 
             this.checkBoxTBFixCommonErrors.AutoSize = true;
-            this.checkBoxTBFixCommonErrors.Location = new System.Drawing.Point(25, 195);
+            this.checkBoxTBFixCommonErrors.Location = new System.Drawing.Point(613, 81);
             this.checkBoxTBFixCommonErrors.Name = "checkBoxTBFixCommonErrors";
             this.checkBoxTBFixCommonErrors.Size = new System.Drawing.Size(55, 17);
             this.checkBoxTBFixCommonErrors.TabIndex = 17;
@@ -4084,7 +4198,7 @@
             // labelTBHelp
             // 
             this.labelTBHelp.AutoSize = true;
-            this.labelTBHelp.Location = new System.Drawing.Point(561, 136);
+            this.labelTBHelp.Location = new System.Drawing.Point(561, 143);
             this.labelTBHelp.Name = "labelTBHelp";
             this.labelTBHelp.Size = new System.Drawing.Size(28, 13);
             this.labelTBHelp.TabIndex = 33;
@@ -4092,7 +4206,7 @@
             // 
             // pictureBoxHelp
             // 
-            this.pictureBoxHelp.Location = new System.Drawing.Point(560, 155);
+            this.pictureBoxHelp.Location = new System.Drawing.Point(560, 160);
             this.pictureBoxHelp.Name = "pictureBoxHelp";
             this.pictureBoxHelp.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxHelp.TabIndex = 32;
@@ -4101,17 +4215,17 @@
             // checkBoxHelp
             // 
             this.checkBoxHelp.AutoSize = true;
-            this.checkBoxHelp.Location = new System.Drawing.Point(563, 195);
+            this.checkBoxHelp.Location = new System.Drawing.Point(563, 198);
             this.checkBoxHelp.Name = "checkBoxHelp";
             this.checkBoxHelp.Size = new System.Drawing.Size(55, 17);
-            this.checkBoxHelp.TabIndex = 22;
+            this.checkBoxHelp.TabIndex = 23;
             this.checkBoxHelp.Text = "Visible";
             this.checkBoxHelp.UseVisualStyleBackColor = true;
             // 
             // labelTBSettings
             // 
             this.labelTBSettings.AutoSize = true;
-            this.labelTBSettings.Location = new System.Drawing.Point(456, 136);
+            this.labelTBSettings.Location = new System.Drawing.Point(456, 143);
             this.labelTBSettings.Name = "labelTBSettings";
             this.labelTBSettings.Size = new System.Drawing.Size(46, 13);
             this.labelTBSettings.TabIndex = 30;
@@ -4119,7 +4233,7 @@
             // 
             // pictureBoxSettings
             // 
-            this.pictureBoxSettings.Location = new System.Drawing.Point(459, 155);
+            this.pictureBoxSettings.Location = new System.Drawing.Point(459, 160);
             this.pictureBoxSettings.Name = "pictureBoxSettings";
             this.pictureBoxSettings.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxSettings.TabIndex = 29;
@@ -4128,17 +4242,17 @@
             // checkBoxSettings
             // 
             this.checkBoxSettings.AutoSize = true;
-            this.checkBoxSettings.Location = new System.Drawing.Point(462, 195);
+            this.checkBoxSettings.Location = new System.Drawing.Point(462, 198);
             this.checkBoxSettings.Name = "checkBoxSettings";
             this.checkBoxSettings.Size = new System.Drawing.Size(55, 17);
-            this.checkBoxSettings.TabIndex = 21;
+            this.checkBoxSettings.TabIndex = 22;
             this.checkBoxSettings.Text = "Visible";
             this.checkBoxSettings.UseVisualStyleBackColor = true;
             // 
             // labelTBSpellCheck
             // 
             this.labelTBSpellCheck.AutoSize = true;
-            this.labelTBSpellCheck.Location = new System.Drawing.Point(357, 136);
+            this.labelTBSpellCheck.Location = new System.Drawing.Point(357, 143);
             this.labelTBSpellCheck.Name = "labelTBSpellCheck";
             this.labelTBSpellCheck.Size = new System.Drawing.Size(59, 13);
             this.labelTBSpellCheck.TabIndex = 27;
@@ -4146,7 +4260,7 @@
             // 
             // pictureBoxSpellCheck
             // 
-            this.pictureBoxSpellCheck.Location = new System.Drawing.Point(361, 155);
+            this.pictureBoxSpellCheck.Location = new System.Drawing.Point(361, 160);
             this.pictureBoxSpellCheck.Name = "pictureBoxSpellCheck";
             this.pictureBoxSpellCheck.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxSpellCheck.TabIndex = 26;
@@ -4155,17 +4269,17 @@
             // checkBoxSpellCheck
             // 
             this.checkBoxSpellCheck.AutoSize = true;
-            this.checkBoxSpellCheck.Location = new System.Drawing.Point(362, 195);
+            this.checkBoxSpellCheck.Location = new System.Drawing.Point(362, 198);
             this.checkBoxSpellCheck.Name = "checkBoxSpellCheck";
             this.checkBoxSpellCheck.Size = new System.Drawing.Size(55, 17);
-            this.checkBoxSpellCheck.TabIndex = 20;
+            this.checkBoxSpellCheck.TabIndex = 21;
             this.checkBoxSpellCheck.Text = "Visible";
             this.checkBoxSpellCheck.UseVisualStyleBackColor = true;
             // 
             // labelTBVisualSync
             // 
             this.labelTBVisualSync.AutoSize = true;
-            this.labelTBVisualSync.Location = new System.Drawing.Point(247, 136);
+            this.labelTBVisualSync.Location = new System.Drawing.Point(132, 143);
             this.labelTBVisualSync.Name = "labelTBVisualSync";
             this.labelTBVisualSync.Size = new System.Drawing.Size(59, 13);
             this.labelTBVisualSync.TabIndex = 21;
@@ -4173,7 +4287,7 @@
             // 
             // pictureBoxVisualSync
             // 
-            this.pictureBoxVisualSync.Location = new System.Drawing.Point(260, 155);
+            this.pictureBoxVisualSync.Location = new System.Drawing.Point(145, 161);
             this.pictureBoxVisualSync.Name = "pictureBoxVisualSync";
             this.pictureBoxVisualSync.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxVisualSync.TabIndex = 20;
@@ -4182,7 +4296,7 @@
             // checkBoxVisualSync
             // 
             this.checkBoxVisualSync.AutoSize = true;
-            this.checkBoxVisualSync.Location = new System.Drawing.Point(263, 195);
+            this.checkBoxVisualSync.Location = new System.Drawing.Point(148, 198);
             this.checkBoxVisualSync.Name = "checkBoxVisualSync";
             this.checkBoxVisualSync.Size = new System.Drawing.Size(55, 17);
             this.checkBoxVisualSync.TabIndex = 19;
@@ -4499,7 +4613,29 @@
             "17",
             "18",
             "19",
-            "20"});
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "35",
+            "36",
+            "37",
+            "38",
+            "39",
+            "40",
+            "50",
+            "60"});
             this.comboBoxSubtitleListViewFontSize.Location = new System.Drawing.Point(16, 38);
             this.comboBoxSubtitleListViewFontSize.Name = "comboBoxSubtitleListViewFontSize";
             this.comboBoxSubtitleListViewFontSize.Size = new System.Drawing.Size(73, 21);
@@ -4632,7 +4768,19 @@
             "27",
             "28",
             "29",
-            "30"});
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "35",
+            "36",
+            "37",
+            "38",
+            "39",
+            "40",
+            "50",
+            "60"});
             this.comboBoxSubtitleFontSize.Location = new System.Drawing.Point(21, 35);
             this.comboBoxSubtitleFontSize.Name = "comboBoxSubtitleFontSize";
             this.comboBoxSubtitleFontSize.Size = new System.Drawing.Size(73, 21);
@@ -4670,7 +4818,7 @@
             this.groupBoxDarkTheme.Controls.Add(this.buttonDarkThemeColor);
             this.groupBoxDarkTheme.Location = new System.Drawing.Point(5, 307);
             this.groupBoxDarkTheme.Name = "groupBoxDarkTheme";
-            this.groupBoxDarkTheme.Size = new System.Drawing.Size(839, 125);
+            this.groupBoxDarkTheme.Size = new System.Drawing.Size(839, 114);
             this.groupBoxDarkTheme.TabIndex = 40;
             this.groupBoxDarkTheme.TabStop = false;
             this.groupBoxDarkTheme.Text = "Dark theme";
@@ -4737,7 +4885,7 @@
             // labelFontNote
             // 
             this.labelFontNote.AutoSize = true;
-            this.labelFontNote.Location = new System.Drawing.Point(10, 457);
+            this.labelFontNote.Location = new System.Drawing.Point(10, 433);
             this.labelFontNote.Name = "labelFontNote";
             this.labelFontNote.Size = new System.Drawing.Size(278, 13);
             this.labelFontNote.TabIndex = 41;
@@ -4761,9 +4909,9 @@
             this.groupBoxNetworkSession.Controls.Add(this.buttonNetworkSessionNewMessageSound);
             this.groupBoxNetworkSession.Controls.Add(this.textBoxNetworkSessionNewMessageSound);
             this.groupBoxNetworkSession.Controls.Add(this.labelNetworkSessionNewMessageSound);
-            this.groupBoxNetworkSession.Location = new System.Drawing.Point(0, 183);
+            this.groupBoxNetworkSession.Location = new System.Drawing.Point(0, 242);
             this.groupBoxNetworkSession.Name = "groupBoxNetworkSession";
-            this.groupBoxNetworkSession.Size = new System.Drawing.Size(851, 337);
+            this.groupBoxNetworkSession.Size = new System.Drawing.Size(851, 278);
             this.groupBoxNetworkSession.TabIndex = 30;
             this.groupBoxNetworkSession.TabStop = false;
             this.groupBoxNetworkSession.Text = "Network session settings";
@@ -4803,13 +4951,16 @@
             this.groupBoxProxySettings.Controls.Add(this.labelProxyAddress);
             this.groupBoxProxySettings.Location = new System.Drawing.Point(0, 0);
             this.groupBoxProxySettings.Name = "groupBoxProxySettings";
-            this.groupBoxProxySettings.Size = new System.Drawing.Size(851, 177);
+            this.groupBoxProxySettings.Size = new System.Drawing.Size(851, 233);
             this.groupBoxProxySettings.TabIndex = 1;
             this.groupBoxProxySettings.TabStop = false;
             this.groupBoxProxySettings.Text = "Proxy server settings";
             // 
             // groupBoxProxyAuthentication
             // 
+            this.groupBoxProxyAuthentication.Controls.Add(this.labelProxyAuthType);
+            this.groupBoxProxyAuthentication.Controls.Add(this.checkBoxProxyUseDefaultCredentials);
+            this.groupBoxProxyAuthentication.Controls.Add(this.comboBoxProxyAuthType);
             this.groupBoxProxyAuthentication.Controls.Add(this.textBoxProxyDomain);
             this.groupBoxProxyAuthentication.Controls.Add(this.labelProxyDomain);
             this.groupBoxProxyAuthentication.Controls.Add(this.textBoxProxyUserName);
@@ -4818,14 +4969,48 @@
             this.groupBoxProxyAuthentication.Controls.Add(this.textBoxProxyPassword);
             this.groupBoxProxyAuthentication.Location = new System.Drawing.Point(28, 60);
             this.groupBoxProxyAuthentication.Name = "groupBoxProxyAuthentication";
-            this.groupBoxProxyAuthentication.Size = new System.Drawing.Size(318, 101);
+            this.groupBoxProxyAuthentication.Size = new System.Drawing.Size(459, 162);
             this.groupBoxProxyAuthentication.TabIndex = 29;
             this.groupBoxProxyAuthentication.TabStop = false;
             this.groupBoxProxyAuthentication.Text = "Authentication";
             // 
+            // labelProxyAuthType
+            // 
+            this.labelProxyAuthType.AutoSize = true;
+            this.labelProxyAuthType.Location = new System.Drawing.Point(12, 113);
+            this.labelProxyAuthType.Name = "labelProxyAuthType";
+            this.labelProxyAuthType.Size = new System.Drawing.Size(55, 13);
+            this.labelProxyAuthType.TabIndex = 33;
+            this.labelProxyAuthType.Text = "Auth type";
+            // 
+            // checkBoxProxyUseDefaultCredentials
+            // 
+            this.checkBoxProxyUseDefaultCredentials.AutoSize = true;
+            this.checkBoxProxyUseDefaultCredentials.Location = new System.Drawing.Point(139, 132);
+            this.checkBoxProxyUseDefaultCredentials.Name = "checkBoxProxyUseDefaultCredentials";
+            this.checkBoxProxyUseDefaultCredentials.Size = new System.Drawing.Size(136, 17);
+            this.checkBoxProxyUseDefaultCredentials.TabIndex = 32;
+            this.checkBoxProxyUseDefaultCredentials.Text = "Use default credentials";
+            this.checkBoxProxyUseDefaultCredentials.UseVisualStyleBackColor = true;
+            // 
+            // comboBoxProxyAuthType
+            // 
+            this.comboBoxProxyAuthType.FormattingEnabled = true;
+            this.comboBoxProxyAuthType.Items.AddRange(new object[] {
+            "",
+            "Basic",
+            "Digest",
+            "NTLM",
+            "Negotiate",
+            "Kerberos"});
+            this.comboBoxProxyAuthType.Location = new System.Drawing.Point(138, 102);
+            this.comboBoxProxyAuthType.Name = "comboBoxProxyAuthType";
+            this.comboBoxProxyAuthType.Size = new System.Drawing.Size(192, 21);
+            this.comboBoxProxyAuthType.TabIndex = 31;
+            // 
             // textBoxProxyDomain
             // 
-            this.textBoxProxyDomain.Location = new System.Drawing.Point(106, 71);
+            this.textBoxProxyDomain.Location = new System.Drawing.Point(138, 68);
             this.textBoxProxyDomain.Name = "textBoxProxyDomain";
             this.textBoxProxyDomain.Size = new System.Drawing.Size(192, 21);
             this.textBoxProxyDomain.TabIndex = 30;
@@ -4841,7 +5026,7 @@
             // 
             // textBoxProxyUserName
             // 
-            this.textBoxProxyUserName.Location = new System.Drawing.Point(106, 19);
+            this.textBoxProxyUserName.Location = new System.Drawing.Point(138, 16);
             this.textBoxProxyUserName.Name = "textBoxProxyUserName";
             this.textBoxProxyUserName.Size = new System.Drawing.Size(192, 21);
             this.textBoxProxyUserName.TabIndex = 22;
@@ -4866,7 +5051,7 @@
             // 
             // textBoxProxyPassword
             // 
-            this.textBoxProxyPassword.Location = new System.Drawing.Point(106, 45);
+            this.textBoxProxyPassword.Location = new System.Drawing.Point(138, 42);
             this.textBoxProxyPassword.Name = "textBoxProxyPassword";
             this.textBoxProxyPassword.Size = new System.Drawing.Size(192, 21);
             this.textBoxProxyPassword.TabIndex = 24;
@@ -4874,9 +5059,9 @@
             // 
             // textBoxProxyAddress
             // 
-            this.textBoxProxyAddress.Location = new System.Drawing.Point(134, 34);
+            this.textBoxProxyAddress.Location = new System.Drawing.Point(166, 34);
             this.textBoxProxyAddress.Name = "textBoxProxyAddress";
-            this.textBoxProxyAddress.Size = new System.Drawing.Size(192, 21);
+            this.textBoxProxyAddress.Size = new System.Drawing.Size(321, 21);
             this.textBoxProxyAddress.TabIndex = 20;
             // 
             // labelProxyAddress
@@ -4919,54 +5104,78 @@
             this.toolTipContinuationPreview.InitialDelay = 500;
             this.toolTipContinuationPreview.ReshowDelay = 100;
             // 
-            // groupBoxToolsMisc
+            // panelFileTypeAssociations
             // 
-            this.groupBoxToolsMisc.Controls.Add(this.comboBoxBDOpensIn);
-            this.groupBoxToolsMisc.Controls.Add(this.labelBDOpensIn);
-            this.groupBoxToolsMisc.Location = new System.Drawing.Point(418, 180);
-            this.groupBoxToolsMisc.Name = "groupBoxToolsMisc";
-            this.groupBoxToolsMisc.Size = new System.Drawing.Size(434, 109);
-            this.groupBoxToolsMisc.TabIndex = 33;
-            this.groupBoxToolsMisc.TabStop = false;
-            this.groupBoxToolsMisc.Text = "Misc";
+            this.panelFileTypeAssociations.Controls.Add(this.buttonUpdateFileTypeAssociations);
+            this.panelFileTypeAssociations.Controls.Add(this.listViewFileTypeAssociations);
+            this.panelFileTypeAssociations.Location = new System.Drawing.Point(230, 6);
+            this.panelFileTypeAssociations.Name = "panelFileTypeAssociations";
+            this.panelFileTypeAssociations.Size = new System.Drawing.Size(852, 521);
+            this.panelFileTypeAssociations.TabIndex = 16;
             // 
-            // labelBDOpensIn
+            // buttonUpdateFileTypeAssociations
             // 
-            this.labelBDOpensIn.AutoSize = true;
-            this.labelBDOpensIn.Location = new System.Drawing.Point(6, 29);
-            this.labelBDOpensIn.Name = "labelBDOpensIn";
-            this.labelBDOpensIn.Size = new System.Drawing.Size(146, 13);
-            this.labelBDOpensIn.TabIndex = 0;
-            this.labelBDOpensIn.Text = "Blu-ray sup/bdn-xml opens in";
+            this.buttonUpdateFileTypeAssociations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonUpdateFileTypeAssociations.Location = new System.Drawing.Point(209, 497);
+            this.buttonUpdateFileTypeAssociations.Name = "buttonUpdateFileTypeAssociations";
+            this.buttonUpdateFileTypeAssociations.Size = new System.Drawing.Size(218, 23);
+            this.buttonUpdateFileTypeAssociations.TabIndex = 23;
+            this.buttonUpdateFileTypeAssociations.Text = "Update file type associations";
+            this.buttonUpdateFileTypeAssociations.UseVisualStyleBackColor = true;
+            this.buttonUpdateFileTypeAssociations.Click += new System.EventHandler(this.buttonUpdateFileTypeAssociations_Click);
             // 
-            // comboBoxBDOpensIn
+            // listViewFileTypeAssociations
             // 
-            this.comboBoxBDOpensIn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxBDOpensIn.FormattingEnabled = true;
-            this.comboBoxBDOpensIn.Items.AddRange(new object[] {
-            "OCR",
-            "BD SUP EDIIT"});
-            this.comboBoxBDOpensIn.Location = new System.Drawing.Point(158, 27);
-            this.comboBoxBDOpensIn.Name = "comboBoxBDOpensIn";
-            this.comboBoxBDOpensIn.Size = new System.Drawing.Size(221, 21);
-            this.comboBoxBDOpensIn.TabIndex = 1;
+            this.listViewFileTypeAssociations.CheckBoxes = true;
+            this.listViewFileTypeAssociations.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.listViewFileTypeAssociations.HideSelection = false;
+            this.listViewFileTypeAssociations.Location = new System.Drawing.Point(0, 4);
+            this.listViewFileTypeAssociations.Name = "listViewFileTypeAssociations";
+            this.listViewFileTypeAssociations.Size = new System.Drawing.Size(199, 516);
+            this.listViewFileTypeAssociations.TabIndex = 22;
+            this.listViewFileTypeAssociations.UseCompatibleStateImageBehavior = false;
+            this.listViewFileTypeAssociations.View = System.Windows.Forms.View.Details;
+            // 
+            // labelUpdateFileTypeAssociationsStatus
+            // 
+            this.labelUpdateFileTypeAssociationsStatus.AutoSize = true;
+            this.labelUpdateFileTypeAssociationsStatus.Location = new System.Drawing.Point(439, 531);
+            this.labelUpdateFileTypeAssociationsStatus.Name = "labelUpdateFileTypeAssociationsStatus";
+            this.labelUpdateFileTypeAssociationsStatus.Size = new System.Drawing.Size(38, 13);
+            this.labelUpdateFileTypeAssociationsStatus.TabIndex = 24;
+            this.labelUpdateFileTypeAssociationsStatus.Text = "Status";
+            // 
+            // imageListFileTypeAssociations
+            // 
+            this.imageListFileTypeAssociations.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageListFileTypeAssociations.ImageSize = new System.Drawing.Size(32, 32);
+            this.imageListFileTypeAssociations.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // toolTipDialogStylePreview
+            // 
+            this.toolTipDialogStylePreview.AutoPopDelay = 60000;
+            this.toolTipDialogStylePreview.InitialDelay = 500;
+            this.toolTipDialogStylePreview.ReshowDelay = 100;
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1092, 574);
+            this.Controls.Add(this.labelUpdateFileTypeAssociationsStatus);
+            this.Controls.Add(this.panelToolBar);
             this.Controls.Add(this.panelTools);
-            this.Controls.Add(this.panelSubtitleFormats);
+            this.Controls.Add(this.panelWaveform);
+            this.Controls.Add(this.panelVideoPlayer);
             this.Controls.Add(this.panelGeneral);
+            this.Controls.Add(this.panelShortcuts);
             this.Controls.Add(this.panelFont);
             this.Controls.Add(this.panelNetwork);
-            this.Controls.Add(this.panelVideoPlayer);
-            this.Controls.Add(this.panelWordLists);
-            this.Controls.Add(this.panelToolBar);
-            this.Controls.Add(this.panelWaveform);
+            this.Controls.Add(this.panelFileTypeAssociations);
+            this.Controls.Add(this.panelSubtitleFormats);
             this.Controls.Add(this.panelSyntaxColoring);
-            this.Controls.Add(this.panelShortcuts);
             this.Controls.Add(this.listBoxSection);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.labelStatus);
@@ -5013,6 +5222,10 @@
             this.groupBoxMainWindowVideoControls.PerformLayout();
             this.groupBoxVideoPlayerDefault.ResumeLayout(false);
             this.groupBoxVideoPlayerDefault.PerformLayout();
+            this.groupBoxMpvBorder.ResumeLayout(false);
+            this.groupBoxMpvBorder.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMpvShadowWidth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMpvOutline)).EndInit();
             this.groupBoxVideoEngine.ResumeLayout(false);
             this.groupBoxVideoEngine.PerformLayout();
             this.panelWaveform.ResumeLayout(false);
@@ -5026,6 +5239,8 @@
             this.groupBoxWaveformAppearence.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaveformBorderHitMs)).EndInit();
             this.panelTools.ResumeLayout(false);
+            this.groupBoxToolsMisc.ResumeLayout(false);
+            this.groupBoxToolsMisc.PerformLayout();
             this.groupBoxGoogleTranslate.ResumeLayout(false);
             this.groupBoxGoogleTranslate.PerformLayout();
             this.groupBoxBing.ResumeLayout(false);
@@ -5039,22 +5254,13 @@
             this.groupBoxFixCommonErrors.PerformLayout();
             this.groupBoxToolsVisualSync.ResumeLayout(false);
             this.groupBoxToolsVisualSync.PerformLayout();
-            this.panelWordLists.ResumeLayout(false);
-            this.groupBoxWordLists.ResumeLayout(false);
-            this.groupBoxWordLists.PerformLayout();
-            this.groupBoxOcrFixList.ResumeLayout(false);
-            this.groupBoxOcrFixList.PerformLayout();
-            this.groupBoxUserWordList.ResumeLayout(false);
-            this.groupBoxUserWordList.PerformLayout();
-            this.groupBoxWordListLocation.ResumeLayout(false);
-            this.groupBoxWordListLocation.PerformLayout();
-            this.groupBoxNamesIgonoreLists.ResumeLayout(false);
-            this.groupBoxNamesIgonoreLists.PerformLayout();
             this.panelToolBar.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBoxShowToolBarButtons.ResumeLayout(false);
             this.groupBoxShowToolBarButtons.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxToggleSourceView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTBBurnIn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNetflixQualityCheck)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTBRemoveTextForHi)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTBFixCommonErrors)).EndInit();
@@ -5087,8 +5293,7 @@
             this.groupBoxProxySettings.PerformLayout();
             this.groupBoxProxyAuthentication.ResumeLayout(false);
             this.groupBoxProxyAuthentication.PerformLayout();
-            this.groupBoxToolsMisc.ResumeLayout(false);
-            this.groupBoxToolsMisc.PerformLayout();
+            this.panelFileTypeAssociations.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5153,25 +5358,6 @@
         private System.Windows.Forms.CheckBox checkBoxRememberWindowPosition;
         private System.Windows.Forms.TextBox textBoxShowLineBreaksAs;
         private System.Windows.Forms.Label labelShowLineBreaksAs;
-        private System.Windows.Forms.Panel panelWordLists;
-        private System.Windows.Forms.GroupBox groupBoxWordLists;
-        private System.Windows.Forms.GroupBox groupBoxWordListLocation;
-        private System.Windows.Forms.GroupBox groupBoxOcrFixList;
-        private System.Windows.Forms.GroupBox groupBoxNamesIgonoreLists;
-        private System.Windows.Forms.TextBox textBoxNameEtc;
-        private System.Windows.Forms.Label labelWordListLanguage;
-        private System.Windows.Forms.Button buttonAddNames;
-        private System.Windows.Forms.ComboBox comboBoxWordListLanguage;
-        private System.Windows.Forms.Button buttonRemoveNameEtc;
-        private System.Windows.Forms.Button buttonRemoveOcrFix;
-        private System.Windows.Forms.ListBox listBoxOcrFixList;
-        private System.Windows.Forms.TextBox textBoxOcrFixKey;
-        private System.Windows.Forms.Button buttonAddOcrFix;
-        private System.Windows.Forms.GroupBox groupBoxUserWordList;
-        private System.Windows.Forms.Button buttonRemoveUserWord;
-        private System.Windows.Forms.ListBox listBoxUserWordLists;
-        private System.Windows.Forms.TextBox textBoxUserWord;
-        private System.Windows.Forms.Button buttonAddUserWord;
         private System.Windows.Forms.Panel panelNetwork;
         private System.Windows.Forms.GroupBox groupBoxProxySettings;
         private System.Windows.Forms.Label labelProxyPassword;
@@ -5180,9 +5366,6 @@
         private System.Windows.Forms.TextBox textBoxProxyPassword;
         private System.Windows.Forms.Label labelProxyAddress;
         private System.Windows.Forms.Label labelProxyUserName;
-        private System.Windows.Forms.CheckBox checkBoxNamesOnline;
-        private System.Windows.Forms.TextBox textBoxNamesOnline;
-        private System.Windows.Forms.TextBox textBoxOcrFixValue;
         private System.Windows.Forms.Panel panelTools;
         private System.Windows.Forms.GroupBox groupBoxToolsVisualSync;
         private System.Windows.Forms.ComboBox comboBoxToolsVerifySeconds;
@@ -5247,7 +5430,6 @@
         private System.Windows.Forms.ComboBox comboBoxVideoPlayerPreviewFontName;
         private System.Windows.Forms.Label labelVideoPlayerPreviewFontSize;
         private System.Windows.Forms.ComboBox comboBoxlVideoPlayerPreviewFontSize;
-        private System.Windows.Forms.CheckBox checkBoxMpvPreviewOpaqueBox;
         private System.Windows.Forms.GroupBox groupBoxShortcuts;
         private System.Windows.Forms.Button buttonUpdateShortcut;
         private System.Windows.Forms.TreeView treeViewShortcuts;
@@ -5328,7 +5510,6 @@
         private System.Windows.Forms.Label labelWaveformTextSize;
         private System.Windows.Forms.CheckBox checkBoxWaveformTextBold;
         private System.Windows.Forms.ComboBox comboBoxWaveformTextSize;
-        private System.Windows.Forms.LinkLabel linkLabelOpenDictionaryFolder;
         private System.Windows.Forms.GroupBox groupBoxNetworkSession;
         private System.Windows.Forms.Button buttonNetworkSessionNewMessageSound;
         private System.Windows.Forms.TextBox textBoxNetworkSessionNewMessageSound;
@@ -5399,7 +5580,6 @@
         private System.Windows.Forms.Button buttonEditProfile;
         private System.Windows.Forms.ComboBox comboBoxRulesProfileName;
         private System.Windows.Forms.Label labelRulesProfileName;
-        private System.Windows.Forms.CheckBox checkBoxCpsIncludeWhiteSpace;
         private System.Windows.Forms.Label labelBingTokenEndpoint;
         private System.Windows.Forms.CheckBox checkBoxToolsBreakEarlyComma;
         private System.Windows.Forms.CheckBox checkBoxToolsBreakEarlyDash;
@@ -5414,7 +5594,7 @@
         private System.Windows.Forms.ComboBox comboBoxDialogStyle;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripShortcuts;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemShortcutsCollapse;
-        private System.Windows.Forms.CheckBox checkBoxWaveformSnapToSceneChanges;
+        private System.Windows.Forms.CheckBox checkBoxWaveformSnapToShotChanges;
         private System.Windows.Forms.CheckBox checkBoxWaveformSingleClickSelect;
         private System.Windows.Forms.Label labelSplitBehavior;
         private System.Windows.Forms.ComboBox comboBoxSplitBehavior;
@@ -5444,8 +5624,6 @@
         private System.Windows.Forms.Button buttonDarkThemeBackColor;
         private System.Windows.Forms.Panel panelDarkThemeColor;
         private System.Windows.Forms.Button buttonDarkThemeColor;
-        private System.Windows.Forms.ListView listViewNames;
-        private System.Windows.Forms.ColumnHeader columnHeaderNames;
         private System.Windows.Forms.Panel panelSubtitleFormats;
         private System.Windows.Forms.GroupBox groupBoxSubtitleFormats;
         private System.Windows.Forms.Label labelDefaultSubtitleFormat;
@@ -5473,12 +5651,55 @@
         private System.Windows.Forms.ToolStripMenuItem moveToBottomToolStripMenuItem;
         private System.Windows.Forms.Panel panelShortcuts;
         private System.Windows.Forms.CheckBox checkBoxLiveSpellCheck;
-        private System.Windows.Forms.Label labelVideoPlayerPreviewFontColor;
-        private System.Windows.Forms.Panel panelVideoPlayerPreviewFontColor;
         private System.Windows.Forms.CheckBox checkBoxDarkThemeShowListViewGridLines;
         private System.Windows.Forms.GroupBox groupBoxFontInUI;
         private System.Windows.Forms.GroupBox groupBoxToolsMisc;
         private System.Windows.Forms.ComboBox comboBoxBDOpensIn;
         private System.Windows.Forms.Label labelBDOpensIn;
+        private System.Windows.Forms.CheckBox checkBoxShortcutsAllowLetterOrNumberInTextBox;
+        private System.Windows.Forms.CheckBox checkBoxWaveformAutoGen;
+        private System.Windows.Forms.Panel panelFileTypeAssociations;
+        private System.Windows.Forms.ListView listViewFileTypeAssociations;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ImageList imageListFileTypeAssociations;
+        private System.Windows.Forms.Button buttonUpdateFileTypeAssociations;
+        private System.Windows.Forms.Label labelUpdateFileTypeAssociationsStatus;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.Label labelTBBurnIn;
+        private System.Windows.Forms.PictureBox pictureBoxTBBurnIn;
+        private System.Windows.Forms.CheckBox checkBoxTBBurnIn;
+        private System.Windows.Forms.ComboBox comboBoxCpsLineLenCalc;
+        private System.Windows.Forms.Label labelCpsLineLenCalc;
+        private System.Windows.Forms.CheckBox checkBoxUseWordSplitList;
+        private System.Windows.Forms.ToolTip toolTipDialogStylePreview;
+        private System.Windows.Forms.Button buttonEditCustomContinuationStyle;
+        private System.Windows.Forms.Label labelProxyAuthType;
+        private System.Windows.Forms.CheckBox checkBoxProxyUseDefaultCredentials;
+        private System.Windows.Forms.ComboBox comboBoxProxyAuthType;
+        private System.Windows.Forms.CheckBox checkBoxFfmpegUseCenterChannel;
+        private System.Windows.Forms.Label labelToggleSourceView;
+        private System.Windows.Forms.PictureBox pictureBoxToggleSourceView;
+        private System.Windows.Forms.CheckBox checkBoxTBToggleSourceView;
+        private System.Windows.Forms.Button buttonTranslationAutoSuffix;
+        private System.Windows.Forms.ComboBox comboBoxTranslationAutoSuffix;
+        private System.Windows.Forms.Label labelTranslationAutoSuffix;
+        private System.Windows.Forms.CheckBox checkBoxUseWordSplitListAvoidPropercase;
+        private System.Windows.Forms.ToolStripMenuItem exportAsHtmlToolStripMenuItem;
+        private System.Windows.Forms.ComboBox comboBoxCustomToggleEnd;
+        private System.Windows.Forms.ComboBox comboBoxCustomToggleStart;
+        private System.Windows.Forms.Label labelShortcutCustomToggle;
+        private System.Windows.Forms.GroupBox groupBoxMpvBorder;
+        private System.Windows.Forms.ComboBox comboBoxOpaqueBoxStyle;
+        private System.Windows.Forms.RadioButton radioButtonMpvOpaqueBox;
+        private System.Windows.Forms.RadioButton radioButtonMpvOutline;
+        private System.Windows.Forms.NumericUpDown numericUpDownMpvShadowWidth;
+        private System.Windows.Forms.NumericUpDown numericUpDownMpvOutline;
+        private System.Windows.Forms.Label labelMpvShadow;
+        private System.Windows.Forms.Panel panelMpvBackColor;
+        private System.Windows.Forms.Button buttonMpvBackColor;
+        private System.Windows.Forms.Panel panelMpvOutlineColor;
+        private System.Windows.Forms.Button buttonMpvOutlineColor;
+        private System.Windows.Forms.Panel panelMpvPrimaryColor;
+        private System.Windows.Forms.Button buttonMpvPrimaryColor;
     }
 }

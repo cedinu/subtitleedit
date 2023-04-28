@@ -10,38 +10,49 @@ namespace Nikse.SubtitleEdit.Forms
 {
     public sealed partial class FindDialog : PositionAndSizeForm
     {
+        private readonly IFindAndReplace _findAndReplaceMethods;
+        private readonly Keys _findNextShortcut;
         private Regex _regEx;
         private readonly Subtitle _subtitle;
-        public FindDialog(Subtitle subtitle)
+
+        public FindDialog(Subtitle subtitle, IFindAndReplace findAndReplaceMethods)
         {
             UiUtil.PreInitialize(this);
             InitializeComponent();
             UiUtil.FixFonts(this);
 
             Text = LanguageSettings.Current.FindDialog.Title;
-            buttonFind.Text = LanguageSettings.Current.FindDialog.Find;
+            labelFindWhat.Text = LanguageSettings.Current.ReplaceDialog.FindWhat;
+            buttonFind.Text = LanguageSettings.Current.FindDialog.FindNext;
+            buttonFindPrev.Text = LanguageSettings.Current.FindDialog.FindPrevious;
             radioButtonNormal.Text = LanguageSettings.Current.FindDialog.Normal;
             radioButtonCaseSensitive.Text = LanguageSettings.Current.FindDialog.CaseSensitive;
             radioButtonRegEx.Text = LanguageSettings.Current.FindDialog.RegularExpression;
-            buttonCancel.Text = LanguageSettings.Current.General.Cancel;
             checkBoxWholeWord.Text = LanguageSettings.Current.FindDialog.WholeWord;
             buttonCount.Text = LanguageSettings.Current.FindDialog.Count;
             labelCount.Text = string.Empty;
             _subtitle = subtitle;
+            _findAndReplaceMethods = findAndReplaceMethods;
 
             if (Width < radioButtonRegEx.Right + 5)
             {
                 Width = radioButtonRegEx.Right + 5;
             }
 
-            UiUtil.FixLargeFonts(this, buttonCancel);
+            UiUtil.FixLargeFonts(this, buttonFind);
+            _findNextShortcut = UiUtil.GetKeys(Configuration.Settings.Shortcuts.MainEditFindNext);
         }
 
         private ReplaceType FindReplaceType
         {
             get
             {
-                var result = new ReplaceType();
+                var result = new ReplaceType
+                {
+                    SearchOriginal = true,
+                    SearchTranslation = true
+                };
+
                 if (radioButtonNormal.Checked)
                 {
                     result.FindType = FindType.Normal;
@@ -97,13 +108,30 @@ namespace Nikse.SubtitleEdit.Forms
         {
             if (e.KeyCode == Keys.Escape)
             {
+                e.Handled = true;
                 DialogResult = DialogResult.Cancel;
+                Close();
+            }
+            else if (e.KeyData == _findNextShortcut)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                var ctrl = ActiveControl;
+                FindNext();
+                Focus();
+                ctrl?.Focus();
             }
         }
 
         private void ButtonFind_Click(object sender, EventArgs e)
         {
-            string searchText = FindText;
+            FindNext();
+            buttonFind.Focus();
+        }
+
+        private void FindNext()
+        {
+            var searchText = FindText;
             textBoxFind.Text = searchText;
 
             if (searchText.Length == 0)
@@ -113,17 +141,20 @@ namespace Nikse.SubtitleEdit.Forms
             else if (radioButtonNormal.Checked)
             {
                 DialogResult = DialogResult.OK;
+                _findAndReplaceMethods.FindDialogFind(FindText, FindReplaceType);
             }
             else if (radioButtonCaseSensitive.Checked)
             {
                 DialogResult = DialogResult.OK;
+                _findAndReplaceMethods.FindDialogFind(FindText, FindReplaceType);
             }
             else if (radioButtonRegEx.Checked)
             {
                 try
                 {
-                    _regEx = new Regex(RegexUtils.FixNewLine(searchText), RegexOptions.Compiled);
+                    _regEx = new Regex(RegexUtils.FixNewLine(searchText), RegexOptions.Compiled, TimeSpan.FromSeconds(5));
                     DialogResult = DialogResult.OK;
+                    _findAndReplaceMethods.FindDialogFind(FindText, FindReplaceType);
                 }
                 catch (Exception exception)
                 {
@@ -136,7 +167,12 @@ namespace Nikse.SubtitleEdit.Forms
         {
             if (e.KeyCode == Keys.Enter)
             {
-                ButtonFind_Click(null, null);
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+                FindNext();
+                Focus();
+                textBoxFind.Focus();
             }
         }
 
@@ -144,7 +180,12 @@ namespace Nikse.SubtitleEdit.Forms
         {
             if (e.KeyCode == Keys.Enter)
             {
-                ButtonFind_Click(null, null);
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+                FindNext();
+                Focus();
+                comboBoxFind.Focus();
             }
         }
 
@@ -181,9 +222,9 @@ namespace Nikse.SubtitleEdit.Forms
                 comboBoxFind.Text = selectedText;
                 comboBoxFind.SelectAll();
                 comboBoxFind.Items.Clear();
-                for (int index = 0; index < Configuration.Settings.Tools.FindHistory.Count; index++)
+                for (var index = 0; index < Configuration.Settings.Tools.FindHistory.Count; index++)
                 {
-                    string s = Configuration.Settings.Tools.FindHistory[index];
+                    var s = Configuration.Settings.Tools.FindHistory[index];
                     comboBoxFind.Items.Add(s);
                 }
             }
@@ -239,5 +280,45 @@ namespace Nikse.SubtitleEdit.Forms
             labelCount.Text = string.Empty;
         }
 
+        private void FindDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _findAndReplaceMethods.FindDialogClose();
+        }
+
+        private void buttonFindPrev_Click(object sender, EventArgs e)
+        {
+            var searchText = FindText;
+            textBoxFind.Text = searchText;
+
+            if (searchText.Length == 0)
+            {
+                DialogResult = DialogResult.Cancel;
+            }
+            else if (radioButtonNormal.Checked)
+            {
+                DialogResult = DialogResult.OK;
+                _findAndReplaceMethods.FindDialogFindPrevious(FindText);
+            }
+            else if (radioButtonCaseSensitive.Checked)
+            {
+                DialogResult = DialogResult.OK;
+                _findAndReplaceMethods.FindDialogFindPrevious(FindText);
+            }
+            else if (radioButtonRegEx.Checked)
+            {
+                try
+                {
+                    _regEx = new Regex(RegexUtils.FixNewLine(searchText), RegexOptions.Compiled, TimeSpan.FromSeconds(5));
+                    DialogResult = DialogResult.OK;
+                    _findAndReplaceMethods.FindDialogFindPrevious(FindText);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+
+            buttonFindPrev.Focus();
+        }
     }
 }

@@ -2,9 +2,10 @@
 using Nikse.SubtitleEdit.Logic;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -12,12 +13,20 @@ namespace Nikse.SubtitleEdit.Forms
 {
     public sealed partial class GetDictionaries : Form
     {
-        private List<string> _dictionaryDownloadLinks = new List<string>();
-        private List<string> _descriptions = new List<string>();
-        private List<string> _englishNames = new List<string>();
+        private class DictionaryItem
+        {
+            public string EnglishName { get; set; }
+            public string NativeName { get; set; }
+            public string Description { get; set; }
+            public string DownloadLink { get; set; }
+            public string DisplayText { get; set; }
+            public override string ToString() => DisplayText;
+        }
+
         private string _xmlName;
         private string _downloadLink;
         private int _testAllIndex = -1;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         public string SelectedEnglishName { get; private set; }
         public string LastDownload { get; private set; }
@@ -39,6 +48,7 @@ namespace Nikse.SubtitleEdit.Forms
 
             LoadDictionaryList("Nikse.SubtitleEdit.Resources.HunspellDictionaries.xml.gz");
             FixLargeFonts();
+            _cancellationTokenSource = new CancellationTokenSource();
 #if DEBUG
             buttonDownloadAll.Visible = true; // For testing all download links
 #endif
@@ -46,30 +56,28 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void LoadDictionaryList(string xmlResourceName)
         {
-            _dictionaryDownloadLinks = new List<string>();
-            _descriptions = new List<string>();
-            _englishNames = new List<string>();
             _xmlName = xmlResourceName;
-            System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
+            var asm = System.Reflection.Assembly.GetExecutingAssembly();
             var stream = asm.GetManifestResourceStream(_xmlName);
             if (stream != null)
             {
-                comboBoxDictionaries.Items.Clear();
+                var dictionaryItems = new List<DictionaryItem>();
                 var doc = new XmlDocument();
-                using (var rdr = new StreamReader(stream))
-                using (var zip = new GZipStream(rdr.BaseStream, CompressionMode.Decompress))
+                using (var zip = new GZipStream(stream, CompressionMode.Decompress))
                 using (var reader = XmlReader.Create(zip, new XmlReaderSettings { IgnoreProcessingInstructions = true }))
                 {
                     doc.Load(reader);
                 }
 
+                comboBoxDictionaries.BeginUpdate();
+                comboBoxDictionaries.Items.Clear();
                 foreach (XmlNode node in doc.DocumentElement.SelectNodes("Dictionary"))
                 {
-                    string englishName = node.SelectSingleNode("EnglishName").InnerText;
-                    string nativeName = node.SelectSingleNode("NativeName").InnerText;
-                    string downloadLink = node.SelectSingleNode("DownloadLink").InnerText;
+                    var englishName = node.SelectSingleNode("EnglishName").InnerText;
+                    var nativeName = node.SelectSingleNode("NativeName").InnerText;
+                    var downloadLink = node.SelectSingleNode("DownloadLink").InnerText;
 
-                    string description = string.Empty;
+                    var description = string.Empty;
                     if (node.SelectSingleNode("Description") != null)
                     {
                         description = node.SelectSingleNode("Description").InnerText;
@@ -77,18 +85,40 @@ namespace Nikse.SubtitleEdit.Forms
 
                     if (!string.IsNullOrEmpty(downloadLink))
                     {
-                        string name = englishName;
-                        if (!string.IsNullOrEmpty(nativeName))
+                        dictionaryItems.Add(new DictionaryItem
                         {
-                            name += " - " + nativeName;
-                        }
-
-                        comboBoxDictionaries.Items.Add(name);
-                        _dictionaryDownloadLinks.Add(downloadLink);
-                        _descriptions.Add(description);
-                        _englishNames.Add(englishName);
+                            EnglishName = englishName,
+                            NativeName = nativeName,
+                            Description = description,
+                            DownloadLink = downloadLink
+                        });
                     }
                 }
+
+                // ensure ellipses suffix on text overlaps
+                using (var graphics = Graphics.FromHwnd(IntPtr.Zero))
+                {
+                    double comboboxWidth = comboBoxDictionaries.DropDownWidth;
+                    // format display value
+                    foreach (var dictionaryItem in dictionaryItems)
+                    {
+                        var text = $"{dictionaryItem.EnglishName}{(string.IsNullOrEmpty(dictionaryItem.NativeName) ? "" : $" - {dictionaryItem.NativeName}")}";
+                        var width = graphics.MeasureString(text, comboBoxDictionaries.Font).Width;
+                        var displayText = text;
+                        if (width > comboboxWidth)
+                        {
+                            double pixelChar = width / text.Length;
+                            var charCount = (int)Math.Floor(comboboxWidth / pixelChar);
+                            displayText = text.Substring(0, charCount - 3) + "...";
+                        }
+
+                        dictionaryItem.DisplayText = displayText;
+                    }
+                }
+
+                // ReSharper disable once CoVariantArrayConversion
+                comboBoxDictionaries.Items.AddRange(dictionaryItems.ToArray());
+                comboBoxDictionaries.EndUpdate();
                 comboBoxDictionaries.SelectedIndex = 0;
             }
             comboBoxDictionaries.AutoCompleteSource = AutoCompleteSource.ListItems;
@@ -131,6 +161,9 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void buttonDownload_Click(object sender, EventArgs e)
         {
+            var item = (DictionaryItem)comboBoxDictionaries.SelectedItem;
+            _downloadLink = item.DownloadLink;
+            SelectedEnglishName = item.EnglishName;
             try
             {
                 labelPleaseWait.Text = LanguageSettings.Current.General.PleaseWait;
@@ -141,18 +174,29 @@ namespace Nikse.SubtitleEdit.Forms
                 Refresh();
                 Cursor = Cursors.WaitCursor;
 
-                int index = comboBoxDictionaries.SelectedIndex;
-                _downloadLink = _dictionaryDownloadLinks[index];
-                string url = _dictionaryDownloadLinks[index];
-                SelectedEnglishName = _englishNames[index];
-
-                var wc = new WebClient { Proxy = Utilities.GetProxy() };
-                wc.DownloadDataCompleted += wc_DownloadDataCompleted;
-                wc.DownloadProgressChanged += (o, args) =>
+                var httpClient = HttpClientHelper.MakeHttpClient();
+                using (var downloadStream = new MemoryStream())
                 {
-                    labelPleaseWait.Text = LanguageSettings.Current.General.PleaseWait + "  " + args.ProgressPercentage + "%";
-                };
-                wc.DownloadDataAsync(new Uri(url));
+                    var downloadTask = httpClient.DownloadAsync(_downloadLink, downloadStream, new Progress<float>((progress) =>
+                    {
+                        var pct = (int)Math.Round(progress * 100.0, MidpointRounding.AwayFromZero);
+                        labelPleaseWait.Text = LanguageSettings.Current.General.PleaseWait + "  " + pct + "%";
+                    }), _cancellationTokenSource.Token);
+
+                    while (!downloadTask.IsCompleted && !downloadTask.IsCanceled)
+                    {
+                        Application.DoEvents();
+                    }
+
+                    if (downloadTask.IsCanceled)
+                    {
+                        DialogResult = DialogResult.Cancel;
+                        labelPleaseWait.Refresh();
+                        return;
+                    }
+
+                    CompleteDownload(downloadStream);
+                }
             }
             catch (Exception exception)
             {
@@ -162,63 +206,47 @@ namespace Nikse.SubtitleEdit.Forms
                 buttonDownloadAll.Enabled = true;
                 comboBoxDictionaries.Enabled = true;
                 Cursor = Cursors.Default;
-                MessageBox.Show(exception.Message + Environment.NewLine + Environment.NewLine + exception.StackTrace);
+                MessageBox.Show($"Unable to download {_downloadLink}!" + Environment.NewLine + Environment.NewLine +
+                                exception.Message + Environment.NewLine + Environment.NewLine + exception.StackTrace);
+                DialogResult = DialogResult.Cancel;
             }
         }
 
-        private void wc_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
+        private void CompleteDownload(MemoryStream downloadStream)
         {
+            if (downloadStream.Length == 0)
+            {
+                throw new Exception("No content downloaded - missing file or no internet connection!");
+            }
+
             Cursor = Cursors.Default;
-            if (e.Error != null && _xmlName == "Nikse.SubtitleEdit.Resources.HunspellDictionaries.xml.gz")
-            {
-                MessageBox.Show("Unable to download " + _downloadLink + Environment.NewLine +
-                                "Switching host - please re-try!");
-                LoadDictionaryList("Nikse.SubtitleEdit.Resources.HunspellBackupDictionaries.xml.gz");
-                labelPleaseWait.Text = string.Empty;
-                buttonOK.Enabled = true;
-                buttonDownload.Enabled = true;
-                buttonDownloadAll.Enabled = true;
-                comboBoxDictionaries.Enabled = true;
-                Cursor = Cursors.Default;
-                return;
-            }
 
-            if (e.Error != null)
-            {
-                MessageBox.Show(LanguageSettings.Current.GetTesseractDictionaries.DownloadFailed + Environment.NewLine +
-                                Environment.NewLine +
-                                e.Error.Message);
-                DialogResult = DialogResult.Cancel;
-                return;
-            }
-
-            string dictionaryFolder = Utilities.DictionaryFolder;
+            var dictionaryFolder = Utilities.DictionaryFolder;
             if (!Directory.Exists(dictionaryFolder))
             {
                 Directory.CreateDirectory(dictionaryFolder);
             }
 
-            int index = comboBoxDictionaries.SelectedIndex;
+            var index = comboBoxDictionaries.SelectedIndex;
 
-            using (var ms = new MemoryStream(e.Result))
-            using (ZipExtractor zip = ZipExtractor.Open(ms))
+            using (var zip = ZipExtractor.Open(downloadStream))
             {
-                List<ZipExtractor.ZipFileEntry> dir = zip.ReadCentralDir();
+                var dir = zip.ReadCentralDir();
                 // Extract dic/aff files in dictionary folder
-                bool found = false;
+                var found = false;
                 ExtractDic(dictionaryFolder, zip, dir, ref found);
 
                 if (!found) // check zip inside zip
                 {
-                    foreach (ZipExtractor.ZipFileEntry entry in dir)
+                    foreach (var entry in dir)
                     {
                         if (entry.FilenameInZip.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
                             using (var innerMs = new MemoryStream())
                             {
                                 zip.ExtractFile(entry, innerMs);
-                                ZipExtractor innerZip = ZipExtractor.Open(innerMs);
-                                List<ZipExtractor.ZipFileEntry> innerDir = innerZip.ReadCentralDir();
+                                var innerZip = ZipExtractor.Open(innerMs);
+                                var innerDir = innerZip.ReadCentralDir();
                                 ExtractDic(dictionaryFolder, innerZip, innerDir, ref found);
                             }
                         }
@@ -237,16 +265,17 @@ namespace Nikse.SubtitleEdit.Forms
                 DownloadNext();
                 return;
             }
+
             MessageBox.Show(string.Format(LanguageSettings.Current.GetDictionaries.XDownloaded, comboBoxDictionaries.Items[index]));
         }
 
         private void ExtractDic(string dictionaryFolder, ZipExtractor zip, List<ZipExtractor.ZipFileEntry> dir, ref bool found)
         {
-            foreach (ZipExtractor.ZipFileEntry entry in dir)
+            foreach (var entry in dir)
             {
                 if (entry.FilenameInZip.EndsWith(".dic", StringComparison.OrdinalIgnoreCase) || entry.FilenameInZip.EndsWith(".aff", StringComparison.OrdinalIgnoreCase))
                 {
-                    string fileName = Path.GetFileName(entry.FilenameInZip);
+                    var fileName = Path.GetFileName(entry.FilenameInZip);
 
                     // French fix
                     if (fileName.StartsWith("fr-moderne", StringComparison.Ordinal))
@@ -266,7 +295,7 @@ namespace Nikse.SubtitleEdit.Forms
                         fileName = fileName.Replace("russian-aot", "ru_RU");
                     }
 
-                    string path = Path.Combine(dictionaryFolder, fileName);
+                    var path = Path.Combine(dictionaryFolder, fileName);
                     zip.ExtractFile(entry, path);
 
                     found = true;
@@ -278,8 +307,8 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void comboBoxDictionaries_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int index = comboBoxDictionaries.SelectedIndex;
-            labelPleaseWait.Text = _descriptions[index];
+            var item = (DictionaryItem)comboBoxDictionaries.SelectedItem;
+            labelPleaseWait.Text = item.Description;
         }
 
         private void buttonDownloadAll_Click(object sender, EventArgs e)

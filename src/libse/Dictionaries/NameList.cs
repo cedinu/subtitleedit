@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace Nikse.SubtitleEdit.Core.Dictionaries
@@ -116,7 +117,7 @@ namespace Nikse.SubtitleEdit.Core.Dictionaries
                                 var name = reader.ReadElementContentAsString().Trim();
                                 if (name.Length > 0)
                                 {
-                                    if (name.Contains(' '))
+                                    if (name.IndexOf(' ') >= 0)
                                     {
                                         _namesMultiList.Add(name);
                                     }
@@ -221,7 +222,7 @@ namespace Nikse.SubtitleEdit.Core.Dictionaries
                 return false;
             }
 
-            if (name.Contains(' '))
+            if (name.IndexOf(' ') >= 0)
             {
                 if (!_namesMultiList.Contains(name))
                 {
@@ -269,7 +270,7 @@ namespace Nikse.SubtitleEdit.Core.Dictionaries
 
         public bool IsInNamesMultiWordList(string input, string word)
         {
-            if (string.IsNullOrEmpty(input))
+            if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(word))
             {
                 return false;
             }
@@ -281,34 +282,45 @@ namespace Nikse.SubtitleEdit.Core.Dictionaries
             {
                 return true;
             }
-            foreach (string multiWordName in _namesMultiList)
+
+            foreach (var multiWordName in _namesMultiList)
             {
-                if (text.FastIndexOf(multiWordName) >= 0)
+                if (text.FastIndexOf(multiWordName) < 0)
                 {
-                    if (multiWordName.StartsWith(word + " ", StringComparison.Ordinal) || multiWordName.EndsWith(" " + word, StringComparison.Ordinal) || multiWordName.Contains(" " + word + " "))
-                    {
-                        return true;
-                    }
+                    continue;
+                }
+
+                if (multiWordName.StartsWith(word + " ", StringComparison.Ordinal) || multiWordName.EndsWith(" " + word, StringComparison.Ordinal) || multiWordName.Contains(" " + word + " "))
+                {
+                    return true;
                 }
             }
+
             return false;
         }
 
-        public bool ContainsCaseInsensitive(string name)
+        public bool ContainsCaseInsensitive(string name, out string newName)
         {
+            newName = null;
             if (string.IsNullOrEmpty(name))
             {
                 return false;
             }
 
-            foreach (var n in name.Contains(' ') ? _namesMultiList : _namesList)
+            foreach (var n in name.IndexOf(' ') >= 0 ? _namesMultiList : _namesList)
             {
                 if (name.Equals(n, StringComparison.OrdinalIgnoreCase))
                 {
+                    newName = n;
                     return true;
                 }
             }
             return false;
+        }
+
+        public static async Task<NameList> CreateAsync(string dictionaryFolder, string languageName, bool useOnlineNameList, string namesUrl)
+        {
+            return await Task.Run(() => new NameList(dictionaryFolder, languageName, useOnlineNameList, namesUrl));
         }
     }
 }

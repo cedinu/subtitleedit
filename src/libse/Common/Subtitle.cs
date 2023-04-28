@@ -21,7 +21,7 @@ namespace Nikse.SubtitleEdit.Core.Common
 
         public static int MaximumHistoryItems => 100;
 
-        public SubtitleFormat OriginalFormat { get; private set; }
+        public SubtitleFormat OriginalFormat { get; set; }
         public Encoding OriginalEncoding { get; private set; }
 
         public List<HistoryItem> HistoryItems { get; }
@@ -101,17 +101,39 @@ namespace Nikse.SubtitleEdit.Core.Common
             return Paragraphs.Find(p => p.Id == id);
         }
 
-        public SubtitleFormat ReloadLoadSubtitle(List<string> lines, string fileName, SubtitleFormat format)
+        public SubtitleFormat ReloadLoadSubtitle(List<string> lines, string fileName, SubtitleFormat format, SubtitleFormat format2 = null, SubtitleFormat format3 = null)
         {
             Paragraphs.Clear();
+
             if (format != null && format.IsMine(lines, fileName))
             {
                 format.LoadSubtitle(this, lines, fileName);
                 OriginalFormat = format;
                 return format;
             }
+
+            if (format2 != null && format2.IsMine(lines, fileName))
+            {
+                format2.LoadSubtitle(this, lines, fileName);
+                OriginalFormat = format2;
+                return format2;
+            }
+
+            if (format3 != null && format3.IsMine(lines, fileName))
+            {
+                format3.LoadSubtitle(this, lines, fileName);
+                OriginalFormat = format3;
+                return format3;
+            }
+
             foreach (var subtitleFormat in SubtitleFormat.AllSubtitleFormats)
             {
+                var name = subtitleFormat.Name;
+                if (format?.Name == name || format2?.Name == name || format3?.Name == name)
+                {
+                    continue;
+                }
+
                 if (subtitleFormat.IsMine(lines, fileName))
                 {
                     subtitleFormat.LoadSubtitle(this, lines, fileName);
@@ -119,6 +141,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                     return subtitleFormat;
                 }
             }
+
             return null;
         }
 
@@ -294,6 +317,7 @@ namespace Nikse.SubtitleEdit.Core.Common
             encoding = sr.CurrentEncoding;
             var lines = sr.ReadToEnd().SplitToLines();
             sr.Close();
+            sr.Dispose();
             return lines;
         }
 
@@ -476,7 +500,7 @@ namespace Nikse.SubtitleEdit.Core.Common
             }
         }
 
-        public void RecalculateDisplayTime(double maxCharactersPerSecond, int index, double optimalCharactersPerSeconds, bool extendOnly = false)
+        public void RecalculateDisplayTime(double maxCharactersPerSecond, int index, double optimalCharactersPerSeconds, bool extendOnly = false, bool onlyOptimal = false)
         {
             var p = GetParagraphOrDefault(index);
             if (p == null)
@@ -486,10 +510,9 @@ namespace Nikse.SubtitleEdit.Core.Common
 
             var originalEndTime = p.EndTime.TotalMilliseconds;
 
-            var duration = Utilities.GetOptimalDisplayMilliseconds(p.Text, optimalCharactersPerSeconds);
+            var duration = Utilities.GetOptimalDisplayMilliseconds(p.Text, optimalCharactersPerSeconds, onlyOptimal);
             p.EndTime.TotalMilliseconds = p.StartTime.TotalMilliseconds + duration;
-            var numberOfCharacters = p.Text.CountCharacters(Configuration.Settings.General.CharactersPerSecondsIgnoreWhiteSpace, Configuration.Settings.General.IgnoreArabicDiacritics);
-            while (Utilities.GetCharactersPerSecond(p, numberOfCharacters) > maxCharactersPerSecond)
+            while (Utilities.GetCharactersPerSecond(p) > maxCharactersPerSecond)
             {
                 duration++;
                 p.EndTime.TotalMilliseconds = p.StartTime.TotalMilliseconds + duration;
@@ -724,6 +747,25 @@ namespace Nikse.SubtitleEdit.Core.Common
                     break;
                 case SubtitleSortCriteria.Duration:
                     Paragraphs = Paragraphs.OrderBy(p => p.Duration.TotalMilliseconds).ThenBy(p => p.Number).ToList();
+                    break;
+                case SubtitleSortCriteria.Gap:
+                    var lookupDictionary = new Dictionary<string, double>();
+                    for (var index = 0; index < Paragraphs.Count; index++)
+                    {
+                        var paragraph = Paragraphs[index];
+                        var next = GetParagraphOrDefault(index + 1);
+                        if (next == null)
+                        {
+                            lookupDictionary.Add(paragraph.Id, 100_000);
+                        }
+                        else
+                        {
+                            var gapMilliseconds = next.StartTime.TotalMilliseconds - paragraph.EndTime.TotalMilliseconds;
+                            lookupDictionary.Add(paragraph.Id, gapMilliseconds);
+                        }
+                    }
+
+                    Paragraphs = Paragraphs.OrderBy(p => lookupDictionary[p.Id]).ThenBy(p => p.Number).ToList();
                     break;
                 case SubtitleSortCriteria.Text:
                     Paragraphs = Paragraphs.OrderBy(p => p.Text, StringComparer.Ordinal).ThenBy(p => p.Number).ToList();

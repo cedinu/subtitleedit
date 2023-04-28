@@ -8,6 +8,8 @@ namespace Nikse.SubtitleEdit.Core.Common
     public static class SeLogger
     {
 
+        public static string ErrorFile => Path.Combine(Configuration.DataDirectory, "error_log.txt");
+
         public static void Error(Exception exception, string message = null)
         {
             if (exception == null)
@@ -17,11 +19,11 @@ namespace Nikse.SubtitleEdit.Core.Common
 
             try
             {
-                string filePath = Path.Combine(Configuration.DataDirectory, "error_log.txt");
-                using (var writer = new StreamWriter(filePath, true, Encoding.UTF8))
+                using (var writer = new StreamWriter(ErrorFile, true, Encoding.UTF8))
                 {
                     writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Date: " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                    writer.WriteLine($"Date: {DateTime.Now.ToString(CultureInfo.InvariantCulture)}");
+                    writer.WriteLine($"SE: {GetSeInfo()}");
                     if (!string.IsNullOrWhiteSpace(message))
                     {
                         writer.WriteLine("Message: " + message);
@@ -49,17 +51,37 @@ namespace Nikse.SubtitleEdit.Core.Common
 
         public static void Error(string message)
         {
-            string filePath = Path.Combine(Configuration.DataDirectory, "error_log.txt");
-            using (var writer = new StreamWriter(filePath, true, Encoding.UTF8))
+            try
             {
-                writer.WriteLine("-----------------------------------------------------------------------------");
-                writer.WriteLine("Date: " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
-                if (!string.IsNullOrWhiteSpace(message))
+                var filePath = Path.Combine(Configuration.DataDirectory, "error_log.txt");
+                using (var writer = new StreamWriter(filePath, true, Encoding.UTF8))
                 {
-                    writer.WriteLine("Message: " + message);
-                }
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine($"Date: {DateTime.Now.ToString(CultureInfo.InvariantCulture)}");
+                    writer.WriteLine($"SE: {GetSeInfo()}");
+                    if (!string.IsNullOrWhiteSpace(message))
+                    {
+                        writer.WriteLine("Message: " + message);
+                    }
 
-                writer.WriteLine();
+                    writer.WriteLine();
+                }
+            }
+            catch 
+            {
+                // ignore
+            }
+        }
+
+        private static string GetSeInfo()
+        {
+            try
+            {
+                return $"{System.Reflection.Assembly.GetEntryAssembly().GetName().Version} - {Environment.OSVersion} - {IntPtr.Size * 8}-bit";
+            }
+            catch
+            {
+                return string.Empty;
             }
         }
     }

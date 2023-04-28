@@ -19,6 +19,8 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenuStripListview = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.oCRSelectedLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparatorOcrSelected = new System.Windows.Forms.ToolStripSeparator();
             this.normalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.italicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -34,6 +36,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.vobSubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dOSTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.finalCutProImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageWithTimeCodeInFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorImageCompare = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemInspectNOcrMatches = new System.Windows.Forms.ToolStripMenuItem();
             this.inspectImageCompareMatchesForCurrentImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,6 +55,13 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.buttonCancel = new System.Windows.Forms.Button();
             this.groupBoxOcrMethod = new System.Windows.Forms.GroupBox();
             this.comboBoxOcrMethod = new System.Windows.Forms.ComboBox();
+            this.groupBoxCloudVision = new System.Windows.Forms.GroupBox();
+            this.checkBoxSeHandlesTextMerge = new System.Windows.Forms.CheckBox();
+            this.checkBoxCloudVisionSendOriginalImages = new System.Windows.Forms.CheckBox();
+            this.comboBoxCloudVisionLanguage = new System.Windows.Forms.ComboBox();
+            this.labelCloudVisionLanguage = new System.Windows.Forms.Label();
+            this.textBoxCloudVisionApiKey = new System.Windows.Forms.TextBox();
+            this.labelCloudVisionApiKey = new System.Windows.Forms.Label();
             this.groupBoxNOCR = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.comboBoxNOcrLineSplitMinHeight = new System.Windows.Forms.ComboBox();
@@ -92,7 +102,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.groupBoxOCRControls = new System.Windows.Forms.GroupBox();
             this.labelStartFrom = new System.Windows.Forms.Label();
             this.numericUpDownStartNumber = new System.Windows.Forms.NumericUpDown();
-            this.buttonStop = new System.Windows.Forms.Button();
+            this.buttonPause = new System.Windows.Forms.Button();
             this.buttonStartOcr = new System.Windows.Forms.Button();
             this.groupBoxOcrAutoFix = new System.Windows.Forms.GroupBox();
             this.buttonSpellCheckDownload = new System.Windows.Forms.Button();
@@ -110,6 +120,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.listBoxUnknownWords = new System.Windows.Forms.ListBox();
             this.contextMenuStripUnknownWords = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeAllXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageAllFixes = new System.Windows.Forms.TabPage();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.tabPageSuggestions = new System.Windows.Forms.TabPage();
@@ -169,6 +180,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.timerHideStatus = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStripListview.SuspendLayout();
             this.groupBoxOcrMethod.SuspendLayout();
+            this.groupBoxCloudVision.SuspendLayout();
             this.groupBoxNOCR.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNOcrMaxWrongPixels)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNumberOfPixelsIsSpaceNOCR)).BeginInit();
@@ -207,6 +219,8 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             // contextMenuStripListview
             // 
             this.contextMenuStripListview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.oCRSelectedLinesToolStripMenuItem,
+            this.toolStripSeparatorOcrSelected,
             this.normalToolStripMenuItem,
             this.italicToolStripMenuItem,
             this.toolStripSeparator1,
@@ -229,8 +243,20 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.toolStripSeparator3,
             this.deleteToolStripMenuItem});
             this.contextMenuStripListview.Name = "contextMenuStripListview";
-            this.contextMenuStripListview.Size = new System.Drawing.Size(306, 386);
+            this.contextMenuStripListview.Size = new System.Drawing.Size(306, 414);
             this.contextMenuStripListview.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStripListviewOpening);
+            // 
+            // oCRSelectedLinesToolStripMenuItem
+            // 
+            this.oCRSelectedLinesToolStripMenuItem.Name = "oCRSelectedLinesToolStripMenuItem";
+            this.oCRSelectedLinesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.oCRSelectedLinesToolStripMenuItem.Text = "OCR selected lines...";
+            this.oCRSelectedLinesToolStripMenuItem.Click += new System.EventHandler(this.oCRSelectedLinesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparatorOcrSelected
+            // 
+            this.toolStripSeparatorOcrSelected.Name = "toolStripSeparatorOcrSelected";
+            this.toolStripSeparatorOcrSelected.Size = new System.Drawing.Size(302, 6);
             // 
             // normalToolStripMenuItem
             // 
@@ -298,7 +324,8 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.bluraySupToolStripMenuItem,
             this.vobSubToolStripMenuItem,
             this.dOSTToolStripMenuItem,
-            this.finalCutProImageToolStripMenuItem});
+            this.finalCutProImageToolStripMenuItem,
+            this.imageWithTimeCodeInFileNameToolStripMenuItem});
             this.toolStripMenuItemExport.Name = "toolStripMenuItemExport";
             this.toolStripMenuItemExport.Size = new System.Drawing.Size(305, 22);
             this.toolStripMenuItemExport.Text = "Export all images as...";
@@ -306,37 +333,44 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             // bDNXMLToolStripMenuItem
             // 
             this.bDNXMLToolStripMenuItem.Name = "bDNXMLToolStripMenuItem";
-            this.bDNXMLToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.bDNXMLToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.bDNXMLToolStripMenuItem.Text = "BDN XML...";
             this.bDNXMLToolStripMenuItem.Click += new System.EventHandler(this.BDNXMLToolStripMenuItem_Click);
             // 
             // bluraySupToolStripMenuItem
             // 
             this.bluraySupToolStripMenuItem.Name = "bluraySupToolStripMenuItem";
-            this.bluraySupToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.bluraySupToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.bluraySupToolStripMenuItem.Text = "Blu-ray sup...";
             this.bluraySupToolStripMenuItem.Click += new System.EventHandler(this.BluraySupToolStripMenuItem_Click);
             // 
             // vobSubToolStripMenuItem
             // 
             this.vobSubToolStripMenuItem.Name = "vobSubToolStripMenuItem";
-            this.vobSubToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.vobSubToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.vobSubToolStripMenuItem.Text = "VobSub...";
             this.vobSubToolStripMenuItem.Click += new System.EventHandler(this.VobSubToolStripMenuItem_Click);
             // 
             // dOSTToolStripMenuItem
             // 
             this.dOSTToolStripMenuItem.Name = "dOSTToolStripMenuItem";
-            this.dOSTToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.dOSTToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.dOSTToolStripMenuItem.Text = "DOST...";
             this.dOSTToolStripMenuItem.Click += new System.EventHandler(this.DOSTToolStripMenuItem_Click);
             // 
             // finalCutProImageToolStripMenuItem
             // 
             this.finalCutProImageToolStripMenuItem.Name = "finalCutProImageToolStripMenuItem";
-            this.finalCutProImageToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.finalCutProImageToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.finalCutProImageToolStripMenuItem.Text = "Final Cut Pro + image...";
             this.finalCutProImageToolStripMenuItem.Click += new System.EventHandler(this.finalCutProImageToolStripMenuItem_Click);
+            // 
+            // imageWithTimeCodeInFileNameToolStripMenuItem
+            // 
+            this.imageWithTimeCodeInFileNameToolStripMenuItem.Name = "imageWithTimeCodeInFileNameToolStripMenuItem";
+            this.imageWithTimeCodeInFileNameToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.imageWithTimeCodeInFileNameToolStripMenuItem.Text = "Images with time code in file name...";
+            this.imageWithTimeCodeInFileNameToolStripMenuItem.Click += new System.EventHandler(this.imageWithTimeCodeInFileNameToolStripMenuItem_Click);
             // 
             // toolStripSeparatorImageCompare
             // 
@@ -472,6 +506,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.groupBoxOcrMethod.Controls.Add(this.groupBoxImageCompareMethod);
             this.groupBoxOcrMethod.Controls.Add(this.GroupBoxTesseractMethod);
             this.groupBoxOcrMethod.Controls.Add(this.groupBoxModiMethod);
+            this.groupBoxOcrMethod.Controls.Add(this.groupBoxCloudVision);
             this.groupBoxOcrMethod.Location = new System.Drawing.Point(13, 5);
             this.groupBoxOcrMethod.Name = "groupBoxOcrMethod";
             this.groupBoxOcrMethod.Size = new System.Drawing.Size(392, 192);
@@ -494,6 +529,78 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.comboBoxOcrMethod.Size = new System.Drawing.Size(366, 21);
             this.comboBoxOcrMethod.TabIndex = 0;
             this.comboBoxOcrMethod.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOcrMethodSelectedIndexChanged);
+            // 
+            // groupBoxCloudVision
+            // 
+            this.groupBoxCloudVision.Controls.Add(this.checkBoxSeHandlesTextMerge);
+            this.groupBoxCloudVision.Controls.Add(this.checkBoxCloudVisionSendOriginalImages);
+            this.groupBoxCloudVision.Controls.Add(this.comboBoxCloudVisionLanguage);
+            this.groupBoxCloudVision.Controls.Add(this.labelCloudVisionLanguage);
+            this.groupBoxCloudVision.Controls.Add(this.textBoxCloudVisionApiKey);
+            this.groupBoxCloudVision.Controls.Add(this.labelCloudVisionApiKey);
+            this.groupBoxCloudVision.Location = new System.Drawing.Point(7, 38);
+            this.groupBoxCloudVision.Name = "groupBoxCloudVision";
+            this.groupBoxCloudVision.Size = new System.Drawing.Size(372, 143);
+            this.groupBoxCloudVision.TabIndex = 8;
+            this.groupBoxCloudVision.TabStop = false;
+            this.groupBoxCloudVision.Text = "Cloud Vision API";
+            // 
+            // checkBoxSeHandlesTextMerge
+            // 
+            this.checkBoxSeHandlesTextMerge.AutoSize = true;
+            this.checkBoxSeHandlesTextMerge.Location = new System.Drawing.Point(7, 105);
+            this.checkBoxSeHandlesTextMerge.Name = "checkBoxSeHandlesTextMerge";
+            this.checkBoxSeHandlesTextMerge.Size = new System.Drawing.Size(134, 17);
+            this.checkBoxSeHandlesTextMerge.TabIndex = 5;
+            this.checkBoxSeHandlesTextMerge.Text = "SE handles text merge";
+            this.checkBoxSeHandlesTextMerge.UseVisualStyleBackColor = true;
+            this.checkBoxSeHandlesTextMerge.CheckedChanged += new System.EventHandler(this.checkBoxSeHandlesTextMerge_CheckedChanged);
+            // 
+            // checkBoxCloudVisionSendOriginalImages
+            // 
+            this.checkBoxCloudVisionSendOriginalImages.AutoSize = true;
+            this.checkBoxCloudVisionSendOriginalImages.Location = new System.Drawing.Point(9, 80);
+            this.checkBoxCloudVisionSendOriginalImages.Name = "checkBoxCloudVisionSendOriginalImages";
+            this.checkBoxCloudVisionSendOriginalImages.Size = new System.Drawing.Size(123, 17);
+            this.checkBoxCloudVisionSendOriginalImages.TabIndex = 4;
+            this.checkBoxCloudVisionSendOriginalImages.Text = "Send original images";
+            this.checkBoxCloudVisionSendOriginalImages.UseVisualStyleBackColor = true;
+            this.checkBoxCloudVisionSendOriginalImages.Visible = false;
+            this.checkBoxCloudVisionSendOriginalImages.CheckedChanged += new System.EventHandler(this.checkBoxCloudVisionSendOriginalImages_CheckedChanged);
+            // 
+            // comboBoxCloudVisionLanguage
+            // 
+            this.comboBoxCloudVisionLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxCloudVisionLanguage.FormattingEnabled = true;
+            this.comboBoxCloudVisionLanguage.Location = new System.Drawing.Point(87, 49);
+            this.comboBoxCloudVisionLanguage.Name = "comboBoxCloudVisionLanguage";
+            this.comboBoxCloudVisionLanguage.Size = new System.Drawing.Size(279, 21);
+            this.comboBoxCloudVisionLanguage.TabIndex = 3;
+            // 
+            // labelCloudVisionLanguage
+            // 
+            this.labelCloudVisionLanguage.AutoSize = true;
+            this.labelCloudVisionLanguage.Location = new System.Drawing.Point(6, 52);
+            this.labelCloudVisionLanguage.Name = "labelCloudVisionLanguage";
+            this.labelCloudVisionLanguage.Size = new System.Drawing.Size(54, 13);
+            this.labelCloudVisionLanguage.TabIndex = 2;
+            this.labelCloudVisionLanguage.Text = "Language";
+            // 
+            // textBoxCloudVisionApiKey
+            // 
+            this.textBoxCloudVisionApiKey.Location = new System.Drawing.Point(87, 22);
+            this.textBoxCloudVisionApiKey.Name = "textBoxCloudVisionApiKey";
+            this.textBoxCloudVisionApiKey.Size = new System.Drawing.Size(279, 21);
+            this.textBoxCloudVisionApiKey.TabIndex = 1;
+            // 
+            // labelCloudVisionApiKey
+            // 
+            this.labelCloudVisionApiKey.AutoSize = true;
+            this.labelCloudVisionApiKey.Location = new System.Drawing.Point(6, 25);
+            this.labelCloudVisionApiKey.Name = "labelCloudVisionApiKey";
+            this.labelCloudVisionApiKey.Size = new System.Drawing.Size(44, 13);
+            this.labelCloudVisionApiKey.TabIndex = 0;
+            this.labelCloudVisionApiKey.Text = "API key";
             // 
             // groupBoxNOCR
             // 
@@ -700,7 +807,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             // 
             this.numericUpDownNumberOfPixelsIsSpaceNOCR.Location = new System.Drawing.Point(122, 17);
             this.numericUpDownNumberOfPixelsIsSpaceNOCR.Maximum = new decimal(new int[] {
-            50,
+            250,
             0,
             0,
             0});
@@ -1079,7 +1186,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.groupBoxOCRControls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxOCRControls.Controls.Add(this.labelStartFrom);
             this.groupBoxOCRControls.Controls.Add(this.numericUpDownStartNumber);
-            this.groupBoxOCRControls.Controls.Add(this.buttonStop);
+            this.groupBoxOCRControls.Controls.Add(this.buttonPause);
             this.groupBoxOCRControls.Controls.Add(this.buttonStartOcr);
             this.groupBoxOCRControls.Location = new System.Drawing.Point(368, 207);
             this.groupBoxOCRControls.Name = "groupBoxOCRControls";
@@ -1119,16 +1226,16 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             0,
             0});
             // 
-            // buttonStop
+            // buttonPause
             // 
-            this.buttonStop.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.buttonStop.Location = new System.Drawing.Point(11, 52);
-            this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(105, 23);
-            this.buttonStop.TabIndex = 2;
-            this.buttonStop.Text = "Stop OCR";
-            this.buttonStop.UseVisualStyleBackColor = true;
-            this.buttonStop.Click += new System.EventHandler(this.ButtonStopClick);
+            this.buttonPause.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.buttonPause.Location = new System.Drawing.Point(11, 52);
+            this.buttonPause.Name = "buttonPause";
+            this.buttonPause.Size = new System.Drawing.Size(105, 23);
+            this.buttonPause.TabIndex = 2;
+            this.buttonPause.Text = "Pause OCR";
+            this.buttonPause.UseVisualStyleBackColor = true;
+            this.buttonPause.Click += new System.EventHandler(this.ButtonPauseClick);
             // 
             // buttonStartOcr
             // 
@@ -1307,7 +1414,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.listBoxUnknownWords.HorizontalScrollbar = true;
             this.listBoxUnknownWords.Location = new System.Drawing.Point(3, 3);
             this.listBoxUnknownWords.Name = "listBoxUnknownWords";
-            this.listBoxUnknownWords.Size = new System.Drawing.Size(143, 149);
+            this.listBoxUnknownWords.Size = new System.Drawing.Size(143, 147);
             this.listBoxUnknownWords.TabIndex = 40;
             this.listBoxUnknownWords.SelectedIndexChanged += new System.EventHandler(this.ListBoxLogSelectedIndexChanged);
             this.listBoxUnknownWords.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBoxCopyToClipboard_KeyDown);
@@ -1315,16 +1422,25 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             // contextMenuStripUnknownWords
             // 
             this.contextMenuStripUnknownWords.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clearToolStripMenuItem});
+            this.clearToolStripMenuItem,
+            this.removeAllXToolStripMenuItem});
             this.contextMenuStripUnknownWords.Name = "contextMenuStripUnknownWords";
-            this.contextMenuStripUnknownWords.Size = new System.Drawing.Size(102, 26);
+            this.contextMenuStripUnknownWords.Size = new System.Drawing.Size(139, 48);
+            this.contextMenuStripUnknownWords.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripUnknownWords_Opening);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
+            // removeAllXToolStripMenuItem
+            // 
+            this.removeAllXToolStripMenuItem.Name = "removeAllXToolStripMenuItem";
+            this.removeAllXToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.removeAllXToolStripMenuItem.Text = "RemoveAllX";
+            this.removeAllXToolStripMenuItem.Click += new System.EventHandler(this.removeAllXToolStripMenuItem_Click);
             // 
             // tabPageAllFixes
             // 
@@ -1733,9 +1849,9 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             // 
             this.checkBoxUseTimeCodesFromIdx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxUseTimeCodesFromIdx.AutoSize = true;
-            this.checkBoxUseTimeCodesFromIdx.Location = new System.Drawing.Point(369, 295);
+            this.checkBoxUseTimeCodesFromIdx.Location = new System.Drawing.Point(335, 295);
             this.checkBoxUseTimeCodesFromIdx.Name = "checkBoxUseTimeCodesFromIdx";
-            this.checkBoxUseTimeCodesFromIdx.Size = new System.Drawing.Size(152, 17);
+            this.checkBoxUseTimeCodesFromIdx.Size = new System.Drawing.Size(186, 17);
             this.checkBoxUseTimeCodesFromIdx.TabIndex = 3;
             this.checkBoxUseTimeCodesFromIdx.Text = "Use lines/time codes from .idx file";
             this.checkBoxUseTimeCodesFromIdx.UseVisualStyleBackColor = true;
@@ -1778,18 +1894,26 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxCurrentText.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.textBoxCurrentText.ContextMenuStrip = this.contextMenuStripTextBox;
+            this.textBoxCurrentText.CurrentLanguage = "";
+            this.textBoxCurrentText.CurrentLineIndex = 0;
             this.textBoxCurrentText.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCurrentText.HideSelection = true;
+            this.textBoxCurrentText.IsDictionaryDownloaded = true;
+            this.textBoxCurrentText.IsSpellCheckerInitialized = false;
+            this.textBoxCurrentText.IsSpellCheckRequested = false;
+            this.textBoxCurrentText.IsWrongWord = false;
+            this.textBoxCurrentText.LanguageChanged = false;
             this.textBoxCurrentText.Location = new System.Drawing.Point(8, 214);
             this.textBoxCurrentText.Multiline = true;
             this.textBoxCurrentText.Name = "textBoxCurrentText";
             this.textBoxCurrentText.Padding = new System.Windows.Forms.Padding(1);
-            this.textBoxCurrentText.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.textBoxCurrentText.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Both;
             this.textBoxCurrentText.SelectedText = "";
             this.textBoxCurrentText.SelectionLength = 0;
             this.textBoxCurrentText.SelectionStart = 0;
             this.textBoxCurrentText.Size = new System.Drawing.Size(354, 77);
             this.textBoxCurrentText.TabIndex = 1;
+            this.textBoxCurrentText.TextBoxFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.textBoxCurrentText.TextChanged += new System.EventHandler(this.TextBoxCurrentTextTextChanged);
             this.textBoxCurrentText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxCurrentText_KeyDown);
             // 
@@ -1943,10 +2067,13 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             this.Text = "Import/OCR VobSub (sub/idx) subtitle";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VobSubOcr_FormClosing);
             this.Shown += new System.EventHandler(this.FormVobSubOcr_Shown);
+            this.ResizeEnd += new System.EventHandler(this.VobSubOcr_ResizeEnd);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.VobSubOcr_KeyDown);
             this.Resize += new System.EventHandler(this.VobSubOcr_Resize);
             this.contextMenuStripListview.ResumeLayout(false);
             this.groupBoxOcrMethod.ResumeLayout(false);
+            this.groupBoxCloudVision.ResumeLayout(false);
+            this.groupBoxCloudVision.PerformLayout();
             this.groupBoxNOCR.ResumeLayout(false);
             this.groupBoxNOCR.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNOcrMaxWrongPixels)).EndInit();
@@ -2010,7 +2137,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private System.Windows.Forms.GroupBox groupBoxOCRControls;
         private System.Windows.Forms.Label labelStartFrom;
         private System.Windows.Forms.NumericUpDown numericUpDownStartNumber;
-        private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.Button buttonPause;
         private System.Windows.Forms.Button buttonStartOcr;
         private System.Windows.Forms.GroupBox groupBoxOcrAutoFix;
         private System.Windows.Forms.Label labelFixesMade;
@@ -2146,5 +2273,16 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private System.Windows.Forms.ToolStripMenuItem boldToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem italicToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem underlineToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem imageWithTimeCodeInFileNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeAllXToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem oCRSelectedLinesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorOcrSelected;
+        private System.Windows.Forms.GroupBox groupBoxCloudVision;
+        private System.Windows.Forms.TextBox textBoxCloudVisionApiKey;
+        private System.Windows.Forms.Label labelCloudVisionApiKey;
+        private System.Windows.Forms.ComboBox comboBoxCloudVisionLanguage;
+        private System.Windows.Forms.Label labelCloudVisionLanguage;
+        private System.Windows.Forms.CheckBox checkBoxCloudVisionSendOriginalImages;
+        private System.Windows.Forms.CheckBox checkBoxSeHandlesTextMerge;
     }
 }

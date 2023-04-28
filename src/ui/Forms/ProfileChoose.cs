@@ -83,6 +83,11 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            if (listViewProfiles.SelectedIndices.Count == 0 || RulesProfiles.Count == 0)
+            {
+                return;
+            }
+
             var idx = listViewProfiles.SelectedIndices[0];
             Configuration.Settings.General.CurrentProfile = RulesProfiles[idx].Name;
             Configuration.Settings.General.SubtitleLineMaximumLength = RulesProfiles[idx].SubtitleLineMaximumLength;
@@ -93,7 +98,7 @@ namespace Nikse.SubtitleEdit.Forms
             Configuration.Settings.General.MinimumMillisecondsBetweenLines = RulesProfiles[idx].MinimumMillisecondsBetweenLines;
             Configuration.Settings.General.MaxNumberOfLines = RulesProfiles[idx].MaxNumberOfLines;
             Configuration.Settings.General.SubtitleMaximumWordsPerMinute = (double)RulesProfiles[idx].SubtitleMaximumWordsPerMinute;
-            Configuration.Settings.General.CharactersPerSecondsIgnoreWhiteSpace = !RulesProfiles[idx].CpsIncludesSpace;
+            Configuration.Settings.General.CpsLineLengthStrategy = RulesProfiles[idx].CpsLineLengthStrategy;
             Configuration.Settings.General.MergeLinesShorterThan = RulesProfiles[idx].MergeLinesShorterThan;
             DialogResult = DialogResult.OK;
         }

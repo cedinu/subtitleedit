@@ -86,10 +86,8 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
 
             if (PreprocessingSettings.CropTransparentColors)
             {
-                n.CropSidesAndBottom(2, Color.Transparent, true);
-                n.CropSidesAndBottom(2, Color.FromArgb(0, 0, 0, 0), true);
-                n.CropTop(2, Color.Transparent);
-                n.CropTop(2, Color.FromArgb(0, 0, 0, 0));
+                n.CropTransparentSidesAndBottom(2, true);
+                n.CropTopTransparent(2);
             }
             if (PreprocessingSettings.InvertColors)
             {
@@ -128,8 +126,7 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
         private void pictureBoxSubtitleImage_Click(object sender, EventArgs e)
         {
             var p = pictureBoxSubtitleImage.PointToClient(MousePosition);
-            var bmp = pictureBoxSubtitleImage.Image as Bitmap;
-            if (bmp == null || p.X >= bmp.Width || p.Y>= bmp.Height)
+            if (!(pictureBoxSubtitleImage.Image is Bitmap bmp) || p.X >= bmp.Width || p.Y >= bmp.Height)
             {
                 return;
             }

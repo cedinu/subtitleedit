@@ -2,7 +2,7 @@
 <Language Name="Македонски">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.6.2</Version>
+    <Version>3.6.12</Version>
     <TranslatedBy>Превод на македонски: Numberguy
 dzoole@hotmail.com</TranslatedBy>
     <CultureName>mk-MK</CultureName>
@@ -116,9 +116,6 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <SourceVideoFile>Изворен видео запис:</SourceVideoFile>
     <GenerateWaveformData>Создај брановиден облик</GenerateWaveformData>
     <PleaseWait>Ова ќе потрае неколку минути – ве молиме почекајте</PleaseWait>
-    <VlcMediaPlayerNotFoundTitle>Не е пронајден VLC media player</VlcMediaPlayerNotFoundTitle>
-    <VlcMediaPlayerNotFound>На Subtitle Edit потребен му е VLC media player 1.1.x или понова верзија за извлекување на аудио податоци.</VlcMediaPlayerNotFound>
-    <GoToVlcMediaPlayerHomePage>Дали сакате да ја отворите веб страницата на VLC media player?</GoToVlcMediaPlayerHomePage>
     <GeneratingPeakFile>Создавање на запис...</GeneratingPeakFile>
     <GeneratingSpectrogram>Создавање на спектограм...</GeneratingSpectrogram>
     <ExtractingSeconds>Извлекување на аудио: {0:0.0} секунди</ExtractingSeconds>
@@ -610,7 +607,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <FixCommonOcrErrors>Поправи чести OCR грешки (користејќи OCR листа за замена)</FixCommonOcrErrors>
     <CommonOcrErrorsFixed>Поправени чести OCR грешки (Користена OcrЛиста за замена): {0}</CommonOcrErrorsFixed>
     <RemoveSpaceBetweenNumber>Отстрани празни места меѓу броеви</RemoveSpaceBetweenNumber>
-    <FixDialogsOnOneLine>Поправи дијалози кои се во еден ред</FixDialogsOnOneLine>
+    <BreakDialogsOnOneLine>Поправи дијалози кои се во еден ред</BreakDialogsOnOneLine>
     <RemoveSpaceBetweenNumbersFixed>Отстранети празни места меѓу броеви: {0}</RemoveSpaceBetweenNumbersFixed>
     <FixTurkishAnsi>Поправи Турски ANSI (Исландски) букви во Unicode</FixTurkishAnsi>
     <FixDanishLetterI>Поправи ја данската буква 'i'</FixDanishLetterI>
@@ -759,7 +756,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <Remove>Отстрани</Remove>
     <RemoveAll>Отстрани сѐ</RemoveAll>
   </ImportImages>
-  <ImportSceneChanges>
+  <ImportShotChanges>
     <Title>Создади/внеси промени на сцена</Title>
     <OpenTextFile>Отвори текстуален запис...</OpenTextFile>
     <Generate>Создади промени на сцена</Generate>
@@ -770,11 +767,11 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <Frames>Кадри</Frames>
     <Seconds>Секунди</Seconds>
     <Milliseconds>Милисекунди</Milliseconds>
-    <GetSceneChangesWithFfmpeg>Создади промени на сцена со FFmpeg</GetSceneChangesWithFfmpeg>
+    <GetShotChangesWithFfmpeg>Создади промени на сцена со FFmpeg</GetShotChangesWithFfmpeg>
     <Sensitivity>Сензитивност</Sensitivity>
     <SensitivityDescription>Помала вредност дава повеќе промени на сцена</SensitivityDescription>
-    <NoSceneChangesFound>Не се откриени промени на сцена.</NoSceneChangesFound>
-  </ImportSceneChanges>
+    <NoShotChangesFound>Не се откриени промени на сцена.</NoShotChangesFound>
+  </ImportShotChanges>
   <ImportText>
     <Title>Внеси текст (plain text)</Title>
     <OneSubtitleIsOneFile>Повеќе записи - еден запис е еден титл</OneSubtitleIsOneFile>
@@ -1087,8 +1084,8 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
         <SetVideoOffset>Размести видео...</SetVideoOffset>
         <SmptTimeMode>SMPTE тајминг (паѓачки кадар)</SmptTimeMode>
         <GenerateTextFromVideo>Генерирај текст од видео...</GenerateTextFromVideo>
-        <GenerateImportSceneChanges>Создади/внеси промени на сцена...</GenerateImportSceneChanges>
-        <RemoveSceneChanges>Отстрани промени на сцена</RemoveSceneChanges>
+        <GenerateImportShotChanges>Создади/внеси промени на сцена...</GenerateImportShotChanges>
+        <RemoveShotChanges>Отстрани промени на сцена</RemoveShotChanges>
         <WaveformBatchGenerate>Сериско создавање на брановидни облици...</WaveformBatchGenerate>
         <ShowHideVideo>Прикажи/сокриј видео</ShowHideVideo>
         <ShowHideWaveform>Прикажи/сокриј брановиден облик</ShowHideWaveform>
@@ -1353,7 +1350,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <BeforeDisplayTimeAdjustment>Пред прилагодба на временскиот приказ</BeforeDisplayTimeAdjustment>
     <DisplayTimeAdjustedX>Временскиот приказ е прилагоден: {0}</DisplayTimeAdjustedX>
     <DisplayTimesAdjustedX>Временските прикази се прилагодени{0}</DisplayTimesAdjustedX>
-    <StarTimeAdjustedX>Почетното време е прилагодено: {0}</StarTimeAdjustedX>
+    <StartTimeAdjustedX>Почетното време е прилагодено: {0}</StartTimeAdjustedX>
     <BeforeCommonErrorFixes>Пред поправките на чести грешки</BeforeCommonErrorFixes>
     <CommonErrorsFixedInSelectedLines>Поправени се честите грешки во избраните линии</CommonErrorsFixedInSelectedLines>
     <CommonErrorsFixed>Поправени чести грешки</CommonErrorsFixed>
@@ -1533,7 +1530,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <BeforeDisplaySubtitleJoin>Пред соединување на титлови</BeforeDisplaySubtitleJoin>
     <SubtitlesJoined>Титловите се соединети</SubtitlesJoined>
     <StatusLog>Извештај</StatusLog>
-    <XSceneChangesImported>{0} внесени промени на сцени</XSceneChangesImported>
+    <XShotChangesImported>{0} внесени промени на сцени</XShotChangesImported>
     <PluginXExecuted>Додаток '{0}' е извршен.</PluginXExecuted>
     <NotAValidXSubFile>Не е правилен XSub запис!</NotAValidXSubFile>
     <BeforeMergeLinesWithSameText>Пред спојување на линии со ист текст</BeforeMergeLinesWithSameText>
@@ -1872,8 +1869,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <AutoBackupEveryFifteenMinutes>на 15 минути</AutoBackupEveryFifteenMinutes>
     <AutoBackupDeleteAfter>Избриши по</AutoBackupDeleteAfter>
     <AutoBackupDeleteAfterOneMonth>1 месец</AutoBackupDeleteAfterOneMonth>
-    <AutoBackupDeleteAfterThreeMonths>3 месеци</AutoBackupDeleteAfterThreeMonths>
-    <AutoBackupDeleteAfterSixMonths>6 месеци</AutoBackupDeleteAfterSixMonths>
+    <AutoBackupDeleteAfterXMonths>{0} месеци</AutoBackupDeleteAfterXMonths>
     <CheckForUpdates>Провери за нова верзија</CheckForUpdates>
     <AutoSave>Автоматско зачувување</AutoSave>
     <AllowEditOfOriginalSubtitle>Дозволи уредување на изворен титл</AllowEditOfOriginalSubtitle>
@@ -1913,7 +1909,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <WaveformFocusMouseEnter>Постави фокус на маус</WaveformFocusMouseEnter>
     <WaveformListViewFocusMouseEnter>Постави и фокус на маус во преглед: Листа</WaveformListViewFocusMouseEnter>
     <WaveformSingleClickSelect>Со еден клик селектирај титлови</WaveformSingleClickSelect>
-    <WaveformSnapToSceneChanges>Скокни до промена на сцени (држи SHIFTза преминување)</WaveformSnapToSceneChanges>
+    <WaveformSnapToShotChanges>Скокни до промена на сцени (држи SHIFTза преминување)</WaveformSnapToShotChanges>
     <WaveformBorderHitMs1>Маркерот на граница мора да е во рамки на</WaveformBorderHitMs1>
     <WaveformBorderHitMs2>милисекунди</WaveformBorderHitMs2>
     <WaveformColor>Боја</WaveformColor>
@@ -2025,8 +2021,8 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <AdjustSetEndAndOffsetTheRest>Постави крај, неутрализирај остаток</AdjustSetEndAndOffsetTheRest>
     <AdjustSetEndAndOffsetTheRestAndGoToNext>Постави крај, неутрализирај остаток и продолжи</AdjustSetEndAndOffsetTheRestAndGoToNext>
     <AdjustExtendCurrentSubtitle>Прошири ја линијата до следната или до максималното траење</AdjustExtendCurrentSubtitle>
-    <AdjustExtendToNextSceneChange>Прошири ги селектираните линии до следна промена на сцена (или линија)</AdjustExtendToNextSceneChange>
-    <AdjustExtendToPreviousSceneChange>Прошири ги селектираните линии до претходна промена на сцена (или линија)</AdjustExtendToPreviousSceneChange>
+    <AdjustExtendToNextShotChange>Прошири ги селектираните линии до следна промена на сцена (или линија)</AdjustExtendToNextShotChange>
+    <AdjustExtendToPreviousShotChange>Прошири ги селектираните линии до претходна промена на сцена (или линија)</AdjustExtendToPreviousShotChange>
     <AdjustExtendToNextSubtitle>Прошири ги селектираните линии до следна ленија</AdjustExtendToNextSubtitle>
     <AdjustExtendToPreviousSubtitle>Прошири ги селектираните линии до претходна линија</AdjustExtendToPreviousSubtitle>
     <RecalculateDurationOfCurrentSubtitle>Пак пресметај траење на титлот</RecalculateDurationOfCurrentSubtitle>
@@ -2065,9 +2061,9 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <WaveformPlayNewSelection>Репродуцирај ја селекцијата</WaveformPlayNewSelection>
     <WaveformPlayNewSelectionEnd>Репродурицај го крајот на селекцијата</WaveformPlayNewSelectionEnd>
     <WaveformPlayFirstSelectedSubtitle>Репродуцирај ја првата избрана линија</WaveformPlayFirstSelectedSubtitle>
-    <WaveformGoToPreviousSceneChange>Оди на претходна промена на сцена</WaveformGoToPreviousSceneChange>
-    <WaveformGoToNextSceneChange>Оди на следна промена на сцена</WaveformGoToNextSceneChange>
-    <WaveformToggleSceneChange>Активирај промена на сцена</WaveformToggleSceneChange>
+    <WaveformGoToPreviousShotChange>Оди на претходна промена на сцена</WaveformGoToPreviousShotChange>
+    <WaveformGoToNextShotChange>Оди на следна промена на сцена</WaveformGoToNextShotChange>
+    <WaveformToggleShotChange>Активирај промена на сцена</WaveformToggleShotChange>
     <WaveformGuessStart>Автоматски прилагоди почеток преку промена на звук/сцена</WaveformGuessStart>
     <GoBack1Frame>Еден кадар назад</GoBack1Frame>
     <GoForward1Frame>Еден кадар напред</GoForward1Frame>
@@ -2081,7 +2077,7 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <GoForward1Second>Една секунда напред</GoForward1Second>
     <GoBack5Seconds>Пет секунди назад</GoBack5Seconds>
     <GoForward5Seconds>Пет секунди напред</GoForward5Seconds>
-    <GoBack3Second>Три секунди назад</GoBack3Second>
+    <GoBack3Seconds>Три секунди назад</GoBack3Seconds>
     <GoToStartCurrent>Постави видео позиција на почеток на тековен титл</GoToStartCurrent>
     <ToggleStartEndCurrent>Преклопи видео позиција меѓу почеток/крај на тековен титл</ToggleStartEndCurrent>
     <PlayCurrent>Пушти го тековниот титл</PlayCurrent>
@@ -2500,12 +2496,12 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <TransportStreamGrayscale>Скала на сивило</TransportStreamGrayscale>
     <TransportStreamGetColor>Употреби боја (може да настане разделба на линии)</TransportStreamGetColor>
     <PromptForUnknownWords>Извести за непознати зборови</PromptForUnknownWords>
-    <TryToGuessUnkownWords>Можност за претпоставка на непознати зборови</TryToGuessUnkownWords>
+    <TryToGuessUnknownWords>Можност за претпоставка на непознати зборови</TryToGuessUnknownWords>
     <AutoBreakSubtitleIfMoreThanTwoLines>Автоматски прекрши го параграфот ако има повеќе од два реда</AutoBreakSubtitleIfMoreThanTwoLines>
     <AllFixes>Сите поправки</AllFixes>
     <GuessesUsed>Употребени претпоставки</GuessesUsed>
     <UnknownWords>Непознати зборови</UnknownWords>
-    <UnknownWordToGuessInLine>{0} ⇒ {1} преку 'OCRFixReplaceList.xml' in line: {2}</UnknownWordToGuessInLine>
+    <UnknownWordToGuessInLine>{0} ⇒ {1} преку 'OCRFixReplaceList/WordSplitList' in line: {2}</UnknownWordToGuessInLine>
     <OcrAutoCorrectionSpellChecking>OCR авто корекција / поправка на правопис</OcrAutoCorrectionSpellChecking>
     <FixOcrErrors>Поправи OCR грешки</FixOcrErrors>
     <ImportTextWithMatchingTimeCodes>Внеси текст со одговарачки временски кодови...</ImportTextWithMatchingTimeCodes>
@@ -2611,8 +2607,8 @@ Email: mailto:nikse.dk@gmail.com</AboutText1>
     <ShowWaveformAndSpectrogram>Прикажи брановиден облик и спектограм</ShowWaveformAndSpectrogram>
     <ShowWaveformOnly>Прикажи само брановиден облик</ShowWaveformOnly>
     <ShowSpectrogramOnly>Прикажи само спектограм</ShowSpectrogramOnly>
-    <AddSceneChange>Додади промена на сцена</AddSceneChange>
-    <RemoveSceneChange>Отстрани промена на сцена</RemoveSceneChange>
+    <AddShotChange>Додади промена на сцена</AddShotChange>
+    <RemoveShotChange>Отстрани промена на сцена</RemoveShotChange>
     <GuessTimeCodes>Претпостави временски кодови...</GuessTimeCodes>
     <SeekSilence>Откриј тишина...</SeekSilence>
     <InsertSubtitleHere>Тука внеси титл...</InsertSubtitleHere>

@@ -80,6 +80,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new DvdSubtitleSystem(),
                     new DvSubtitle(),
                     new Ebu(),
+                    new Edius4Frames(),
+                    new Edius4Ms(),
+                    new EdiusMarkerList2Frames(),
+                    new EdiusMarkerList2Ms(),
+                    new EdiusMarkerList3Frames(),
+                    new EdiusMarkerList3Ms(),
                     new Edl(),
                     new Eeg708(),
                     new ElrPrint(),
@@ -103,6 +109,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new FinalCutProXml17(),
                     new FinalCutProXml18(),
                     new FinalCutProXml19(),
+                    new FinalCutProXml110(),
+                    new FinalCutProXml111(),
                     new FinalCutProTestXml(),
                     new FinalCutProTest2Xml(),
                     new FlashXml(),
@@ -117,6 +125,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new IssXml(),
                     new ItunesTimedText(),
                     new JacoSub(),
+                    new JsonAeneas(),
                     new JsonTed(),
                     new Json(),
                     new JsonType2(),
@@ -137,10 +146,14 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new JsonType16(),
                     new JsonType17(),
                     new JsonType18(),
+                    new JsonType19(),
+                    new JsonType20(),
                     new KanopyHtml(),
                     new LambdaCap(),
                     new Lrc(),
+                    new LrcNoEndTime(),
                     new MacSub(),
+                    new MagicVideoTitler(),
                     new MediaTransData(),
                     new MicroDvd(),
                     new MidwayInscriberCGX(),
@@ -149,6 +162,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new NciTimedRollUpCaptions(),
                     new NetflixImsc11Japanese(),
                     new NetflixTimedText(),
+                    new NinsightXml(),
+                    new NVivoTranscript(),
                     new OgmChapters(),
                     new OpenDvt(),
                     new Oresme(),
@@ -165,6 +180,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new RhozetHarmonic(),
                     new Rtf1(),
                     new Rtf2(),
+                    new RxMarker(),
                     new Sami(),
                     new SamiAvDicPlayer(),
                     new SamiModern(),
@@ -172,6 +188,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new Scenarist(),
                     new ScenaristClosedCaptions(),
                     new ScenaristClosedCaptionsDropFrame(),
+                    new SmartTitler(),
                     new SmilTimesheetData(),
                     new SmpteTt2052(),
                     new SoftNiSub(),
@@ -195,7 +212,6 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new SwiftText(),
                     new SwiftTextLineNumber(),
                     new SwiftTextLineNOAndDur(),
-                    new Tek(),
                     new TimeXml(),
                     new TimeXml2(),
                     new TimedText10(),
@@ -223,6 +239,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new VocapiaSplit(),
                     new WebVTT(),
                     new WebVTTFileWithLineNumber(),
+                    new WhisperRaw(),
                     new Xif(),
                     new Xmp(),
                     new YouTubeAnnotations(),
@@ -334,36 +351,36 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     new UnknownSubtitle101(),
                     new UnknownSubtitle102(),
                     new UnknownSubtitle103(),
+                    new UnknownSubtitle104(),
+                    new UnknownSubtitle105(),
+                    new UnknownSubtitle106(),
+                    new UnknownSubtitle107(),
                 };
 
-                string path = Configuration.PluginsDirectory;
-                if (Directory.Exists(path))
+                foreach (var pluginFileName in Configuration.GetPlugins())
                 {
-                    foreach (string pluginFileName in Directory.EnumerateFiles(path, "*.DLL"))
+                    try
                     {
-                        try
+                        var assembly = System.Reflection.Assembly.Load(FileUtil.ReadAllBytesShared(pluginFileName));
+                        foreach (var exportedType in assembly.GetExportedTypes())
                         {
-                            var assembly = System.Reflection.Assembly.Load(FileUtil.ReadAllBytesShared(pluginFileName));
-                            foreach (var exportedType in assembly.GetExportedTypes())
+                            try
                             {
-                                try
+                                var pluginObject = Activator.CreateInstance(exportedType);
+                                if (pluginObject is SubtitleFormat po)
                                 {
-                                    object pluginObject = Activator.CreateInstance(exportedType);
-                                    if (pluginObject is SubtitleFormat po)
-                                    {
-                                        _allSubtitleFormats.Insert(1, po);
-                                    }
-                                }
-                                catch
-                                {
-                                    // ignored
+                                    _allSubtitleFormats.Insert(1, po);
                                 }
                             }
+                            catch
+                            {
+                                // ignored
+                            }
                         }
-                        catch
-                        {
-                            // ignored
-                        }
+                    }
+                    catch
+                    {
+                        // ignored
                     }
                 }
 
@@ -422,20 +439,20 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public static int MillisecondsToFrames(double milliseconds, double frameRate)
         {
-            return (int)Math.Round(milliseconds / (TimeCode.BaseUnit / GetFrameForCalculation(frameRate)));
+            return (int)Math.Round(milliseconds / (TimeCode.BaseUnit / GetFrameForCalculation(frameRate)), MidpointRounding.AwayFromZero);
         }
 
         public static double GetFrameForCalculation(double frameRate)
         {
-            if (Math.Abs(frameRate - 23.976) < 0.01)
+            if (Math.Abs(frameRate - 23.976) < 0.001)
             {
                 return 24000.0 / 1001.0;
             }
-            if (Math.Abs(frameRate - 29.97) < 0.01)
+            if (Math.Abs(frameRate - 29.97) < 0.001)
             {
                 return 30000.0 / 1001.0;
             }
-            if (Math.Abs(frameRate - 59.94) < 0.01)
+            if (Math.Abs(frameRate - 59.94) < 0.001)
             {
                 return 60000.0 / 1001.0;
             }
@@ -445,7 +462,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public static int MillisecondsToFramesMaxFrameRate(double milliseconds)
         {
-            int frames = (int)Math.Round(milliseconds / (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)));
+            var frames = (int)Math.Round(milliseconds / (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)), MidpointRounding.AwayFromZero);
             if (frames >= Configuration.Settings.General.CurrentFrameRate)
             {
                 frames = (int)(Configuration.Settings.General.CurrentFrameRate - 0.01);
@@ -456,12 +473,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
         public static int FramesToMilliseconds(double frames)
         {
-            return (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)));
+            return (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)), MidpointRounding.AwayFromZero);
         }
 
         public static int FramesToMillisecondsMax999(double frames)
         {
-            int ms = (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)));
+            var ms = (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)), MidpointRounding.AwayFromZero);
             return Math.Min(ms, 999);
         }
 
@@ -514,6 +531,16 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             if (tokens.Length != 4)
             {
                 throw new InvalidOperationException();
+            }
+
+            if (tokens[0] == "--" && tokens[1] == "--" && tokens[2] == "--" && tokens[3] == "--")
+            {
+                return new TimeCode(TimeCode.MaxTimeTotalMilliseconds);
+            }
+
+            if (tokens[0] == "-" && tokens[1] == "-" && tokens[2] == "-" && tokens[3] == "-")
+            {
+                return new TimeCode(TimeCode.MaxTimeTotalMilliseconds);
             }
 
             return new TimeCode(int.Parse(tokens[0]), int.Parse(tokens[1]), int.Parse(tokens[2]), FramesToMillisecondsMax999(int.Parse(tokens[3])));
@@ -628,6 +655,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         {
             return new SubtitleFormat[]
             {
+                new NkhCuePoints(),
                 new DlDd(),
                 new Ted20(),
                 new Captionate(),
@@ -641,18 +669,24 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 new BdnXml(),
                 new Wsb(),
                 new JsonTypeOnlyLoad1(),
+                new JsonTypeOnlyLoad2(),
+                new JsonTypeOnlyLoad3(),
+                new JsonTypeOnlyLoad4(),
                 new TranscriptiveJson(),
                 new KaraokeCdgCreatorText(),
                 new VidIcelandic(),
                 new JsonArchtime(),
                 new MacCaption10(),
                 new Rdf1(),
+                new CombinedXml(),
+                new AudacityLabels(),
+                new Fte(),
             };
         }
 
         public static SubtitleFormat FromName(string formatName, SubtitleFormat defaultFormat)
         {
-            string trimmedFormatName = formatName.Trim();
+            var trimmedFormatName = formatName.Trim();
             foreach (var format in AllSubtitleFormats)
             {
                 if (format.Name.Trim().Equals(trimmedFormatName, StringComparison.OrdinalIgnoreCase) ||
@@ -665,7 +699,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             return defaultFormat;
         }
 
-        private static IList<SubtitleFormat> GetOrderedFormatsList(IList<SubtitleFormat> unorderedFormatsList)
+        private static IList<SubtitleFormat> GetOrderedFormatsList(IEnumerable<SubtitleFormat> unorderedFormatsList)
         {
             IEnumerable<SubtitleFormat> newSelectedFormats = new[] { Utilities.GetSubtitleFormatByFriendlyName(Configuration.Settings.General.DefaultSubtitleFormat) };
             if (!string.IsNullOrEmpty(Configuration.Settings.General.FavoriteSubtitleFormats))

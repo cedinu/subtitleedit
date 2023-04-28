@@ -2,7 +2,7 @@
 <Language Name="Norsk">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.6.2</Version>
+    <Version>3.6.12</Version>
     <TranslatedBy>Oversatt av Dandelion Sprout</TranslatedBy>
     <CultureName>nb-NO</CultureName>
     <HelpFile />
@@ -104,9 +104,6 @@ E-post for norsk oversettelse: mailto:imreeil42@gmail.com</AboutText1>
     <SourceVideoFile>Video-kildefil:</SourceVideoFile>
     <GenerateWaveformData>Generer bølgevisningsdata</GenerateWaveformData>
     <PleaseWait>Dette kan ta noen minutter — vennligst vent</PleaseWait>
-    <VlcMediaPlayerNotFoundTitle>VLC Media Player ble ikke funnet</VlcMediaPlayerNotFoundTitle>
-    <VlcMediaPlayerNotFound>Subtitle Edit trenger VLC Media Player 1.1.x eller nyere for å ekstraktere lyddata.</VlcMediaPlayerNotFound>
-    <GoToVlcMediaPlayerHomePage>Vil du gå til hjemmesiden til VLC Media Player?</GoToVlcMediaPlayerHomePage>
     <GeneratingPeakFile>Genererer satsvis fil...</GeneratingPeakFile>
     <GeneratingSpectrogram>Genererer spektrogram...</GeneratingSpectrogram>
     <ExtractingSeconds>Ekstrakterer lyd: {0:0.0} seconds</ExtractingSeconds>
@@ -534,7 +531,7 @@ Tips: Se om du har noe plass igjen på harddisken.</WaveFileMalformed>
     <FixCommonOcrErrors>Fix common OCR errors (using OCR replace list)</FixCommonOcrErrors>
     <CommonOcrErrorsFixed>Common OCR errors fixed (OcrReplaceList file used): {0}</CommonOcrErrorsFixed>
     <RemoveSpaceBetweenNumber>Remove space between numbers</RemoveSpaceBetweenNumber>
-    <FixDialogsOnOneLine>Fix dialogs on one line</FixDialogsOnOneLine>
+    <BreakDialogsOnOneLine>Fix dialogs on one line</BreakDialogsOnOneLine>
     <RemoveSpaceBetweenNumbersFixed>Remove space between numbers fixed: {0}</RemoveSpaceBetweenNumbersFixed>
     <FixTurkishAnsi>Fix Turkish ANSI (Icelandic) letters to Unicode</FixTurkishAnsi>
     <FixDanishLetterI>Fix Danish letter 'i'</FixDanishLetterI>
@@ -669,7 +666,7 @@ Tips: Se om du har noe plass igjen på harddisken.</WaveFileMalformed>
     <Remove>Fjern</Remove>
     <RemoveAll>Fjern alle</RemoveAll>
   </ImportImages>
-  <ImportSceneChanges>
+  <ImportShotChanges>
     <Title>Importer sceneendringer</Title>
     <OpenTextFile>Åpne tekstfil...</OpenTextFile>
     <ImportOptions>Importer alternativer</ImportOptions>
@@ -678,7 +675,7 @@ Tips: Se om du har noe plass igjen på harddisken.</WaveFileMalformed>
     <Frames>Bilder</Frames>
     <Seconds>Sekunder</Seconds>
     <Milliseconds>Millisekunder</Milliseconds>
-  </ImportSceneChanges>
+  </ImportShotChanges>
   <ImportText>
     <Title>Importer ren tekst</Title>
     <OneSubtitleIsOneFile>Multiple files - one file is one subtitle</OneSubtitleIsOneFile>
@@ -974,8 +971,8 @@ Tips: Se om du har noe plass igjen på harddisken.</WaveFileMalformed>
         <OpenDvd>Åpne DVD...</OpenDvd>
         <ChooseAudioTrack>Velg lydspor</ChooseAudioTrack>
         <CloseVideo>Lukk videofil</CloseVideo>
-        <ImportSceneChanges>Importer sceneendringer...</ImportSceneChanges>
-        <RemoveSceneChanges>Fjern sceneendringer</RemoveSceneChanges>
+        <ImportShotChanges>Importer sceneendringer...</ImportShotChanges>
+        <RemoveShotChanges>Fjern sceneendringer</RemoveShotChanges>
         <WaveformBatchGenerate>Satsvis generering av bølgevisninger...</WaveformBatchGenerate>
         <ShowHideVideo>Vis/skjul video</ShowHideVideo>
         <ShowHideWaveform>Vis/skjul bølgevisning</ShowHideWaveform>
@@ -1217,7 +1214,7 @@ Vil du starte fra toppen av dokumentet og lete en gang til?</ReplaceXContinue>
     <BeforeDisplayTimeAdjustment>Før visning av tidsjusteringer</BeforeDisplayTimeAdjustment>
     <DisplayTimeAdjustedX>Visningstid justert: {0}</DisplayTimeAdjustedX>
     <DisplayTimesAdjustedX>Visningstider justert: {0}</DisplayTimesAdjustedX>
-    <StarTimeAdjustedX>Starttid justert: {0}</StarTimeAdjustedX>
+    <StartTimeAdjustedX>Starttid justert: {0}</StartTimeAdjustedX>
     <BeforeCommonErrorFixes>Før korrigering av vanlige feil</BeforeCommonErrorFixes>
     <CommonErrorsFixedInSelectedLines>Vanlige feil korrigert i valgte linjer</CommonErrorsFixedInSelectedLines>
     <CommonErrorsFixed>Vanlige feil er korrigert</CommonErrorsFixed>
@@ -1398,7 +1395,7 @@ Vil du fortsette?</SubtitleAppendPrompt>
     <BeforeDisplaySubtitleJoin>Før sammenslåing av undertekster</BeforeDisplaySubtitleJoin>
     <SubtitlesJoined>Undertekster slått sammen</SubtitlesJoined>
     <StatusLog>Statuslogg</StatusLog>
-    <XSceneChangesImported>{0} sceneendringer importert</XSceneChangesImported>
+    <XShotChangesImported>{0} sceneendringer importert</XShotChangesImported>
     <PluginXExecuted>Plugin '{0}' er satt i gang.</PluginXExecuted>
     <NotAValidXSubFile>Dette er ikke en gyldig XSub-fil!</NotAValidXSubFile>
     <BeforeMergeLinesWithSameText>Før sammenslåing av linjer med samme tekst</BeforeMergeLinesWithSameText>
@@ -2139,7 +2136,7 @@ Vil du beholde endringene?</KeepChangesMessage>
     <TransportStreamGrayscale>Monokrom</TransportStreamGrayscale>
     <TransportStreamGetColor>Bruk farger (vil inkludere litt oppdeling av linjer)</TransportStreamGetColor>
     <PromptForUnknownWords>Versel ved ukjente ord</PromptForUnknownWords>
-    <TryToGuessUnkownWords>Prøv å gjette på ukjente ord</TryToGuessUnkownWords>
+    <TryToGuessUnknownWords>Prøv å gjette på ukjente ord</TryToGuessUnknownWords>
     <AutoBreakSubtitleIfMoreThanTwoLines>Autobryt paragrafer hvis de er mer enn to linjer</AutoBreakSubtitleIfMoreThanTwoLines>
     <AllFixes>Alle korrigeringer</AllFixes>
     <GuessesUsed>Gjetninger brukt</GuessesUsed>

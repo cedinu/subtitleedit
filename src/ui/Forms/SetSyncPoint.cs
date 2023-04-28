@@ -1,4 +1,5 @@
 ﻿using Nikse.SubtitleEdit.Core.Common;
+using Nikse.SubtitleEdit.Core.SubtitleFormats;
 using Nikse.SubtitleEdit.Logic;
 using Nikse.SubtitleEdit.Logic.VideoPlayers;
 using System;
@@ -75,7 +76,7 @@ namespace Nikse.SubtitleEdit.Forms
         {
             string movieFileName = null;
 
-            foreach (string extension in Utilities.VideoFileExtensions)
+            foreach (var extension in Utilities.VideoFileExtensions)
             {
                 movieFileName = fileNameNoExtension + extension;
                 if (File.Exists(movieFileName))
@@ -123,6 +124,7 @@ namespace Nikse.SubtitleEdit.Forms
                     }
                 }
             }
+
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 _audioTrackNumber = -1;
@@ -149,7 +151,7 @@ namespace Nikse.SubtitleEdit.Forms
                     videoPlayerContainer1.VideoPlayer.DisposeVideoPlayer();
                 }
 
-                VideoInfo videoInfo = UiUtil.GetVideoInfo(fileName);
+                var videoInfo = UiUtil.GetVideoInfo(fileName);
 
                 UiUtil.InitializeVideoPlayerAndContainer(fileName, videoInfo, videoPlayerContainer1, VideoStartLoaded, VideoStartEnded);
             }
@@ -184,32 +186,25 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (videoPlayerContainer1 != null)
+            if (videoPlayerContainer1 == null)
             {
-                double pos;
+                return;
+            }
 
-                if (_stopPosition >= 0 && videoPlayerContainer1.CurrentPosition > _stopPosition)
-                {
-                    videoPlayerContainer1.Pause();
-                    videoPlayerContainer1.CurrentPosition = _goBackPosition;
-                    _stopPosition = -1;
-                }
+            if (_stopPosition >= 0 && videoPlayerContainer1.CurrentPosition > _stopPosition)
+            {
+                videoPlayerContainer1.Pause();
+                videoPlayerContainer1.CurrentPosition = _goBackPosition;
+                _stopPosition = -1;
+            }
 
-                if (!videoPlayerContainer1.IsPaused)
-                {
-                    videoPlayerContainer1.RefreshProgressBar();
-                    pos = videoPlayerContainer1.CurrentPosition;
-                }
-                else
-                {
-                    pos = videoPlayerContainer1.CurrentPosition;
-                }
-                if (Math.Abs(pos - _lastPosition) > 0.01)
-                {
-                    UiUtil.ShowSubtitle(_subtitle, videoPlayerContainer1);
-                    timeUpDownLine.TimeCode = TimeCode.FromSeconds(pos);
-                    _lastPosition = pos;
-                }
+            videoPlayerContainer1.RefreshProgressBar();
+            var pos = videoPlayerContainer1.CurrentPosition;
+            if (Math.Abs(pos - _lastPosition) > 0.01)
+            {
+                UiUtil.ShowSubtitle(_subtitle, videoPlayerContainer1, new SubRip());
+                timeUpDownLine.TimeCode = TimeCode.FromSeconds(pos);
+                _lastPosition = pos;
             }
         }
 
@@ -266,7 +261,7 @@ namespace Nikse.SubtitleEdit.Forms
             }
             else if (_mainGeneralGoToNextSubtitle == e.KeyData || _mainGeneralGoToNextSubtitlePlayTranslate == e.KeyData)
             {
-                int selectedIndex = 0;
+                var selectedIndex = 0;
                 if (subtitleListView1.SelectedItems.Count > 0)
                 {
                     selectedIndex = subtitleListView1.SelectedItems[0].Index;
@@ -277,7 +272,7 @@ namespace Nikse.SubtitleEdit.Forms
             }
             else if (_mainGeneralGoToPrevSubtitle == e.KeyData || _mainGeneralGoToPrevSubtitlePlayTranslate == e.KeyData)
             {
-                int selectedIndex = 0;
+                var selectedIndex = 0;
                 if (subtitleListView1.SelectedItems.Count > 0)
                 {
                     selectedIndex = subtitleListView1.SelectedItems[0].Index;
@@ -358,7 +353,7 @@ namespace Nikse.SubtitleEdit.Forms
         {
             if (subtitleListView1.SelectedItems.Count == 1)
             {
-                int index = subtitleListView1.SelectedItems[0].Index;
+                var index = subtitleListView1.SelectedItems[0].Index;
 
                 videoPlayerContainer1.Pause();
                 videoPlayerContainer1.CurrentPosition = _subtitle.Paragraphs[index].StartTime.TotalMilliseconds / TimeCode.BaseUnit;

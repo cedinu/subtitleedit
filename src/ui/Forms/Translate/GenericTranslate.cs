@@ -7,6 +7,7 @@ using Nikse.SubtitleEdit.Core.Translate.Service;
 using Nikse.SubtitleEdit.Logic;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -18,9 +19,9 @@ namespace Nikse.SubtitleEdit.Forms.Translate
     public sealed partial class GenericTranslate : PositionAndSizeForm
     {
         public Subtitle TranslatedSubtitle { get; private set; }
-        public bool UseFreeGoogle { get; set; }
         private Subtitle _subtitle;
         private Encoding _encoding;
+        private SubtitleFormat _subtitleFormat;
         private bool _breakTranslation;
         private const string SplitterString = "+-+";
         private ITranslationService _translationService;
@@ -58,20 +59,20 @@ namespace Nikse.SubtitleEdit.Forms.Translate
             UiUtil.FixLargeFonts(this, buttonOK);
         }
 
-        internal void Initialize(Subtitle subtitle, Subtitle target, string title, Encoding encoding)
+        internal void Initialize(Subtitle subtitle, Subtitle target, string title, Encoding encoding, SubtitleFormat subtitleFormat)
         {
             if (!string.IsNullOrEmpty(title))
             {
                 Text = title;
             }
 
-            // required in translation engine atm
-            subtitle.Renumber();
+            subtitle.Renumber(); // "Renumber" is required for translation engine atm
 
             labelPleaseWait.Visible = false;
             progressBar1.Visible = false;
             _subtitle = subtitle;
             _encoding = encoding;
+            _subtitleFormat = subtitleFormat;
             buttonTranslate.Enabled = false;
 
             if (target != null)
@@ -145,7 +146,6 @@ namespace Nikse.SubtitleEdit.Forms.Translate
         {
             AddTranslationService(GoogleTranslationInitializer.Init(this));
             AddTranslationService(MicrosoftTranslationInitializer.Init());
-            AddTranslationService(new NikseDkTranslationService());
 
             if (comboBoxTranslationServices.Items.Count > 0 && comboBoxTranslationServices.SelectedIndex < 0)
             {
@@ -201,17 +201,10 @@ namespace Nikse.SubtitleEdit.Forms.Translate
 
         public static string EvaluateDefaultSourceLanguageCode(Encoding encoding, Subtitle subtitle)
         {
-            string defaultSourceLanguageCode = LanguageAutoDetect.AutoDetectGoogleLanguage(encoding); // Guess language via encoding
+            var defaultSourceLanguageCode = LanguageAutoDetect.AutoDetectGoogleLanguage(encoding); // Guess language via encoding
             if (string.IsNullOrEmpty(defaultSourceLanguageCode))
             {
                 defaultSourceLanguageCode = LanguageAutoDetect.AutoDetectGoogleLanguage(subtitle); // Guess language based on subtitle contents
-            }
-
-            //convert new Hebrew code (he) to old Hebrew code (iw)  http://www.mathguide.de/info/tools/languagecode.html
-            //brummochse: why get it converted to the old code?
-            if (defaultSourceLanguageCode == "he")
-            {
-                defaultSourceLanguageCode = "iw";
             }
 
             return defaultSourceLanguageCode;
@@ -219,10 +212,14 @@ namespace Nikse.SubtitleEdit.Forms.Translate
 
         public static string EvaluateDefaultTargetLanguageCode(string defaultSourceLanguage)
         {
-            var installedLanguages = new List<InputLanguage>();
+            var installedLanguages = new List<string>();
             foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
             {
-                installedLanguages.Add(language);
+                var iso639 = Iso639Dash2LanguageCode.GetTwoLetterCodeFromEnglishName(language.LayoutName);
+                if (!string.IsNullOrEmpty(iso639) && !installedLanguages.Contains(iso639))
+                {
+                    installedLanguages.Add(iso639.ToLowerInvariant());
+                }
             }
 
             var uiCultureTargetLanguage = Configuration.Settings.Tools.GoogleTranslateLastTargetLanguage;
@@ -234,7 +231,7 @@ namespace Nikse.SubtitleEdit.Forms.Translate
                     if (temp.Length > 4)
                     {
                         temp = temp.Substring(temp.Length - 5, 2).ToLowerInvariant();
-                        if (temp != defaultSourceLanguage && installedLanguages.Any(p => p.Culture.TwoLetterISOLanguageName.Contains(temp)))
+                        if (temp != defaultSourceLanguage && installedLanguages.Any(p => p.Contains(temp)))
                         {
                             uiCultureTargetLanguage = temp;
                             break;
@@ -245,12 +242,30 @@ namespace Nikse.SubtitleEdit.Forms.Translate
 
             if (uiCultureTargetLanguage == defaultSourceLanguage)
             {
-                foreach (InputLanguage language in installedLanguages)
+                foreach (var language in installedLanguages)
                 {
-                    if (language.Culture.TwoLetterISOLanguageName != defaultSourceLanguage)
+                    if (language != defaultSourceLanguage)
                     {
-                        uiCultureTargetLanguage = language.Culture.TwoLetterISOLanguageName;
+                        uiCultureTargetLanguage = language;
                         break;
+                    }
+                }
+            }
+
+            if (uiCultureTargetLanguage == defaultSourceLanguage)
+            {
+                var name = CultureInfo.CurrentCulture.Name;
+                if (name.Length > 2)
+                {
+                    name = name.Remove(0, name.Length - 2);
+                }
+                var iso = IsoCountryCodes.ThreeToTwoLetterLookup.FirstOrDefault(p => p.Value == name);
+                if (!iso.Equals(default(KeyValuePair<string, string>)))
+                {
+                    var iso639 = Iso639Dash2LanguageCode.GetTwoLetterCodeFromThreeLetterCode(iso.Key);
+                    if (!string.IsNullOrEmpty(iso639))
+                    {
+                        uiCultureTargetLanguage = iso639;
                     }
                 }
             }
@@ -270,7 +285,7 @@ namespace Nikse.SubtitleEdit.Forms.Translate
 
         public static void SelectLanguageCode(ComboBox comboBox, string languageIsoCode)
         {
-            int i = 0;
+            var i = 0;
             foreach (TranslationPair item in comboBox.Items)
             {
                 if (item.Code == languageIsoCode)
@@ -316,13 +331,22 @@ namespace Nikse.SubtitleEdit.Forms.Translate
 
         public static bool IsAvailableNetworkActive()
         {
-            if (NetworkInterface.GetIsNetworkAvailable())
+            if (!NetworkInterface.GetIsNetworkAvailable())
             {
-                var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-                return (from face in interfaces
-                        where face.OperationalStatus == OperationalStatus.Up
-                        where (face.NetworkInterfaceType != NetworkInterfaceType.Tunnel) && (face.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                        select face.GetIPv4Statistics()).Any(statistics => (statistics.BytesReceived > 0) && (statistics.BytesSent > 0));
+                return false;
+            }
+
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (var face in interfaces)
+            {
+                if (face.OperationalStatus == OperationalStatus.Up && face.NetworkInterfaceType != NetworkInterfaceType.Tunnel && face.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                {
+                    var statistics = face.GetIPv4Statistics();
+                    if (statistics.BytesReceived > 0 && statistics.BytesSent > 0)
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;
@@ -354,23 +378,23 @@ namespace Nikse.SubtitleEdit.Forms.Translate
                     return _breakTranslation;
                 });
             }
-            catch (TranslationException translationException)
-            {
-                if (translationException.InnerException != null && !IsAvailableNetworkActive())
-                {
-                    ShowNetworkError(translationException.InnerException);
-                }
-                else
-                {
-                    MessageBox.Show(translationException.Message + Environment.NewLine +
-                                    translationException.InnerException?.Source + ": " + translationException.InnerException?.Message);
-                }
-            }
-            catch (Exception exception)
-            {
-                SeLogger.Error(exception);
-                ShowNetworkError(exception);
-            }
+            //catch (TranslationException translationException)
+            //{
+            //    if (translationException.InnerException != null && !IsAvailableNetworkActive())
+            //    {
+            //        ShowNetworkError(translationException.InnerException);
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show(translationException.Message + Environment.NewLine +
+            //                        translationException.InnerException?.Source + ": " + translationException.InnerException?.Message);
+            //    }
+            //}
+            //catch (Exception exception)
+            //{
+            //    SeLogger.Error(exception);
+            //    ShowNetworkError(exception);
+            //}
             finally
             {
                 labelPleaseWait.Visible = false;
@@ -420,12 +444,13 @@ namespace Nikse.SubtitleEdit.Forms.Translate
                 // use all
                 selectedParagraphs = _subtitle.Paragraphs;
             }
+
             return selectedParagraphs;
         }
 
         private void FillTranslatedText(Dictionary<int, string> targetTexts)
         {
-            int lastIndex = 0;
+            var lastIndex = 0;
             foreach (var targetText in targetTexts)
             {
                 var paragraphNumber = targetText.Key;
@@ -467,6 +492,54 @@ namespace Nikse.SubtitleEdit.Forms.Translate
             cleanText = cleanText.Replace("< br/ >", Environment.NewLine);
             cleanText = cleanText.Replace(Environment.NewLine + " ", Environment.NewLine);
             cleanText = cleanText.Replace(" " + Environment.NewLine, Environment.NewLine);
+
+            var formatType = _subtitleFormat.GetType();
+            if (formatType == typeof(AdvancedSubStationAlpha) || formatType == typeof(SubStationAlpha))
+            {
+                cleanText = cleanText.Replace("{i1}", "{\\i1}");
+                cleanText = cleanText.Replace("{i0}", "{\\i0}");
+                cleanText = cleanText.Replace("{b1}", "{\\b1}");
+                cleanText = cleanText.Replace("{b0}", "{\\b0}");
+                cleanText = cleanText.Replace("{u1}", "{\\u1}");
+                cleanText = cleanText.Replace("{u0}", "{\\u0}");
+                cleanText = cleanText.Replace("{s1}", "{\\s1}");
+                cleanText = cleanText.Replace("{s0}", "{\\s0}");
+                cleanText = cleanText.Replace("{c&H", "{\\c&H");
+                cleanText = cleanText.Replace("{1&H", "{\\1c&H");
+                cleanText = cleanText.Replace("{2c&H", "{\\2c&H");
+                cleanText = cleanText.Replace("{3c&H", "{\\3c&H");
+                cleanText = cleanText.Replace("{4c&H", "{\\4c&H");
+                cleanText = cleanText.Replace("{alpha&H", "{\\alpha&H");
+                cleanText = cleanText.Replace("{1a&H", "{\\1a&H");
+                cleanText = cleanText.Replace("{2a&H", "{\\2a&H");
+                cleanText = cleanText.Replace("{3a&H", "{\\3a&H");
+                cleanText = cleanText.Replace("{4a&H", "{\\4a&H");
+                cleanText = cleanText.Replace("{fn", "{\\fn");
+                cleanText = cleanText.Replace("{fs", "{\\fs");
+                cleanText = cleanText.Replace("{an", "{\\an");
+                cleanText = cleanText.Replace("{be", "{\\be");
+                cleanText = cleanText.Replace("{pos", "{\\pos");
+                cleanText = cleanText.Replace("{fad", "{\\fad");
+                cleanText = cleanText.Replace("{move", "{\\move");
+                cleanText = cleanText.Replace("{fscx", "{\\fscx");
+                cleanText = cleanText.Replace("{fscy", "{\\fscy");
+                cleanText = cleanText.Replace("{bord", "{\\bord");
+                cleanText = cleanText.Replace("{xbord", "{\\xbord");
+                cleanText = cleanText.Replace("{ybord", "{\\ybord");
+                cleanText = cleanText.Replace("{shad", "{\\shad");
+                cleanText = cleanText.Replace("{xshad", "{\\xshad");
+                cleanText = cleanText.Replace("{yshad", "{\\yshad");
+                cleanText = cleanText.Replace("{fr", "{\\fr");
+                cleanText = cleanText.Replace("{fsp", "{\\fsp");
+                cleanText = cleanText.Replace("{fay", "{\\fay");
+                cleanText = cleanText.Replace("{fax", "{\\fax");
+                cleanText = cleanText.Replace("{org(", "{\\org(");
+                cleanText = cleanText.Replace("{t(", "{\\t(");
+                cleanText = cleanText.Replace("{clip", "{\\clip");
+                cleanText = cleanText.Replace("{iclip", "{\\iclip");
+                cleanText = cleanText.Replace("{blur", "{\\blur");
+            }
+
             cleanText = cleanText.Replace("<I>", "<i>");
             cleanText = cleanText.Replace("< I>", "<i>");
             cleanText = cleanText.Replace("</ i>", "</i>");
@@ -675,8 +748,8 @@ namespace Nikse.SubtitleEdit.Forms.Translate
                     MessageBox.Show(e.Message + Environment.NewLine + e.InnerException?.Source + ": " + e.InnerException?.Message, "MicrosoftTranslationService");
                 }
             }
-            return microsoftTranslationService;
 
+            return microsoftTranslationService;
         }
     }
 }

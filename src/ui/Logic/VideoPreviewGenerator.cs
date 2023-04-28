@@ -1,10 +1,14 @@
 ﻿using Nikse.SubtitleEdit.Core.Common;
+using Nikse.SubtitleEdit.Core.SubtitleFormats;
+using Nikse.SubtitleEdit.Forms;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Nikse.SubtitleEdit.Logic
 {
@@ -20,7 +24,7 @@ namespace Nikse.SubtitleEdit.Logic
 
             try
             {
-                var process = GenerateVideoFile(previewFileName, 3, 720, 480, Color.Black, true, 25);
+                var process = GenerateVideoFile(previewFileName, 3, 720, 480, Color.Black, true, 25, null);
                 process.Start();
                 process.WaitForExit();
 
@@ -32,21 +36,28 @@ namespace Nikse.SubtitleEdit.Logic
             }
         }
 
-        public static Process GenerateVideoFile(string previewFileName, int seconds, int width, int height, Color color, bool checkered, decimal frameRate, DataReceivedEventHandler dataReceivedHandler = null)
+        public static Process GenerateVideoFile(string previewFileName, int seconds, int width, int height, Color color, bool checkered, decimal frameRate, Bitmap bitmap, DataReceivedEventHandler dataReceivedHandler = null, bool addTimeCode = false, string addTimeColor = "white")
         {
             Process processMakeVideo;
 
-            if (checkered)
+            if (bitmap != null)
+            {
+                var tempImageFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".png");
+                var backgroundImage = ExportPngXml.ResizeBitmap(bitmap, width, height);
+                backgroundImage.Save(tempImageFileName, ImageFormat.Png);
+                processMakeVideo = GetFFmpegProcess(tempImageFileName, previewFileName, backgroundImage.Width, backgroundImage.Height, seconds, frameRate, addTimeCode, addTimeColor);
+            }
+            else if (checkered)
             {
                 const int rectangleSize = 9;
                 var backgroundImage = TextDesigner.MakeBackgroundImage(width, height, rectangleSize, Configuration.Settings.General.UseDarkTheme);
                 var tempImageFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".png");
                 backgroundImage.Save(tempImageFileName, ImageFormat.Png);
-                processMakeVideo = GetFFmpegProcess(tempImageFileName, previewFileName, backgroundImage.Width, backgroundImage.Height, seconds, frameRate);
+                processMakeVideo = GetFFmpegProcess(tempImageFileName, previewFileName, backgroundImage.Width, backgroundImage.Height, seconds, frameRate, addTimeCode, addTimeColor);
             }
             else
             {
-                processMakeVideo = GetFFmpegProcess(color, previewFileName, width, height, seconds, frameRate);
+                processMakeVideo = GetFFmpegProcess(color, previewFileName, width, height, seconds, frameRate, addTimeCode, addTimeColor);
             }
 
             SetupDataReceiveHandler(dataReceivedHandler, processMakeVideo);
@@ -68,7 +79,7 @@ namespace Nikse.SubtitleEdit.Logic
         /// <summary>
         /// Generate a video with a burned-in Advanced Sub Station Alpha subtitle.
         /// </summary>
-        public static Process GenerateHardcodedVideoFile(string inputVideoFileName, string assaSubtitleFileName, string outputVideoFileName, int width, int height, string videoEncoding, string preset, string crf, string audioEncoding, bool forceStereo, string sampleRate, string tune, string audioBitRate, string pass, string twoPassBitRate, DataReceivedEventHandler dataReceivedHandler = null)
+        public static Process GenerateHardcodedVideoFile(string inputVideoFileName, string assaSubtitleFileName, string outputVideoFileName, int width, int height, string videoEncoding, string preset, string crf, string audioEncoding, bool forceStereo, string sampleRate, string tune, string audioBitRate, string pass, string twoPassBitRate, DataReceivedEventHandler dataReceivedHandler = null, string cutStart = null, string cutEnd = null)
         {
             var videoEncodingSettings = string.Empty;
             if (!string.IsNullOrEmpty(videoEncoding))
@@ -99,7 +110,18 @@ namespace Nikse.SubtitleEdit.Logic
             var crfSettings = string.Empty;
             if (!string.IsNullOrEmpty(crf) && string.IsNullOrEmpty(pass))
             {
-                crfSettings = $" -crf {crf}";
+                if (videoEncoding == "h264_nvenc" || videoEncoding == "hevc_nvenc")
+                {
+                    crfSettings = $" -cq {crf}";
+                }
+                else if (videoEncoding == "h264_amf" || videoEncoding == "hevc_amf")
+                {
+                    crfSettings = $" -quality {crf}";
+                }
+                else
+                {
+                    crfSettings = $" -crf {crf}";
+                }
             }
 
             var tuneParameter = string.Empty;
@@ -126,67 +148,101 @@ namespace Nikse.SubtitleEdit.Logic
                 }
             }
 
+            if (!string.IsNullOrEmpty(cutStart))
+            {
+                cutStart = " " + cutStart.Trim() + " ";
+            }
+            else
+            {
+                cutStart = " ";
+            }
+
+            if (!string.IsNullOrEmpty(cutEnd))
+            {
+                cutEnd = " " + cutEnd.Trim() + " ";
+            }
+            else
+            {
+                cutEnd = " ";
+            }
+
             var processMakeVideo = new Process
             {
                 StartInfo =
                 {
                     FileName = GetFfmpegLocation(),
-                    Arguments = $"-i \"{inputVideoFileName}\" -vf \"ass={Path.GetFileName(assaSubtitleFileName)}\",yadif,format=yuv420p -g 30 -bf 2 -s {width}x{height} {videoEncodingSettings} {passSettings} {presetSettings} {crfSettings} {audioSettings}{tuneParameter} -use_editlist 0 -movflags +faststart {outputVideoFileName}",
+                    Arguments = $"{cutStart}-i \"{inputVideoFileName}\"{cutEnd}-vf \"ass={Path.GetFileName(assaSubtitleFileName)}\",yadif,format=yuv420p -g 30 -bf 2 -s {width}x{height} {videoEncodingSettings} {passSettings} {presetSettings} {crfSettings} {audioSettings}{tuneParameter} -use_editlist 0 -movflags +faststart {outputVideoFileName}".TrimStart(),
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     WorkingDirectory = Path.GetDirectoryName(assaSubtitleFileName) ?? string.Empty,
                 }
             };
 
-            processMakeVideo.StartInfo.Arguments = processMakeVideo.StartInfo.Arguments
-                .Replace("  ", " ")
-                .Replace("  ", " ")
-                .Trim();
-
+            processMakeVideo.StartInfo.Arguments = processMakeVideo.StartInfo.Arguments.Trim();
             SetupDataReceiveHandler(dataReceivedHandler, processMakeVideo);
-
             return processMakeVideo;
         }
 
-        private static Process GetFFmpegProcess(string imageFileName, string outputFileName, int videoWidth, int videoHeight, int seconds, decimal frameRate)
+        private static Process GetFFmpegProcess(string imageFileName, string outputFileName, int videoWidth, int videoHeight, int seconds, decimal frameRate, bool addTimeCode = false, string addTimeColor = "white")
         {
+            var drawText = MakeDrawText(addTimeCode, frameRate, addTimeColor);
+
             return new Process
             {
                 StartInfo =
                 {
                     FileName = GetFfmpegLocation(),
-                    Arguments = $"-t {seconds} -loop 1 -r {frameRate.ToString(CultureInfo.InvariantCulture)} -i \"{imageFileName}\" -c:v libx264 -tune stillimage -shortest -s {videoWidth}x{videoHeight} \"{outputFileName}\"",
+                    Arguments = $"-t {seconds} -loop 1 -r {frameRate.ToString(CultureInfo.InvariantCulture)} -i \"{imageFileName}\" -c:v libx264 -tune stillimage -shortest -s {videoWidth}x{videoHeight}{drawText} \"{outputFileName}\"",
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
         }
 
-        private static Process GetFFmpegProcess(Color color, string outputFileName, int videoWidth, int videoHeight, int seconds, decimal frameRate)
+        private static Process GetFFmpegProcess(Color color, string outputFileName, int videoWidth, int videoHeight, int seconds, decimal frameRate, bool addTimeCode = false, string addTimeColor = "white")
         {
             var htmlColor = $"#{(color.R.ToString("X2") + color.G.ToString("X2") + color.B.ToString("X2")).ToUpperInvariant()}";
 
+            var drawText = MakeDrawText(addTimeCode, frameRate, addTimeColor);
+
             return new Process
             {
                 StartInfo =
                 {
                     FileName = GetFfmpegLocation(),
-                    Arguments = $"-t {seconds} -f lavfi -i color=c={htmlColor}:r={frameRate.ToString(CultureInfo.InvariantCulture)}:s={videoWidth}x{videoHeight} -c:v libx264 -tune stillimage -shortest -s {videoWidth}x{videoHeight} \"{outputFileName}\"",
+                    Arguments = $"-t {seconds} -f lavfi -i color=c={htmlColor}:r={frameRate.ToString(CultureInfo.InvariantCulture)}:s={videoWidth}x{videoHeight} -c:v libx264 -tune stillimage -shortest -s {videoWidth}x{videoHeight}{drawText} \"{outputFileName}\"",
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
         }
 
-        public static string GetScreenShot(string inputFileName, string timeCode)
+        private static string MakeDrawText(bool addTimeCode, decimal frameRate, string addTimeColor)
+        {
+            var drawText = string.Empty;
+            if (addTimeCode)
+            {
+                drawText = $" -vf \"drawtext=timecode='00\\:00\\:00\\:00':r={frameRate.ToString(CultureInfo.InvariantCulture)}:x=10:y=10:fontsize=34:fontcolor={addTimeColor}\"";
+            }
+
+            return drawText;
+        }
+
+        public static string GetScreenShot(string inputFileName, string timeCode, string colorMatrix = "")
         {
             var outputFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
+            var vfMatrix = string.Empty;
+            if (!string.IsNullOrEmpty(colorMatrix))
+            {
+                vfMatrix = $"-vf colormatrix={colorMatrix}";
+            }
+
             var process = new Process
             {
                 StartInfo =
                 {
                     FileName = GetFfmpegLocation(),
-                    Arguments = $"-ss {timeCode} -i \"{inputFileName}\" -frames:v 1 -q:v 2 \"{outputFileName}\"",
+                    Arguments = $"-ss {timeCode} -i \"{inputFileName}\" {vfMatrix} -frames:v 1 -q:v 2 \"{outputFileName}\"",
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
@@ -195,6 +251,26 @@ namespace Nikse.SubtitleEdit.Logic
             process.Start();
             process.WaitForExit();
             return outputFileName;
+        }
+
+        public static string[] GetScreenShotsForEachFrame(string videoFileName, string outputFolder)
+        {
+            Directory.CreateDirectory(outputFolder);
+            var outputFileName = Path.Combine(outputFolder, "image%05d.png");
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = GetFfmpegLocation(),
+                    Arguments = $"-i \"{videoFileName}\" -vf \"select=1\" -vsync vfr \"{outputFileName}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+            return Directory.GetFiles(outputFolder, "*.png").OrderBy(p => p).ToArray();
         }
 
         private static string GetFfmpegLocation()
@@ -206,6 +282,137 @@ namespace Nikse.SubtitleEdit.Logic
             }
 
             return ffmpegLocation;
+        }
+
+        public static Process GenerateSoftCodedVideoFile(string inputVideoFileName, List<VideoPreviewGeneratorSub> softSubs, string outputVideoFileName, DataReceivedEventHandler outputHandler)
+        {
+            var subsInput = string.Empty;
+            var subsMap = string.Empty;
+            var subsMeta = string.Empty;
+            var subsFormat = string.Empty;
+
+            var ffmpegInfo = FfmpegMediaInfo.Parse(inputVideoFileName);
+            var audioTrackCount = ffmpegInfo.Tracks.Count(p => p.TrackType == FfmpegTrackType.Audio);
+
+            var isMp4 = outputVideoFileName.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase);
+
+            var count = 1;
+            var number = 0;
+            foreach (var softSub in softSubs)
+            {
+                subsInput += $" -i \"{softSub.FileName}\"";
+                subsMap += $" -map {count}";
+
+                if (!string.IsNullOrEmpty(softSub.Language))
+                {
+                    var lang = string.IsNullOrEmpty(softSub.Language) ? string.Empty : softSub.Language.ToLowerInvariant();
+                    var threeLetterCode = Iso639Dash2LanguageCode.GetThreeLetterCodeFromTwoLetterCode(lang);
+                    if (lang.Length == 3)
+                    {
+                        threeLetterCode = lang;
+                    }
+                    else if (lang.IndexOf('-') == 2)
+                    {
+                        threeLetterCode = Iso639Dash2LanguageCode.GetThreeLetterCodeFromTwoLetterCode(lang.Substring(0, 2));
+                    }
+
+                    var languageName = Iso639Dash2LanguageCode.List.FirstOrDefault(p => p.ThreeLetterCode == threeLetterCode)?.EnglishName;
+                    if (languageName == null)
+                    {
+                        languageName = Iso639Dash2LanguageCode.List.FirstOrDefault(p => p.TwoLetterCode == lang || p.EnglishName.ToLowerInvariant() == lang)?.EnglishName;
+                    }
+
+                    if (!string.IsNullOrEmpty(threeLetterCode) && !string.IsNullOrEmpty(languageName))
+                    {
+                        subsMeta += $" -metadata:s:s:{number} language=\"{threeLetterCode}\"";
+                        subsMeta += $" -metadata:s:s:{number} title=\"{languageName}\"";
+                    }
+                    else if (!string.IsNullOrEmpty(softSub.Language))
+                    {
+                        subsMeta += $" -metadata:s:s:{number} language=\"{softSub.Language}\"";
+                        subsMeta += $" -metadata:s:s:{number} title=\"{softSub.Language}\"";
+                    }
+                }
+
+                if (softSub.IsDefault)
+                {
+                    subsMeta += $" -disposition:s:s:{number} default";
+                }
+
+                if (softSub.IsForced)
+                {
+                    subsMeta += $" -disposition:s:s:{number} forced";
+                    subsMeta += $" -metadata:s:s:{number} forced=1";
+                }
+
+                if (isMp4)
+                {
+                    subsFormat = " -c:s mov_text";
+                }
+                else if (softSub.SubtitleFormat == null && softSub.Format == "Blu-ray sup")
+                {
+                    subsFormat += $" -c:s:s:{number} copy"; // should be "pgs" or "pgssub" or ?
+                }
+                else if (softSub.SubtitleFormat?.GetType() == typeof(SubRip))
+                {
+                    subsFormat += $" -c:s:s:{number} srt";
+                }
+                else if (softSub.SubtitleFormat?.GetType() == typeof(AdvancedSubStationAlpha))
+                {
+                    subsFormat += $" -c:s:s:{number} ass";
+                }
+                else if (softSub.SubtitleFormat?.GetType() == typeof(SubStationAlpha))
+                {
+                    subsFormat += $" -c:s:s:{number} ssa";
+                }
+                else if (softSub.SubtitleFormat?.GetType() == typeof(WebVTT) ||
+                         softSub.SubtitleFormat?.GetType() == typeof(WebVTTFileWithLineNumber))
+                {
+                    subsFormat += $" -c:s:s:{number} webvtt";
+                }
+
+                count++;
+                number++;
+            }
+
+            subsInput = " " + subsInput.Trim();
+            if (subsInput.Trim().Length == 0)
+            {
+                subsInput = string.Empty;
+            }
+
+            subsMap = " " + subsMap.Trim();
+            if (subsMap.Trim().Length == 0)
+            {
+                subsMap = string.Empty;
+            }
+
+            subsFormat = " " + subsFormat.Trim();
+            if (subsFormat.Trim().Length == 0)
+            {
+                subsFormat = string.Empty;
+            }
+
+            subsMeta = " " + subsMeta.Trim();
+            if (subsMeta.Trim().Length == 0)
+            {
+                subsMeta = string.Empty;
+            }
+
+            var processMakeVideo = new Process
+            {
+                StartInfo =
+                {
+                    FileName = GetFfmpegLocation(),
+                    Arguments = $"-i \"{inputVideoFileName}\"{subsInput} -map 0 -c copy -map -0:s{subsMap}{subsFormat}{subsMeta} \"{outputVideoFileName}\"".TrimStart(),
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+
+            processMakeVideo.StartInfo.Arguments = processMakeVideo.StartInfo.Arguments.Trim();
+            SetupDataReceiveHandler(outputHandler, processMakeVideo);
+            return processMakeVideo;
         }
     }
 }

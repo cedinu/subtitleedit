@@ -36,13 +36,13 @@ namespace Nikse.SubtitleEdit.Core.Forms
                 return context.Text;
             }
 
-            string text = context.Text;
-            string oldText = text;
-            bool doRepeat = true;
+            var text = context.Text;
+            var oldText = text;
+            var doRepeat = true;
             while (doRepeat)
             {
                 doRepeat = false;
-                foreach (string s in context.Interjections)
+                foreach (var s in context.Interjections)
                 {
                     if (text.Contains(s))
                     {
@@ -50,8 +50,8 @@ namespace Nikse.SubtitleEdit.Core.Forms
                         var match = regex.Match(text);
                         if (match.Success)
                         {
-                            int index = match.Index;
-                            string temp = text.Remove(index, s.Length);
+                            var index = match.Index;
+                            var temp = text.Remove(index, s.Length);
                             if (index == 0 && temp.StartsWith("... ", StringComparison.Ordinal))
                             {
                                 temp = temp.Remove(0, 4);
@@ -96,6 +96,18 @@ namespace Nikse.SubtitleEdit.Core.Forms
                             {
                                 temp = temp.Remove(2, 1);
                             }
+                            else if (index == 2 && temp.StartsWith($"- .{Environment.NewLine}", StringComparison.Ordinal))
+                            {
+                                temp = temp.Remove(2, $"- .{Environment.NewLine}".Length - 2);
+                            }
+                            else if (index == 2 && temp.StartsWith($"- !{Environment.NewLine}", StringComparison.Ordinal))
+                            {
+                                temp = temp.Remove(2, $"- !{Environment.NewLine}".Length - 2);
+                            }
+                            else if (index == 2 && temp.StartsWith($"- ?{Environment.NewLine}", StringComparison.Ordinal))
+                            {
+                                temp = temp.Remove(2, $"- ?{Environment.NewLine}".Length - 2);
+                            }
                             else if (index == 0 && temp.StartsWith(" —", StringComparison.Ordinal))
                             {
                                 temp = temp.Remove(0, 2);
@@ -103,6 +115,14 @@ namespace Nikse.SubtitleEdit.Core.Forms
                             else if (index == 0 && temp.StartsWith('—'))
                             {
                                 temp = temp.Remove(0, 1);
+                            }
+                            else if (index == 0 && temp.StartsWith("...! ", StringComparison.Ordinal))
+                            {
+                                temp = temp.Remove(0, 5);
+                            }
+                            else if (index == 0 && temp.StartsWith("...? ", StringComparison.Ordinal))
+                            {
+                                temp = temp.Remove(0, 5);
                             }
                             else if (index > 3 && (temp.Substring(index - 2) == ".  —" || temp.Substring(index - 2) == "!  —" || temp.Substring(index - 2) == "?  —"))
                             {
@@ -113,13 +133,13 @@ namespace Nikse.SubtitleEdit.Core.Forms
                                 temp = temp.Remove(index, 1).TrimEnd();
                             }
 
-                            string pre = string.Empty;
+                            var pre = string.Empty;
                             if (index > 0)
                             {
                                 doRepeat = true;
                             }
 
-                            bool removeAfter = true;
+                            var removeAfter = true;
 
                             if (index > 2 && temp.Length > index)
                             {
@@ -135,8 +155,8 @@ namespace Nikse.SubtitleEdit.Core.Forms
                             {
                                 if (temp.Length > index - s.Length + 3)
                                 {
-                                    int subIndex = index - s.Length + 1;
-                                    string subTemp = temp.Substring(subIndex, 3);
+                                    var subIndex = index - s.Length + 1;
+                                    var subTemp = temp.Substring(subIndex, 3);
                                     if (subTemp == ", !" || subTemp == ", ?" || subTemp == ", .")
                                     {
                                         temp = temp.Remove(subIndex, 2);
@@ -155,8 +175,8 @@ namespace Nikse.SubtitleEdit.Core.Forms
 
                                 if (removeAfter && temp.Length > index - s.Length + 2)
                                 {
-                                    int subIndex = index - s.Length;
-                                    string subTemp = temp.Substring(subIndex, 3);
+                                    var subIndex = index - s.Length;
+                                    var subTemp = temp.Substring(subIndex, 3);
                                     if (subTemp == ", !" || subTemp == ", ?" || subTemp == ", .")
                                     {
                                         temp = temp.Remove(subIndex, 2);
@@ -185,8 +205,8 @@ namespace Nikse.SubtitleEdit.Core.Forms
 
                                 if (removeAfter && temp.Length > index - s.Length + 2)
                                 {
-                                    int subIndex = index - s.Length + 1;
-                                    string subTemp = temp.Substring(subIndex, 2);
+                                    var subIndex = index - s.Length + 1;
+                                    var subTemp = temp.Substring(subIndex, 2);
                                     if (subTemp == "-!" || subTemp == "-?" || subTemp == "-.")
                                     {
                                         temp = temp.Remove(subIndex, 1);
@@ -204,7 +224,7 @@ namespace Nikse.SubtitleEdit.Core.Forms
 
                             if (index > 3 && index - 2 < temp.Length)
                             {
-                                string subTemp = temp.Substring(index - 2);
+                                var subTemp = temp.Substring(index - 2);
                                 if (subTemp.StartsWith(",  —", StringComparison.Ordinal) || subTemp.StartsWith(", —", StringComparison.Ordinal))
                                 {
                                     temp = temp.Remove(index - 2, 1);
@@ -258,7 +278,16 @@ namespace Nikse.SubtitleEdit.Core.Forms
                                     }
                                 }
 
-                                if (temp.Length > 0 && s[0].ToString(CultureInfo.InvariantCulture) != s[0].ToString(CultureInfo.InvariantCulture).ToLowerInvariant())
+                                var preNoTags = HtmlUtil.RemoveHtmlTags(pre, true).Trim();
+                                if (temp.Length > 0 &&
+                                    (preNoTags.Length == 0 ||
+                                     preNoTags == "-" ||
+                                     preNoTags.EndsWith(". -", StringComparison.Ordinal) ||
+                                     preNoTags.EndsWith("! -", StringComparison.Ordinal) ||
+                                     preNoTags.EndsWith("? -", StringComparison.Ordinal) ||
+                                     preNoTags.EndsWith(Environment.NewLine + "-", StringComparison.Ordinal) ||
+                                     preNoTags.HasSentenceEnding()) &&
+                                    s[0].ToString(CultureInfo.InvariantCulture) != s[0].ToString(CultureInfo.InvariantCulture).ToLowerInvariant())
                                 {
                                     temp = char.ToUpper(temp[0]) + temp.Substring(1);
                                     doRepeat = true;
@@ -299,6 +328,7 @@ namespace Nikse.SubtitleEdit.Core.Forms
                 }
             }
 
+            var lineIndexRemoved = -1;
             var lines = text.SplitToLines();
             if (lines.Count == 2 && text != oldText)
             {
@@ -402,11 +432,13 @@ namespace Nikse.SubtitleEdit.Core.Forms
                 {
                     text = lines[0];
                     lines = text.SplitToLines();
+                    lineIndexRemoved = 1;
                 }
                 else if (string.IsNullOrWhiteSpace(lines[0].RemoveChar('.', '?', '!', '-', '—')))
                 {
                     text = lines[1];
                     lines = text.SplitToLines();
+                    lineIndexRemoved = 0;
                 }
             }
 
@@ -468,9 +500,18 @@ namespace Nikse.SubtitleEdit.Core.Forms
                     var oldLines = oldText.SplitToLines();
                     var newLines = text.SplitToLines();
                     if (oldLines.Count == 2 && newLines.Count == 1 &&
-                        (oldLines[0] == newLines[0] || oldLines[1] == newLines[0]))
+                        (oldLines[0].TrimStart(' ', '-') == newLines[0] || oldLines[1].TrimStart(' ', '-') == newLines[0]))
                     {
                         return text;
+                    }
+
+                    if (lineIndexRemoved == 0)
+                    {
+                        return RemoveStartDashSingleLine(oldLines[1]);
+                    }
+                    else if (lineIndexRemoved == 1)
+                    {
+                        return RemoveStartDashSingleLine(oldLines[0]);
                     }
 
                     return oldText;
@@ -486,6 +527,42 @@ namespace Nikse.SubtitleEdit.Core.Forms
             }
 
             return text;
+        }
+
+        private static string RemoveStartDashSingleLine(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+
+            var s = input;
+            if (s[0] == '-')
+            {
+                return s.TrimStart('-').TrimStart();
+            }
+
+            var pre = string.Empty;
+            if (s.StartsWith("{\\") && s.Contains("}"))
+            {
+                var idx = s.IndexOf('}');
+                pre = s.Substring(0, idx + 1);
+                s = s.Remove(0, idx + 1).TrimStart();
+            }
+
+            if (s.StartsWith("<i>", StringComparison.OrdinalIgnoreCase))
+            {
+                pre += "<i>";
+                s = s.Remove(0, 3).TrimStart();
+            }
+
+            if (s.StartsWith("<font>", StringComparison.OrdinalIgnoreCase))
+            {
+                pre += "<font>";
+                s = s.Remove(0, 6).TrimStart();
+            }
+
+            return pre + s.TrimStart('-').TrimStart();
         }
     }
 }

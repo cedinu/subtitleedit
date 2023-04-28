@@ -21,13 +21,13 @@ namespace Nikse.SubtitleEdit.Core.Common
         public static readonly string TesseractOriginalDirectory = BaseDirectory + "Tesseract302" + Path.DirectorySeparatorChar;
         public static readonly string DictionariesDirectory = DataDirectory + "Dictionaries" + Path.DirectorySeparatorChar;
         public static readonly string SpectrogramsDirectory = DataDirectory + "Spectrograms" + Path.DirectorySeparatorChar;
-        public static readonly string SceneChangesDirectory = DataDirectory + "SceneChanges" + Path.DirectorySeparatorChar;
+        public static readonly string ShotChangesDirectory = DataDirectory + "ShotChanges" + Path.DirectorySeparatorChar;
         public static readonly string AutoBackupDirectory = DataDirectory + "AutoBackup" + Path.DirectorySeparatorChar;
         public static readonly string VobSubCompareDirectory = DataDirectory + "VobSub" + Path.DirectorySeparatorChar;
-        public static readonly string TesseractDirectory = DataDirectory + "Tesseract500.Alpha.20210811" + Path.DirectorySeparatorChar;
+        public static readonly string TesseractDirectory = DataDirectory + "Tesseract530" + Path.DirectorySeparatorChar;
         public static readonly string Tesseract302Directory = DataDirectory + "Tesseract302" + Path.DirectorySeparatorChar;
         public static readonly string WaveformsDirectory = DataDirectory + "Waveforms" + Path.DirectorySeparatorChar;
-        public static readonly string PluginsDirectory = DataDirectory + "Plugins" + Path.DirectorySeparatorChar;
+        public static readonly string PluginsDirectory = DataDirectory + "Plugins";
         public static readonly string IconsDirectory = DataDirectory + "Icons" + Path.DirectorySeparatorChar;
         public static readonly string OcrDirectory = DataDirectory + "Ocr" + Path.DirectorySeparatorChar;
         public static readonly string SettingsFileName = DataDirectory + "Settings.xml";
@@ -35,6 +35,25 @@ namespace Nikse.SubtitleEdit.Core.Common
         public static readonly string Tesseract302DataDirectory = GetTesseract302DataDirectory();
 
         public static readonly string DefaultLinuxFontName = "DejaVu Serif";
+
+        public static List<string> GetPlugins()
+        {
+            var plugins = new List<string>();
+            if (!Directory.Exists(PluginsDirectory))
+            {
+                return plugins;
+            }
+
+            foreach (var pluginFileName in Directory.GetFiles(PluginsDirectory, "*.*"))
+            {
+                if (pluginFileName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    plugins.Add(pluginFileName);
+                }
+            }
+
+            return plugins;
+        }
 
         private Configuration()
         {
@@ -152,7 +171,16 @@ namespace Nikse.SubtitleEdit.Core.Common
                         // ignored
                     }
                 }
-                Directory.CreateDirectory(Path.Combine(appDataRoamingPath, "Dictionaries"));
+
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(appDataRoamingPath, "Dictionaries"));
+                }
+                catch
+                {
+                    // ignored
+                }
+
                 return appDataRoamingPath + Path.DirectorySeparatorChar; // system installation
             }
 
@@ -187,6 +215,11 @@ namespace Nikse.SubtitleEdit.Core.Common
         {
             if (IsRunningOnLinux || IsRunningOnMac)
             {
+                if (Directory.Exists("/usr/share/tesseract-ocr/5/tessdata"))
+                {
+                    return "/usr/share/tesseract-ocr/5/tessdata";
+                }
+
                 if (Directory.Exists("/usr/share/tesseract-ocr/4.00/tessdata"))
                 {
                     return "/usr/share/tesseract-ocr/4.00/tessdata";
@@ -202,6 +235,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                     return "/usr/share/tessdata";
                 }
             }
+
             return Path.Combine(TesseractDirectory, "tessdata");
         }
 
@@ -241,6 +275,20 @@ namespace Nikse.SubtitleEdit.Core.Common
                     // though advertised, this code page is not supported
                 }
             }
+
+            try
+            {
+                var enc = Encoding.GetEncoding(28606);
+                if (!encodings.Contains(enc))
+                {
+                    encodings.Add(enc);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
             return encodings.AsEnumerable();
         }
 

@@ -423,10 +423,10 @@ ZA ŁATWO, PRAGNIE MŁODOŚCI";
             Assert.AreEqual("00:27:21,175", subtitle.Paragraphs[6].StartTime.ToString(false));
             Assert.AreEqual("00:27:23,121", subtitle.Paragraphs[6].EndTime.ToString(false));
 
-            Assert.IsTrue(target.Errors.Contains("Line 8 -"));
-            Assert.IsTrue(target.Errors.Contains("Line 14 -"));
-            Assert.IsTrue(target.Errors.Contains("Line 18 -"));
-            Assert.IsTrue(target.Errors.Contains("Line 32 -"));
+            Assert.IsTrue(target.Errors.Contains("Line 8: "));
+            Assert.IsTrue(target.Errors.Contains("Line 14: "));
+            Assert.IsTrue(target.Errors.Contains("Line 18: "));
+            Assert.IsTrue(target.Errors.Contains("Line 32: "));
         }
 
         #endregion SubRip (.srt)
@@ -441,7 +441,6 @@ Title:
 Original Script: swk
 Update Details:
 ScriptType: v4.00+
-Collisions: Normal
 PlayDepth: 0
 PlayResX: 1920
 PlayResY: 1080
@@ -857,6 +856,27 @@ Dialogue: Marked=0,0:00:01.00,0:00:03.00,Default,NTP,0000,0000,0000,!Effect," + 
             subtitle.Paragraphs.Add(new Paragraph("<font color=\"#ff0000\"><i>Red</i></font>", 1000, 5000));
             string text = target.ToText(subtitle, "title");
             Assert.IsTrue(text.Contains("<Font Italic=\"yes\" Color=\"FFFF0000\">Red</Font>"));
+        }
+
+        [TestMethod]
+        public void DcinemaSmpteColorAndItalicNoSpaceBeforeAndAfterFont()
+        {
+            var target = new DCinemaSmpte2010();
+            var subtitle = new Subtitle();
+            subtitle.Paragraphs.Add(new Paragraph("<font color=\"#ff0000\"><i>Red</i></font>", 1000, 5000));
+            var text = target.ToText(subtitle, "title");
+            Assert.IsTrue(text.Contains("><Font Italic=\"yes\" Color=\"FFFF0000\">Red</Font><"));
+        }
+
+        [TestMethod]
+        public void DcinemaSmpteColorAndItalicNoSpaceBeforeAndAfterFontTwoLines()
+        {
+            var target = new DCinemaSmpte2010();
+            var subtitle = new Subtitle();
+            subtitle.Paragraphs.Add(new Paragraph("<i>Line 1" + Environment.NewLine + "Line 2</i>", 1000, 5000));
+            var text = target.ToText(subtitle, "title");
+            Assert.IsTrue(text.Contains(">Line 1</Font></Text>"));
+            Assert.IsTrue(text.Contains("><Font Italic=\"yes\">Line 2</Font></Text>"));
         }
 
         #endregion DCinema smpte (.xml)
@@ -1714,6 +1734,68 @@ VÄLKOMMEN TILL TEXAS
             target.RemoveNativeFormatting(subtitle, new SubRip());
             Assert.AreEqual("<font color=\"cyan\">(Amanda): line2.1</font>" + Environment.NewLine +
                             "<font color=\"cyan\">line 2.2</font>", subtitle.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void WebVttItalicCue1()
+        {
+            var target = new WebVTT();
+            var subtitle = new Subtitle();
+            var raw = @"WEBVTT
+
+STYLE
+::cue(.background-color_transparent) {
+  background-color: rgba(255,255,255,0.0);
+}
+::cue(.font-family_proportionalSansSerif) {
+  font-family: proportionalSansSerif;
+}
+::cue(.font-style_normal) {
+  font-style: normal;
+}
+::cue(.font-weight_normal) {
+  font-weight: normal;
+}
+::cue(.text-shadow_black-4%) {
+  text-shadow: black 4%;
+}
+::cue(.font-style_italic) {
+  font-style: italic;
+}
+
+
+00:02:36.840 --> 00:02:39.120 line:81.11% align:center
+<c.background-color_transparent.font-family_proportionalSansSerif.font-style_normal.font-weight_normal.text-shadow_black-4%><c.font-style_italic>Hallo world!</c></c>
+
+";
+            target.LoadSubtitle(subtitle, raw.SplitToLines(), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            Assert.AreEqual("<i>Hallo world!</i>", subtitle.Paragraphs[0].Text);
+        }
+
+        [TestMethod]
+        public void WebVttItalicCue2()
+        {
+            var target = new WebVTT();
+            var subtitle = new Subtitle();
+            var raw = @"WEBVTT
+
+STYLE
+::cue(.bold) {
+  font-weight: bold;
+}
+::cue(.italic) {
+  font-style: italic;
+}
+
+
+00:02:36.840 --> 00:02:39.120 line:81.11% align:center
+<c.bold.italic>Hallo world!</c>
+
+";
+            target.LoadSubtitle(subtitle, raw.SplitToLines(), null);
+            target.RemoveNativeFormatting(subtitle, new SubRip());
+            Assert.AreEqual("<b><i>Hallo world!</i></b>", subtitle.Paragraphs[0].Text);
         }
 
         [TestMethod]

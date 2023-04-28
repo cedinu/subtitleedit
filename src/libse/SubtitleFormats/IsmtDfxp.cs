@@ -28,7 +28,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
 
                 var buffer = new byte[12];
-                int l = fs.Read(buffer, 0, buffer.Length);
+                var l = fs.Read(buffer, 0, buffer.Length);
                 if (l != buffer.Length)
                 {
                     return false;
@@ -54,6 +54,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             var mp4Parser = new MP4Parser(fileName);
             var dfxpStrings = mp4Parser.GetMdatsAsStrings();
             SubtitleFormat format = new TimedText10();
+            SubtitleFormat format2 = new TimedTextBase64Image();
+            SubtitleFormat format3 = new TimedTextImage();
             foreach (var xmlAsString in dfxpStrings)
             {
                 try
@@ -63,18 +65,24 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                         continue;
                     }
 
+                    if (xmlAsString.IndexOf('\0') >= 0)
+                    {
+                        _errorCount++;
+                        continue;
+                    }
+
                     var sub = new Subtitle();
-                    var mdatLines = xmlAsString.SplitToLines();
-                    format = sub.ReloadLoadSubtitle(mdatLines, null, format);
+                    var mdatLines = xmlAsString.SplitToLines(100_000);
+                    format = sub.ReloadLoadSubtitle(mdatLines, null, format, format2, format3);
                     if (sub.Paragraphs.Count == 0)
                     {
                         continue;
                     }
 
                     // merge lines with same time codes
-                    sub = Forms.MergeLinesWithSameTimeCodes.Merge(sub, new List<int>(), out _, true, false, 1000, "en", new List<int>(), new Dictionary<int, bool>(), new Subtitle());
+                    sub = Forms.MergeLinesWithSameTimeCodes.Merge(sub, new List<int>(), out _, true, false, false, 1000, "en", new List<int>(), new Dictionary<int, bool>(), new Subtitle());
 
-                    // adjust to last exisiting sub
+                    // adjust to last existing sub
                     var lastSub = subtitle.GetParagraphOrDefault(subtitle.Paragraphs.Count - 1);
                     if (lastSub != null && sub.Paragraphs.Count > 0 && lastSub.StartTime.TotalMilliseconds > sub.Paragraphs[0].StartTime.TotalMilliseconds)
                     {
@@ -87,6 +95,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 {
                     _errorCount++;
                 }
+
+                subtitle.OriginalFormat = format;
             }
 
             var merged = MergeLinesSameTextUtils.MergeLinesWithSameTextInSubtitle(subtitle, false, 250);

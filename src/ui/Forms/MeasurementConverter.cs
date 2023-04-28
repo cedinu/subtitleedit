@@ -16,7 +16,7 @@ namespace Nikse.SubtitleEdit.Forms
             public bool IsOriginalActive { get; set; }
         }
 
-        public event EventHandler<InsertEventArgs> InsertClicked;
+        public event EventHandler<InsertEventArgs> OnInsertClicked;
 
         public string Input { get; set; }
         public bool IsOriginalActive { get; set; }
@@ -141,6 +141,7 @@ namespace Nikse.SubtitleEdit.Forms
             labelConvertFrom.Text = l.ConvertFrom;
             labelConvertTo.Text = l.ConvertTo;
             linkLabel1.Text = l.CopyToClipboard;
+            buttonInsert.Text = l.Insert;
             buttonOK.Text = LanguageSettings.Current.General.Ok;
             checkBoxCloseOnInsert.Text = l.CloseOnInsert;
             checkBoxCloseOnInsert.Checked = Configuration.Settings.General.MeasurementConverterCloseOnInsert;
@@ -246,7 +247,7 @@ namespace Nikse.SubtitleEdit.Forms
 
         private void buttonInsert_Click(object sender, EventArgs e)
         {
-            InsertClicked?.Invoke(this, new InsertEventArgs { Result = Output, IsOriginalActive = IsOriginalActive });
+            OnInsertClicked?.Invoke(this, new InsertEventArgs { Result = Output, IsOriginalActive = IsOriginalActive });
 
             if (checkBoxCloseOnInsert.Checked)
             {
@@ -4799,7 +4800,7 @@ namespace Nikse.SubtitleEdit.Forms
                 return;
             }
 
-            if (e.KeyChar == '.' && !((sender as TextBox).Text.IndexOf('.') > -1) || e.KeyChar == ',' || e.KeyChar == '-' && !((sender as TextBox).Text.IndexOf('-') > -1))
+            if (e.KeyChar == '.' && !(((TextBox)sender)?.Text.IndexOf('.') > -1) || e.KeyChar == ',' || e.KeyChar == '-' && !(((TextBox)sender)?.Text.IndexOf('-') > -1))
             {
                 return;
             }

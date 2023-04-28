@@ -12,28 +12,23 @@ namespace Nikse.SubtitleEdit.Forms
     {
         private readonly List<string> _templates = new List<string>();
         private readonly Subtitle _subtitle;
-        private readonly Subtitle _translated;
+        private readonly Subtitle _original;
         private readonly string _title;
+        private readonly string _videoFileName;
         private bool _batchConvert;
         public string LogMessage { get; set; }
         public string CurrentFormatName { get; set; }
 
-        public ExportCustomText(Subtitle subtitle, Subtitle original, string title)
+        public ExportCustomText(Subtitle subtitle, Subtitle original, string title, string videoFileName)
         {
             UiUtil.PreInitialize(this);
             InitializeComponent();
             UiUtil.FixFonts(this);
 
-            if (original?.Paragraphs == null || original.Paragraphs.Count == 0)
-            {
-                _subtitle = subtitle;
-            }
-            else
-            {
-                _subtitle = original;
-                _translated = subtitle;
-            }
+            _subtitle = subtitle;
+            _original = original;
             _title = title;
+            _videoFileName = videoFileName;
 
             UiUtil.InitializeTextEncodingComboBox(comboBoxEncoding);
 
@@ -48,6 +43,7 @@ namespace Nikse.SubtitleEdit.Forms
                     _templates.Add(template);
                 }
             }
+
             ShowTemplates(_templates);
 
             var l = LanguageSettings.Current.ExportCustomText;
@@ -76,16 +72,17 @@ namespace Nikse.SubtitleEdit.Forms
         private void ShowTemplates(List<string> templates)
         {
             listViewTemplates.Items.Clear();
-            foreach (string s in templates)
+            foreach (var s in templates)
             {
                 var arr = s.Split('Æ');
-                if (arr.Length == 6)
+                if (arr.Length >= 6)
                 {
                     var lvi = new ListViewItem(arr[0]);
                     lvi.SubItems.Add(arr[2].Replace(Environment.NewLine, "<br />"));
                     listViewTemplates.Items.Add(lvi);
                 }
             }
+
             if (listViewTemplates.Items.Count > 0)
             {
                 listViewTemplates.Items[0].Selected = true;
@@ -111,6 +108,7 @@ namespace Nikse.SubtitleEdit.Forms
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -121,7 +119,7 @@ namespace Nikse.SubtitleEdit.Forms
                 if (form.ShowDialog(this) == DialogResult.OK)
                 {
                     var arr = form.FormatOk.Split('Æ');
-                    if (arr.Length == 6)
+                    if (arr.Length >= 6)
                     {
                         string name = arr[0];
                         int i = 1;
@@ -132,22 +130,25 @@ namespace Nikse.SubtitleEdit.Forms
                             form.FormatOk = name + form.FormatOk;
                             i++;
                         }
+
                         _templates.Add(form.FormatOk);
                         ShowTemplates(_templates);
                         listViewTemplates.Items[listViewTemplates.Items.Count - 1].Selected = true;
                     }
                 }
             }
+
             SaveTemplates();
         }
 
         private void SaveTemplates()
         {
             var sb = new StringBuilder();
-            foreach (string template in _templates)
+            foreach (var template in _templates)
             {
                 sb.Append(template + 'æ');
             }
+
             Configuration.Settings.Tools.ExportCustomTemplates = sb.ToString().TrimEnd('æ');
         }
 
@@ -200,18 +201,22 @@ namespace Nikse.SubtitleEdit.Forms
                 return;
             }
 
+            var fileExt = GetFileExtension();
             saveFileDialog1.Title = LanguageSettings.Current.ExportCustomText.SaveSubtitleAs;
             if (!string.IsNullOrEmpty(_title))
             {
-                saveFileDialog1.FileName = Path.GetFileNameWithoutExtension(_title) + ".txt";
+                saveFileDialog1.FileName = Path.GetFileNameWithoutExtension(_title) + fileExt;
             }
 
-            saveFileDialog1.Filter = LanguageSettings.Current.General.AllFiles + "|*.*";
+            saveFileDialog1.Filter =
+                fileExt.TrimStart('.') + "|*" + fileExt + "|" +
+                LanguageSettings.Current.General.AllFiles + "|*.*";
+
             if (saveFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 try
                 {
-                    FileUtil.WriteAllText(saveFileDialog1.FileName, GenerateText(_subtitle, _translated, _title), GetCurrentEncoding());
+                    FileUtil.WriteAllText(saveFileDialog1.FileName, GenerateText(_subtitle, _original, _title, _videoFileName), GetCurrentEncoding());
                     LogMessage = string.Format(LanguageSettings.Current.ExportCustomText.SubtitleExportedInCustomFormatToX, saveFileDialog1.FileName);
                     DialogResult = DialogResult.OK;
                 }
@@ -222,7 +227,7 @@ namespace Nikse.SubtitleEdit.Forms
             }
         }
 
-        private string GenerateText(Subtitle subtitle, Subtitle translation, string title)
+        private string GenerateText(Subtitle subtitle, Subtitle original, string title, string videoFileName)
         {
             if (listViewTemplates.SelectedItems.Count != 1)
             {
@@ -234,7 +239,7 @@ namespace Nikse.SubtitleEdit.Forms
             try
             {
                 int idx = listViewTemplates.SelectedItems[0].Index;
-                return GenerateCustomText(subtitle, translation, title, _templates[idx]);
+                return GenerateCustomText(subtitle, original, title, videoFileName, _templates[idx]);
             }
             catch (Exception exception)
             {
@@ -242,20 +247,49 @@ namespace Nikse.SubtitleEdit.Forms
             }
         }
 
-        internal static string GenerateCustomText(Subtitle subtitle, Subtitle translation, string title, string templateString)
+        private string GetFileExtension()
+        {
+            if (listViewTemplates.SelectedItems.Count > 0)
+            {
+                var idx = listViewTemplates.SelectedItems[0].Index;
+                return GetFileExtension(_templates[idx]);
+            }
+
+            return ".txt";
+        }
+
+        internal static string GetFileExtension(string templateString)
+        {
+            var arr = templateString.Split('Æ');
+            if (arr.Length == 7)
+            {
+                return "." + arr[6].Trim('.', ' ');
+            }
+
+            return ".txt";
+        }
+
+        internal static string GenerateCustomText(Subtitle subtitle, Subtitle original, string title, string videoFileName, string templateString)
         {
             var arr = templateString.Split('Æ');
             var sb = new StringBuilder();
-            sb.Append(ExportCustomTextFormat.GetHeaderOrFooter(title, subtitle, arr[1]));
-            string template = ExportCustomTextFormat.GetParagraphTemplate(arr[2]);
+            sb.Append(ExportCustomTextFormat.GetHeaderOrFooter(title, videoFileName, subtitle, arr[1]));
+            var template = ExportCustomTextFormat.GetParagraphTemplate(arr[2]);
             var isXml = arr[1].Contains("<?xml version=", StringComparison.OrdinalIgnoreCase);
-            for (int i = 0; i < subtitle.Paragraphs.Count; i++)
+            for (var i = 0; i < subtitle.Paragraphs.Count; i++)
             {
-                Paragraph p = subtitle.Paragraphs[i];
-                string start = ExportCustomTextFormat.GetTimeCode(p.StartTime, arr[3]);
-                string end = ExportCustomTextFormat.GetTimeCode(p.EndTime, arr[3]);
+                var p = subtitle.Paragraphs[i];
+                var start = ExportCustomTextFormat.GetTimeCode(p.StartTime, arr[3]);
+                var end = ExportCustomTextFormat.GetTimeCode(p.EndTime, arr[3]);
 
-                string text = p.Text;
+                var gap = string.Empty;
+                var next = subtitle.GetParagraphOrDefault(i + 1);
+                if (next != null)
+                {
+                    gap = ExportCustomTextFormat.GetTimeCode(new TimeCode(next.StartTime.TotalMilliseconds - p.EndTime.TotalMilliseconds), arr[3]); 
+                }
+
+                var text = p.Text;
                 if (isXml)
                 {
                     text = text.Replace("<", "&lt;")
@@ -264,25 +298,25 @@ namespace Nikse.SubtitleEdit.Forms
                 }
                 text = ExportCustomTextFormat.GetText(text, arr[4]);
 
-                string translationText = string.Empty;
-                if (translation?.Paragraphs != null && translation.Paragraphs.Count > 0)
+                var originalText = string.Empty;
+                if (original?.Paragraphs != null && original.Paragraphs.Count > 0)
                 {
-                    var trans = Utilities.GetOriginalParagraph(i, p, translation.Paragraphs);
-                    if (trans != null)
+                    var originalParagraph = Utilities.GetOriginalParagraph(i, p, original.Paragraphs);
+                    if (originalParagraph != null)
                     {
-                        translationText = trans.Text;
+                        originalText = originalParagraph.Text;
                     }
                 }
-                string paragraph = ExportCustomTextFormat.GetParagraph(template, start, end, text, translationText, i, p.Actor, p.Duration, arr[3], Utilities.GetCharactersPerSecond(p));
+                var paragraph = ExportCustomTextFormat.GetParagraph(template, start, end, text, originalText, i, p.Actor, p.Duration, gap, arr[3], p, videoFileName);
                 sb.Append(paragraph);
             }
-            sb.Append(ExportCustomTextFormat.GetHeaderOrFooter(title, subtitle, arr[5]));
+            sb.Append(ExportCustomTextFormat.GetHeaderOrFooter(title, videoFileName, subtitle, arr[5]));
             return sb.ToString();
         }
 
         private void listViewTemplates_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBoxPreview.Text = GenerateText(_subtitle, _translated, _title);
+            textBoxPreview.Text = GenerateText(_subtitle, _original, _title, _videoFileName);
             buttonSave.Enabled = listViewTemplates.SelectedItems.Count == 1;
         }
 

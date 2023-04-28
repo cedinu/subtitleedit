@@ -104,6 +104,21 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     text = "<i>" + text.Substring(4);
                 }
             }
+
+            if (text.StartsWith("{\\") && text.Contains("}"))
+            {
+                tag = text.Substring(0, text.IndexOf('}') + 1);
+                var tagPlusPeriod = tag + "...";
+                if (text.StartsWith(tagPlusPeriod, StringComparison.Ordinal))
+                {
+                    text = tag + text.Substring(tagPlusPeriod.Length);
+                    while (text.StartsWith(tag + ".", StringComparison.Ordinal) || text.StartsWith(tag + " ", StringComparison.Ordinal))
+                    {
+                        text = tag + text.Substring(tagPlusPeriod.Length + 1);
+                    }
+                }
+            }
+
             tag = "<i> ...";
             if (text.StartsWith(tag, StringComparison.Ordinal))
             {
@@ -184,7 +199,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                 {
                     string part0 = noTagLines[0];
                     string part1 = noTagLines[1];
-                    if (part0.Length > 1 && "-—!?.\")]♫♪".Contains(part0[part0.Length - 1]) &&
+                    if (part0.Length > 1 && "-—!?.…\")]♫♪".Contains(part0[part0.Length - 1]) &&
                         part1.Length > 1 && (char.IsUpper(part1[0]) || "\"'♫♪{[(".Contains(part1[0])))
                     {
                         text = text.Replace(" - ", Environment.NewLine + "- ");
@@ -269,10 +284,10 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             }
 
             prevText = prevText.Replace("♪", string.Empty).Replace("♫", string.Empty).Trim();
-            bool isPrevEndOfLine = prevText.Length > 1 &&
-                                   !prevText.EndsWith("...", StringComparison.Ordinal) &&
-                                   (".!?—".Contains(prevText[prevText.Length - 1]) || // em dash, unicode character
-                                    prevText.EndsWith("--", StringComparison.Ordinal));
+            var isPrevEndOfLine = prevText.Length > 1 &&
+                                  !prevText.EndsWith("...", StringComparison.Ordinal) &&
+                                  (".!?—".Contains(prevText[prevText.Length - 1]) || // em dash, unicode character
+                                   prevText.EndsWith("--", StringComparison.Ordinal));
 
             if (isPrevEndOfLine && prevText.Length > 5 && prevText.EndsWith('.') &&
                 prevText[prevText.Length - 3] == '.' &&
@@ -280,6 +295,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             {
                 isPrevEndOfLine = false;
             }
+
             return isPrevEndOfLine;
         }
 
@@ -301,7 +317,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
 
         public static string FixHyphensRemoveForSingleLine(Subtitle subtitle, string input, int i)
         {
-            if (string.IsNullOrEmpty(input))
+            if (string.IsNullOrEmpty(input) || input.Contains(". -"))
             {
                 return input;
             }
@@ -315,7 +331,8 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     {
                         return arr[1].TrimStart('-').TrimStart();
                     }
-                    else if (arr[1].Trim() == "-" && arr[0].Length > 2)
+
+                    if (arr[1].Trim() == "-" && arr[0].Length > 2)
                     {
                         return arr[0].TrimStart('-').TrimStart();
                     }
@@ -345,6 +362,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     }
                 }
             }
+
             return text;
         }
 
@@ -354,10 +372,10 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             if (prev == null || !HtmlUtil.RemoveHtmlTags(prev.Text).TrimEnd().EndsWith(dash, StringComparison.Ordinal) || HtmlUtil.RemoveHtmlTags(prev.Text).TrimEnd().EndsWith(dash + dash, StringComparison.Ordinal))
             {
                 var noTagLines = HtmlUtil.RemoveHtmlTags(text, true).SplitToLines();
-                int startHyphenCount = noTagLines.Count(line => line.TrimStart().StartsWith(dash, StringComparison.Ordinal));
+                var startHyphenCount = noTagLines.Count(line => line.TrimStart().StartsWith(dash, StringComparison.Ordinal));
                 if (startHyphenCount == 1)
                 {
-                    bool remove = true;
+                    var remove = true;
                     var noTagParts = HtmlUtil.RemoveHtmlTags(text).SplitToLines();
                     if (noTagParts.Count == 2)
                     {
@@ -370,7 +388,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
 
                     if (remove)
                     {
-                        int idx = text.IndexOf(dash, StringComparison.Ordinal);
+                        var idx = text.IndexOf(dash, StringComparison.Ordinal);
                         var st = new StrippableText(text);
                         if (st.Pre.Length >= idx)
                         {
@@ -393,7 +411,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                         }
                         else
                         {
-                            int indexOfNewLine = text.IndexOf(Environment.NewLine, StringComparison.Ordinal);
+                            var indexOfNewLine = text.IndexOf(Environment.NewLine, StringComparison.Ordinal);
                             if (indexOfNewLine > 0)
                             {
                                 idx = text.IndexOf(dash, indexOfNewLine, StringComparison.Ordinal);
@@ -436,7 +454,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             text = text.Replace(Environment.NewLine + "<u> ", Environment.NewLine + "<u>");
             if (text.StartsWith("{\\"))
             {
-                int end = text.IndexOf('}');
+                var end = text.IndexOf('}');
                 if (end > 0 && end + 1 < text.Length && text[end + 1] == ' ')
                 {
                     text = text.Remove(end + 1, 1);
@@ -464,6 +482,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
             {
                 line = line.Remove(3, 1);
             }
+
             if (line.Length > 6 && line.LineStartsWithHtmlTag(true)) // <i>... foobar
             {
                 var idx = line.IndexOf('>') + 1;
@@ -475,6 +494,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                 }
                 line = pre + line;
             }
+
             if (line.LineStartsWithHtmlTag(false, true)) //<font color="#000000"> and <font>
             {
                 var closeIdx = line.IndexOf('>', 5);
@@ -489,23 +509,24 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     line = fontTag + line;
                 }
             }
+
             return line;
         }
 
         public static string FixHyphensAdd(Subtitle subtitle, int i, string language)
         {
-            Paragraph p = subtitle.Paragraphs[i];
-            string text = p.Text;
+            var p = subtitle.Paragraphs[i];
+            var text = p.Text;
             var textCache = HtmlUtil.RemoveHtmlTags(text.TrimStart(), true);
             if (textCache.StartsWith('-') || textCache.Contains(Environment.NewLine + "-"))
             {
-                Paragraph prev = subtitle.GetParagraphOrDefault(i - 1);
+                var prev = subtitle.GetParagraphOrDefault(i - 1);
 
                 if (prev == null || !HtmlUtil.RemoveHtmlTags(prev.Text).TrimEnd().EndsWith('-') || HtmlUtil.RemoveHtmlTags(prev.Text).TrimEnd().EndsWith("--", StringComparison.Ordinal))
                 {
                     var lines = textCache.SplitToLines();
-                    int startHyphenCount = lines.Count(line => line.TrimStart().StartsWith('-'));
-                    int totalSpaceHyphen = Utilities.CountTagInText(text, " -");
+                    var startHyphenCount = lines.Count(line => line.TrimStart().StartsWith('-'));
+                    var totalSpaceHyphen = Utilities.CountTagInText(text, " -");
                     if (startHyphenCount == 1 && totalSpaceHyphen == 0)
                     {
                         var parts = textCache.SplitToLines();
@@ -521,9 +542,9 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
 
                             if (doAdd)
                             {
-                                int idx = text.IndexOf('-');
-                                int newLineIdx = text.IndexOf(Environment.NewLine, StringComparison.Ordinal);
-                                bool addSecondLine = idx < newLineIdx;
+                                var idx = text.IndexOf('-');
+                                var newLineIdx = text.IndexOf(Environment.NewLine, StringComparison.Ordinal);
+                                var addSecondLine = idx < newLineIdx;
 
                                 if (addSecondLine && idx > 0 && char.IsLetter(text[idx - 1]))
                                 {
@@ -567,6 +588,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                             }
                         }
                     }
+
                     // - Shut it off. -Get the fuck<br/>out of here, Darryl.
                     if (totalSpaceHyphen == 1 && startHyphenCount == 1)
                     {
@@ -585,12 +607,13 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
 
         public static string FixDoubleGreaterThanHelper(string text)
         {
-            string post = string.Empty;
+            var post = string.Empty;
             if (text.Length > 3 && text[0] == '<' && text[2] == '>' && (text[1] == 'i' || text[1] == 'b' || text[1] == 'u'))
             {
                 post += "<" + text[1] + ">";
                 text = text.Remove(0, 3).TrimStart();
             }
+
             if (text.StartsWith("<font", StringComparison.OrdinalIgnoreCase))
             {
                 var endIdx = text.IndexOf('>', 5);
@@ -600,10 +623,12 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     text = text.Substring(endIdx + 1).TrimStart();
                 }
             }
+
             if (text.StartsWith(">>", StringComparison.Ordinal) && text.Length > 3)
             {
                 text = text.TrimStart('>', ' ').TrimStart();
             }
+
             return post + text;
         }
 
@@ -616,8 +641,8 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                 return text;
             }
 
-            string s = HtmlUtil.RemoveHtmlTags(text, true);
-            if (s.Contains(Environment.NewLine) && s.Replace(Environment.NewLine, " ").Replace("  ", " ").CountCharacters(false, Configuration.Settings.General.IgnoreArabicDiacritics) < Configuration.Settings.General.MergeLinesShorterThan)
+            var s = HtmlUtil.RemoveHtmlTags(text, true);
+            if (s.Contains(Environment.NewLine) && s.Replace(Environment.NewLine, " ").Replace("  ", " ").CountCharacters(false) < Configuration.Settings.General.MergeLinesShorterThan)
             {
                 s = s.TrimEnd().TrimEnd('.', '?', '!', ':', ';');
                 s = s.TrimStart('-');
@@ -630,6 +655,7 @@ namespace Nikse.SubtitleEdit.Core.Forms.FixCommonErrors
                     return Utilities.UnbreakLine(text);
                 }
             }
+
             return text;
         }
     }

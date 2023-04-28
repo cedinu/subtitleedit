@@ -302,6 +302,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 .Replace('', ',')
                 .Replace('¡', ',')
                 .Replace(" -> ", defaultSeparator)
+                .Replace(" —> ", defaultSeparator) // em-dash
+                .Replace(" ——> ", defaultSeparator) // em-dash
                 .Replace(" - > ", defaultSeparator)
                 .Replace(" ->> ", defaultSeparator)
                 .Replace(" -- > ", defaultSeparator)
@@ -352,6 +354,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             if (IsValidTimeCode(line))
             {
                 string[] parts = line.Replace("-->", ":").RemoveChar(' ').Split(':', ',');
+
+                if (parts.Length < 8)
+                {
+                    return false;
+                }
+
                 try
                 {
                     int startHours = int.Parse(parts[0]);

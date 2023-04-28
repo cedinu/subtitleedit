@@ -10,6 +10,7 @@ namespace Nikse.SubtitleEdit.Forms
 
         public double AdjustFactor { get; private set; }
         public bool AdjustAllLines { get; private set; }
+        public decimal Percentage { get; private set; }
 
         public ChangeSpeedInPercent(int numberOfSelectedLines)
         {
@@ -23,6 +24,7 @@ namespace Nikse.SubtitleEdit.Forms
             radioButtonSpeedCustom.Text = LanguageSettings.Current.ChangeSpeedInPercent.Custom;
             radioButtonSpeedFromDropFrame.Text = LanguageSettings.Current.ChangeSpeedInPercent.FromDropFrame;
             radioButtonToDropFrame.Text = LanguageSettings.Current.ChangeSpeedInPercent.ToDropFrame;
+            checkBoxAllowOverlap.Text = LanguageSettings.Current.ChangeSpeedInPercent.AllowOverlap;
             buttonOK.Text = LanguageSettings.Current.General.Ok;
             buttonCancel.Text = LanguageSettings.Current.General.Cancel;
 
@@ -43,6 +45,8 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 radioButtonAllLines.Checked = true;
             }
+
+            checkBoxAllowOverlap.Checked = Configuration.Settings.Tools.ChangeSpeedAllowOverlap;
         }
 
         private void ChangeSpeedInPercent_KeyDown(object sender, KeyEventArgs e)
@@ -65,31 +69,37 @@ namespace Nikse.SubtitleEdit.Forms
                 AdjustParagraph(p);
             }
 
-            for (int i = 0; i < subtitle.Paragraphs.Count; i++)
+            if (!checkBoxAllowOverlap.Checked)
             {
-                Paragraph p = subtitle.Paragraphs[i];
-                Paragraph next = subtitle.GetParagraphOrDefault(i + 1);
-                if (next != null)
+                for (int i = 0; i < subtitle.Paragraphs.Count; i++)
                 {
-                    if (p.EndTime.TotalMilliseconds >= next.StartTime.TotalMilliseconds)
+                    Paragraph p = subtitle.Paragraphs[i];
+                    Paragraph next = subtitle.GetParagraphOrDefault(i + 1);
+                    if (next != null)
                     {
-                        p.EndTime.TotalMilliseconds = next.StartTime.TotalMilliseconds - 1;
+                        if (p.EndTime.TotalMilliseconds >= next.StartTime.TotalMilliseconds)
+                        {
+                            p.EndTime.TotalMilliseconds = next.StartTime.TotalMilliseconds - 1;
+                        }
                     }
                 }
             }
+
             return subtitle;
         }
 
         public void AdjustParagraph(Paragraph p)
         {
-            p.StartTime.TotalMilliseconds = p.StartTime.TotalMilliseconds * AdjustFactor;
-            p.EndTime.TotalMilliseconds = p.EndTime.TotalMilliseconds * AdjustFactor;
+            p.StartTime.TotalMilliseconds = Math.Round(p.StartTime.TotalMilliseconds * AdjustFactor, MidpointRounding.AwayFromZero);
+            p.EndTime.TotalMilliseconds = Math.Round(p.EndTime.TotalMilliseconds * AdjustFactor, MidpointRounding.AwayFromZero);
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            Percentage = numericUpDownPercent.Value;
             AdjustFactor = Convert.ToDouble(numericUpDownPercent.Value) / 100.0;
             AdjustAllLines = radioButtonAllLines.Checked;
+            Configuration.Settings.Tools.ChangeSpeedAllowOverlap = checkBoxAllowOverlap.Checked;
             DialogResult = DialogResult.OK;
         }
 

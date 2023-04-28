@@ -455,6 +455,14 @@ namespace Test.Logic
         }
 
         [TestMethod]
+        public void FixInvalidItalicTagsMissingEndStartWithColon()
+        {
+            var s1 = "ADULT MARK: <i>New friends";
+            var s2 = HtmlUtil.FixInvalidItalicTags(s1);
+            Assert.AreEqual("ADULT MARK: <i>New friends</i>", s2);
+        }
+
+        [TestMethod]
         public void FixUnneededSpacesDoubleSpace1()
         {
             const string s1 = "This is  a test";
@@ -617,6 +625,16 @@ namespace Test.Logic
         {
             string s = Utilities.RemoveUnneededSpaces("The 4 th and 1 st 3 rd and 2 nd.", "en");
             Assert.AreEqual("The 4th and 1st 3rd and 2nd.", s);
+        }
+
+        [TestMethod]
+        public void RemoveUnneededSpacesDutchAposS()
+        {
+            var s = Utilities.RemoveUnneededSpaces("Nou 's avonds?", "en");
+            Assert.AreEqual("Nou's avonds?", s);
+
+            s = Utilities.RemoveUnneededSpaces("Nou 's avonds?", "nl");
+            Assert.AreEqual("Nou 's avonds?", s);
         }
 
         [TestMethod]
@@ -871,6 +889,34 @@ namespace Test.Logic
         {
             var result = Utilities.GetPathAndFileNameWithoutExtension("C:" + System.IO.Path.DirectorySeparatorChar + "my.files" + System.IO.Path.DirectorySeparatorChar + "file1.srt");
             Assert.AreEqual("C:" + System.IO.Path.DirectorySeparatorChar + "my.files" + System.IO.Path.DirectorySeparatorChar + "file1", result);
+        }
+
+        [TestMethod]
+        public void RemoveSsaTags1()
+        {
+            var result = Utilities.RemoveSsaTags("{\\i1}Hallo world!{\\i0}");
+            Assert.AreEqual("Hallo world!", result);
+        }
+
+        [TestMethod]
+        public void RemoveSsaTags2()
+        {
+            var result = Utilities.RemoveSsaTags("{\\i1}Hallo world!");
+            Assert.AreEqual("Hallo world!", result);
+        }
+
+        [TestMethod]
+        public void RemoveSsaTags3()
+        {
+            var result = Utilities.RemoveSsaTags("Hallo {\\i1}my{\\i0} world!");
+            Assert.AreEqual("Hallo my world!", result);
+        }
+
+        [TestMethod]
+        public void RemoveSsaTags4()
+        {
+            var result = Utilities.RemoveSsaTags("{\\p2}m 0 0 l 1 1{\\p0}Hallo world!", true);
+            Assert.AreEqual("Hallo world!", result);
         }
     }
 }
