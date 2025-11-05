@@ -3,6 +3,9 @@ using Nikse.SubtitleEdit.Core.Enums;
 using System;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Controls;
+using Nikse.SubtitleEdit.Controls.Interfaces;
+using MessageBox = Nikse.SubtitleEdit.Forms.SeMsgBox.MessageBox;
 
 namespace Nikse.SubtitleEdit.Logic
 {
@@ -17,6 +20,7 @@ namespace Nikse.SubtitleEdit.Logic
         public int SelectedPosition { get; set; }
         public int ReplaceFromPosition { get; set; }
         public int StartLineIndex { get; set; }
+        public string StartFindText { get; set; }
         public bool MatchInOriginal { get; set; }
         public bool InProgress { get; set; }
 
@@ -41,6 +45,11 @@ namespace Nikse.SubtitleEdit.Logic
             _regEx = regEx;
             FindTextLength = findText.Length;
             StartLineIndex = startLineIndex;
+            if (StartLineIndex == 0)
+            {
+                StartFindText = findText;
+            }
+
             MatchInOriginal = false;
         }
 
@@ -89,7 +98,11 @@ namespace Nikse.SubtitleEdit.Logic
             Match match;
             try
             {
-                _regEx = new Regex(FindText, RegexOptions.None, TimeSpan.FromSeconds(5));
+                if (_regEx == null)
+                {
+                    _regEx = new Regex(FindText, RegexOptions.None, TimeSpan.FromSeconds(5));
+                }
+
                 match = _regEx.Match(text, startIndex);
             }
             catch (RegexMatchTimeoutException exception)
@@ -273,7 +286,7 @@ namespace Nikse.SubtitleEdit.Logic
             return false;
         }
 
-        public static ContextMenuStrip GetRegExContextMenu(TextBox textBox)
+        public static ContextMenuStrip GetRegExContextMenu(ISelectedText textBox)
         {
             var cm = new ContextMenuStrip();
             var l = LanguageSettings.Current.RegularExpressionContextMenu;
@@ -289,29 +302,23 @@ namespace Nikse.SubtitleEdit.Logic
             cm.Items.Add(l.OneOrMore, null, delegate { textBox.SelectedText = "+"; });
             cm.Items.Add(l.InCharacterGroup, null, delegate { textBox.SelectedText = "[test]"; });
             cm.Items.Add(l.NotInCharacterGroup, null, delegate { textBox.SelectedText = "[^test]"; });
-            return cm;
-        }
 
-        public static ContextMenuStrip GetRegExContextMenu(ComboBox comboBox)
-        {
-            var cm = new ContextMenuStrip();
-            var l = LanguageSettings.Current.RegularExpressionContextMenu;
-            cm.Items.Add(l.WordBoundary, null, delegate { comboBox.SelectedText = "\\b"; });
-            cm.Items.Add(l.NonWordBoundary, null, delegate { comboBox.SelectedText = "\\B"; });
-            cm.Items.Add(l.NewLine, null, delegate { comboBox.SelectedText = "\\r\\n"; });
-            cm.Items.Add(l.AnyDigit, null, delegate { comboBox.SelectedText = "\\d"; });
-            cm.Items.Add(l.NonDigit, null, delegate { comboBox.SelectedText = "\\D"; });
-            cm.Items.Add(l.AnyCharacter, null, delegate { comboBox.SelectedText = "."; });
-            cm.Items.Add(l.AnyWhitespace, null, delegate { comboBox.SelectedText = "\\s"; });
-            cm.Items.Add(l.NonSpaceCharacter, null, delegate { comboBox.SelectedText = "\\S"; });
-            cm.Items.Add(l.ZeroOrMore, null, delegate { comboBox.SelectedText = "*"; });
-            cm.Items.Add(l.OneOrMore, null, delegate { comboBox.SelectedText = "+"; });
-            cm.Items.Add(l.InCharacterGroup, null, delegate { comboBox.SelectedText = "[test]"; });
-            cm.Items.Add(l.NotInCharacterGroup, null, delegate { comboBox.SelectedText = "[^test]"; });
+            if (Configuration.Settings.General.UseDarkTheme)
+            {
+                DarkTheme.SetDarkTheme(cm);
+            }
+
             return cm;
         }
 
         public static ContextMenuStrip GetReplaceTextContextMenu(TextBox textBox)
+        {
+            var cm = new ContextMenuStrip();
+            cm.Items.Add(LanguageSettings.Current.RegularExpressionContextMenu.NewLineShort, null, delegate { textBox.SelectedText = "\\n"; });
+            return cm;
+        }
+
+        public static ContextMenuStrip GetReplaceTextContextMenu(SETextBox textBox)
         {
             var cm = new ContextMenuStrip();
             cm.Items.Add(LanguageSettings.Current.RegularExpressionContextMenu.NewLineShort, null, delegate { textBox.SelectedText = "\\n"; });
@@ -385,6 +392,12 @@ namespace Nikse.SubtitleEdit.Logic
 
                     return Success;
                 }
+
+                if (startIndex <= 0)
+                {
+                    return false;
+                }
+
                 var searchText = text.Substring(0, startIndex);
                 var pos = -1;
                 var comparison = GetComparison();
@@ -490,5 +503,9 @@ namespace Nikse.SubtitleEdit.Logic
 
         private StringComparison GetComparison() => FindReplaceType.FindType == FindType.Normal ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
+        public void SetRegex(Regex regex)
+        {
+            _regEx = regex;
+        }
     }
 }

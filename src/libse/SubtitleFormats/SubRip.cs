@@ -14,8 +14,8 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         private int _lineNumber;
         private bool _isMsFrames;
         private bool _isWsrt;
-        private static Regex _regExWsrtItalicStart;
-        private static Regex _regExWsrtItalicEnd;
+        private static Regex _regExWsrtItalicStart = new Regex(@"<3\d>", RegexOptions.Compiled);
+        private static Regex _regExWsrtItalicEnd = new Regex(@"</3\d>", RegexOptions.Compiled);
 
         private enum ExpectingLine
         {
@@ -73,29 +73,17 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             _errorCount = 0;
 
             subtitle.Paragraphs.Clear();
+            var line = string.Empty;
+            var next = lines.Count > 0 ? lines[0].TrimEnd().Trim('\u007F') : string.Empty;
+            var nextNext = lines.Count > 1 ? lines[1].TrimEnd().Trim('\u007F') : string.Empty;
+            var nextNextNext = lines.Count > 2 ? lines[2].TrimEnd().Trim('\u007F') : string.Empty;
             for (var i = 0; i < lines.Count; i++)
             {
                 _lineNumber++;
-                var line = lines[i].TrimEnd();
-                line = line.Trim('\u007F'); // 127=delete ascii
-
-                var next = string.Empty;
-                if (i + 1 < lines.Count)
-                {
-                    next = lines[i + 1];
-                }
-
-                var nextNext = string.Empty;
-                if (i + 2 < lines.Count)
-                {
-                    nextNext = lines[i + 2];
-                }
-
-                var nextNextNext = string.Empty;
-                if (i + 3 < lines.Count)
-                {
-                    nextNextNext = lines[i + 3];
-                }
+                line = next;
+                next = nextNext;
+                nextNext = nextNextNext;
+                nextNextNext = (i + 3 < lines.Count) ? lines[i + 3].TrimEnd().Trim('\u007F') : string.Empty; //  007F=127=delete asci
 
                 // A new line is missing between two paragraphs or no line number (buggy file)
                 if (_expecting == ExpectingLine.Text && i + 1 < lines.Count && !string.IsNullOrEmpty(_paragraph?.Text) &&
@@ -109,6 +97,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     }
                     _expecting = ExpectingLine.Number;
                 }
+
                 if (_expecting == ExpectingLine.Number && TryReadTimeCodesLine(line.Trim(), null, false))
                 {
                     _expecting = ExpectingLine.TimeCodes;
@@ -226,16 +215,6 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     {
                         if (_isWsrt && !string.IsNullOrEmpty(line) && line.Contains("<3", StringComparison.Ordinal))
                         {
-                            if (_regExWsrtItalicStart == null)
-                            {
-                                _regExWsrtItalicStart = new Regex(@"<3\d>", RegexOptions.Compiled);
-                            }
-
-                            if (_regExWsrtItalicEnd == null)
-                            {
-                                _regExWsrtItalicEnd = new Regex(@"</3\d>", RegexOptions.Compiled);
-                            }
-
                             line = _regExWsrtItalicStart.Replace(line, "<i>");
                             line = _regExWsrtItalicEnd.Replace(line, "</i>");
                         }
@@ -245,7 +224,15 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             _paragraph.Text += Environment.NewLine;
                         }
 
-                        _paragraph.Text += RemoveBadChars(line).TrimEnd();
+                        _paragraph.Text += line.Replace('\0', ' ').TrimEnd();
+
+                        if (string.IsNullOrWhiteSpace(line) && Utilities.IsInteger(next) && TryReadTimeCodesLine(nextNext, null, false))
+                        {
+                            subtitle.Paragraphs.Add(_paragraph);
+                            _lastParagraph = _paragraph;
+                            _paragraph = new Paragraph();
+                            _expecting = ExpectingLine.Number;
+                        }
                     }
                     else if (string.IsNullOrEmpty(line) && string.IsNullOrEmpty(_paragraph.Text))
                     {
@@ -260,7 +247,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     }
                     else if (string.IsNullOrEmpty(line) && string.IsNullOrEmpty(next))
                     {
-                        _paragraph.Text += Environment.NewLine + RemoveBadChars(line).TrimEnd();
+                        _paragraph.Text += Environment.NewLine + line.Replace('\0', ' ').TrimEnd();
                     }
                     else
                     {
@@ -283,11 +270,6 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             return !(string.IsNullOrWhiteSpace(text) || Utilities.IsInteger(text) || TryReadTimeCodesLine(text.Trim(), null, false));
         }
 
-        private static string RemoveBadChars(string line)
-        {
-            return line.Replace('\0', ' ');
-        }
-
         private bool TryReadTimeCodesLine(string input, Paragraph paragraph, bool validate)
         {
             var s = input.TrimStart('-', ' ');
@@ -296,21 +278,28 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 return false;
             }
 
+            const char zeroWidthSpace = '\u200B';
+            const char zeroWidthNoBreakSpace = '\uFEFF';
             const string defaultSeparator = " --> ";
             // Fix some badly formatted separator sequences - anything can happen if you manually edit ;)
             var line = input.Replace('،', ',')
-                .Replace('', ',')
-                .Replace('¡', ',')
-                .Replace(" -> ", defaultSeparator)
-                .Replace(" —> ", defaultSeparator) // em-dash
-                .Replace(" ——> ", defaultSeparator) // em-dash
-                .Replace(" - > ", defaultSeparator)
-                .Replace(" ->> ", defaultSeparator)
-                .Replace(" -- > ", defaultSeparator)
-                .Replace(" - -> ", defaultSeparator)
-                .Replace(" -->> ", defaultSeparator)
-                .Replace(" ---> ", defaultSeparator)
-                .Replace(": ", ":").Trim();
+             .Replace('', ',')
+             .Replace('¡', ',')
+             .Replace(zeroWidthSpace, ' ')
+             .Replace(zeroWidthNoBreakSpace, ' ')
+             .Replace(" -> ", defaultSeparator)
+             .Replace(" —> ", defaultSeparator) // em-dash
+             .Replace(" ——> ", defaultSeparator) // em-dash
+             .Replace(" - > ", defaultSeparator)
+             .Replace(" ->> ", defaultSeparator)
+             .Replace(" -- > ", defaultSeparator)
+             .Replace(" - -> ", defaultSeparator)
+             .Replace(" -->> ", defaultSeparator)
+             .Replace(" ---> ", defaultSeparator)
+             .Replace("  ", " ")
+             .Replace(": ", ":")
+             .Replace(" :", ":")
+             .Trim();
 
             // Removed stuff after time codes - like subtitle position
             //  - example of position info: 00:02:26,407 --> 00:02:31,356  X1:100 X2:100 Y1:100 Y2:100
@@ -332,6 +321,10 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
 
             // removes all extra spaces
             line = line.RemoveChar(' ').Replace("-->", defaultSeparator).Trim();
+            if (!line.Contains(defaultSeparator, StringComparison.Ordinal))
+            {
+                line = line.Replace(">", defaultSeparator);
+            }
 
             // Fix a few more cases of wrong time codes, seen this: 00.00.02,000 --> 00.00.04,000
             line = line.Replace('.', ':');
@@ -416,9 +409,9 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
         /// </summary>
         private static bool IsValidTimeCode(string line)
         {
-            int step = 0;
+            var step = 0;
             var max = line.Length;
-            for (int i = 0; i < max; i++)
+            for (var i = 0; i < max; i++)
             {
                 var ch = line[i];
                 if (char.IsWhiteSpace(ch))
@@ -509,6 +502,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                     return false;
                 }
             }
+
             return true;
         }
     }

@@ -1,11 +1,14 @@
 ﻿using Nikse.SubtitleEdit.Core.AudioToText;
-using Nikse.SubtitleEdit.Core.Common;
+using Nikse.SubtitleEdit.Core.Http;
 using Nikse.SubtitleEdit.Logic;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Core.Common;
+using MessageBox = Nikse.SubtitleEdit.Forms.SeMsgBox.MessageBox;
 
 namespace Nikse.SubtitleEdit.Forms.AudioToText
 {
@@ -39,6 +42,7 @@ namespace Nikse.SubtitleEdit.Forms.AudioToText
                 }
             }
 
+            comboBoxModels.UsePopupWindow = true;
             comboBoxModels.SelectedIndex = selectedIndex;
             labelPleaseWait.Text = string.Empty;
             labelFileName.Text = string.Empty;
@@ -88,48 +92,56 @@ namespace Nikse.SubtitleEdit.Forms.AudioToText
 
                 if (!string.IsNullOrEmpty(LastDownloadedModel.Folder))
                 {
-                    folder = Path.Combine(folder, LastDownloadedModel.Folder);
-                    if (!Directory.Exists(folder))
+                    var parts = LastDownloadedModel.Folder.Split('/', '\\');
+                    foreach (var part in parts)
                     {
-                        Directory.CreateDirectory(folder);
+                        folder = Path.Combine(folder, part);
+                        if (!Directory.Exists(folder))
+                        {
+                            Directory.CreateDirectory(folder);
+                        }
                     }
                 }
 
+                var progressReport = new Progress<float>((progress) =>
+                {
+                    var pct = (int)Math.Round(progress * 100.0, MidpointRounding.AwayFromZero);
+                    labelPleaseWait.Text = LanguageSettings.Current.General.PleaseWait + "  " + pct + "%";
+                });
                 foreach (var url in LastDownloadedModel.Urls)
                 {
-                    var httpClient = HttpClientHelper.MakeHttpClient();
-                    currentDownloadUrl = url;
-                    _downloadFileName = MakeDownloadFileName(LastDownloadedModel, url) + ".$$$";
-                    labelFileName.Text = url.Split('/').Last();
-                    using (var downloadStream = new FileStream(_downloadFileName, FileMode.Create, FileAccess.Write))
+                    using (var httpClient = DownloaderFactory.MakeHttpClient())
                     {
-                        var downloadTask = httpClient.DownloadAsync(url, downloadStream, new Progress<float>((progress) =>
+                        currentDownloadUrl = url;
+                        _downloadFileName = MakeDownloadFileName(LastDownloadedModel, url) + ".$$$";
+                        labelFileName.Text = url.Split('/').Last();
+                        using (var downloadStream = new FileStream(_downloadFileName, FileMode.Create, FileAccess.Write))
                         {
-                            var pct = (int)Math.Round(progress * 100.0, MidpointRounding.AwayFromZero);
-                            labelPleaseWait.Text = LanguageSettings.Current.General.PleaseWait + "  " + pct + "%";
-                        }), _cancellationTokenSource.Token);
+                            var downloadTask = httpClient.DownloadAsync(url, downloadStream, progressReport,
+                                _cancellationTokenSource.Token);
 
-                        while (!downloadTask.IsCompleted && !downloadTask.IsCanceled)
-                        {
-                            Application.DoEvents();
-                        }
-
-                        if (downloadTask.IsCanceled)
-                        {
-                            DialogResult = DialogResult.Cancel;
-                            labelPleaseWait.Refresh();
-                            try
+                            while (!downloadTask.IsCompleted && !downloadTask.IsCanceled)
                             {
-                                File.Delete(_downloadFileName);
+                                Application.DoEvents();
                             }
-                            catch
-                            {
-                                // ignore
-                            }
-                            return;
-                        }
 
-                        CompleteDownload(downloadStream);
+                            if (downloadTask.IsCanceled)
+                            {
+                                DialogResult = DialogResult.Cancel;
+                                labelPleaseWait.Refresh();
+                                try
+                                {
+                                    File.Delete(_downloadFileName);
+                                }
+                                catch
+                                {
+                                    // ignore
+                                }
+                                return;
+                            }
+
+                            CompleteDownload(downloadStream);
+                        }
                     }
                 }
 
@@ -160,7 +172,11 @@ namespace Nikse.SubtitleEdit.Forms.AudioToText
             var path = WhisperHelper.GetWhisperModel().ModelFolder;
             if (!string.IsNullOrEmpty(model.Folder))
             {
-                path = Path.Combine(path, model.Folder);
+                var parts = model.Folder.Split('/', '\\');
+                foreach (var part in parts)
+                {
+                    path = Path.Combine(path, part);
+                }
             }
 
             if (model.Urls.Length > 1)
@@ -180,9 +196,36 @@ namespace Nikse.SubtitleEdit.Forms.AudioToText
 
         private void CompleteDownload(Stream downloadStream)
         {
-            if (downloadStream.Length == 0)
+            var streamLength = downloadStream.Length;
+            if (streamLength == 0)
             {
                 throw new Exception("No content downloaded - missing file or no internet connection!");
+            }
+
+            downloadStream.Flush();
+            downloadStream.Close();
+
+            if (streamLength < 50)
+            {
+                var text = FileUtil.ReadAllTextShared(_downloadFileName, Encoding.UTF8);
+                if (text.StartsWith("Entry not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        File.Delete(_downloadFileName);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    return;
+                }
+
+                if (text.Contains("Invalid username or password."))
+                {
+                    throw new Exception("Unable to download file - Invalid username or password! (Perhaps file has a new location)");
+                }
             }
 
             var newFileName = _downloadFileName.Replace(".$$$", string.Empty);
@@ -194,9 +237,6 @@ namespace Nikse.SubtitleEdit.Forms.AudioToText
             {
                 // ignore
             }
-
-            downloadStream.Flush();
-            downloadStream.Close();
 
             Application.DoEvents();
             File.Move(_downloadFileName, newFileName);

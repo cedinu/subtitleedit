@@ -116,58 +116,12 @@ namespace Nikse.SubtitleEdit.Core.Common
             return source.IndexOf(value, comparisonType) >= 0;
         }
 
-        public static List<string> SplitToLines(this string s)
-        {
-            //original non-optimized version: return source.Replace("\r\r\n", "\n").Replace("\r\n", "\n").Replace('\r', '\n').Replace('\u2028', '\n').Split('\n');
-
-            var lines = new List<string>();
-            var start = 0;
-            var max = s.Length;
-            var i = 0;
-            while (i < max)
-            {
-                var ch = s[i];
-                if (ch == '\r')
-                {
-                    if (i < max - 2 && s[i + 1] == '\r' && s[i + 2] == '\n') // \r\r\n
-                    {
-                        lines.Add(s.Substring(start, i - start));
-                        i += 3;
-                        start = i;
-                        continue;
-                    }
-
-                    if (i < max - 1 && s[i + 1] == '\n') // \r\n
-                    {
-                        lines.Add(s.Substring(start, i - start));
-                        i += 2;
-                        start = i;
-                        continue;
-                    }
-
-                    lines.Add(s.Substring(start, i - start));
-                    i++;
-                    start = i;
-                    continue;
-                }
-
-                if (ch == '\n' || ch == '\u2028')
-                {
-                    lines.Add(s.Substring(start, i - start));
-                    i++;
-                    start = i;
-                    continue;
-                }
-
-                i++;
-            }
-
-            lines.Add(s.Substring(start, i - start));
-            return lines;
-        }
+        public static List<string> SplitToLines(this string s) => SplitToLines(s, s.Length);
 
         public static List<string> SplitToLines(this string s, int max)
         {
+            //original non-optimized version: return source.Replace("\r\r\n", "\n").Replace("\r\n", "\n").Replace('\r', '\n').Replace('\u2028', '\n').Split('\n');
+
             var lines = new List<string>();
             var start = 0;
             var i = 0;
@@ -182,13 +136,15 @@ namespace Nikse.SubtitleEdit.Core.Common
                 var ch = s[i];
                 if (ch == '\r')
                 {
-                    if (i < max - 2 && s[i + 1] == '\r' && s[i + 2] == '\n') // \r\r\n
-                    {
-                        lines.Add(s.Substring(start, i - start));
-                        i += 3;
-                        start = i;
-                        continue;
-                    }
+                    // See https://github.com/SubtitleEdit/subtitleedit/issues/8854
+                    // SE now tries to follow how VS code opens text file
+                    //if (i < max - 2 && s[i + 1] == '\r' && s[i + 2] == '\n') // \r\r\n
+                    //{
+                    //    lines.Add(s.Substring(start, i - start));
+                    //    i += 3;
+                    //    start = i;
+                    //    continue;
+                    //}
 
                     if (i < max - 1 && s[i + 1] == '\n') // \r\n
                     {
@@ -206,10 +162,6 @@ namespace Nikse.SubtitleEdit.Core.Common
 
                 if (ch == '\n' || ch == '\u2028')
                 {
-                    if (start >= s.Length || i - start < 0 || i - start >= s.Length)
-                    {
-                    }
-
                     lines.Add(s.Substring(start, i - start));
                     i++;
                     start = i;
@@ -342,6 +294,46 @@ namespace Nikse.SubtitleEdit.Core.Common
             return s;
         }
 
+        // note: replace both input and output variable type with ReadOnlySpan<char> when in more modern .NET
+        // that will make it allocation free
+        public static string RemoveRecursiveLineBreaks(this string input)
+        {
+            var len = input.Length;
+            var writeIndex = len - 1;
+            var isLineBreakAdjacent = false;
+            var buffer = new char[len];
+
+            // windows line break style
+            var hasCarriageReturn = input.Contains('\r');
+
+            for (int i = len - 1; i >= 0; i--)
+            {
+                var charAtIndex = input[i];
+                // carriage return line feed
+                if ((hasCarriageReturn && charAtIndex == '\r') || charAtIndex == '\n')
+                {
+                    // line break is adjacent but we found another line break - ignore it
+                    if (isLineBreakAdjacent)
+                    {
+                        continue;
+                    }
+
+                    // write into buffer and update the flag
+                    buffer[writeIndex--] = charAtIndex;
+                    isLineBreakAdjacent = charAtIndex == '\r' || (!hasCarriageReturn && charAtIndex == '\n');
+                }
+                else
+                {
+                    // write current character to the buffer and decrement the write-index
+                    buffer[writeIndex--] = charAtIndex;
+                    // update adjacent line break flag
+                    isLineBreakAdjacent = false;
+                }
+            }
+
+            return new string(buffer, writeIndex + 1, len - (writeIndex + 1));
+        }
+
         public static bool ContainsLetter(this string s)
         {
             if (s != null)
@@ -366,11 +358,10 @@ namespace Nikse.SubtitleEdit.Core.Common
                 return false;
             }
 
-            var max = s.Length;
-            for (var index = 0; index < max; index++)
+            var len = s.Length;
+            for (var i = 0; i < len; i++)
             {
-                var ch = s[index];
-                if (char.IsNumber(ch))
+                if (CharUtils.IsDigit(s[i]))
                 {
                     return true;
                 }
@@ -440,7 +431,7 @@ namespace Nikse.SubtitleEdit.Core.Common
 
         public static bool IsOnlyControlCharactersOrWhiteSpace(this string s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (s == null)
             {
                 return true;
             }
@@ -506,7 +497,21 @@ namespace Nikse.SubtitleEdit.Core.Common
             var sb = new StringBuilder();
             var tags = RemoveAndSaveTags(input, sb, format);
             var properCaseText = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(sb.ToString().ToLowerInvariant());
-            return RestoreSavedTags(properCaseText, tags);
+            return RestoreSavedAndRemovedTags(properCaseText, tags);
+        }
+
+        public static string ToLowercaseButKeepTags(this string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return input;
+            }
+
+            var sb = new StringBuilder();
+            var tags = RemoveAndSaveTags(input, sb, new SubRip());
+            var lowercaseText = sb.ToString().ToLowerInvariant();
+            var result = RestoreSavedAndRemovedTags(lowercaseText, tags);
+            return result;
         }
 
         public static string ToggleCasing(this string input, SubtitleFormat format, string overrideFromStringInit = null)
@@ -543,18 +548,18 @@ namespace Nikse.SubtitleEdit.Core.Common
 
             if (containsUppercase && containsLowercase)
             {
-                return RestoreSavedTags(text.ToUpperInvariant(), tags);
+                return RestoreSavedAndRemovedTags(text.ToUpperInvariant(), tags);
             }
 
             if (containsUppercase)
             {
-                return RestoreSavedTags(text.ToLowerInvariant(), tags);
+                return RestoreSavedAndRemovedTags(text.ToLowerInvariant(), tags);
             }
 
-            return RestoreSavedTags(System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(text), tags);
+            return RestoreSavedAndRemovedTags(System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(text), tags);
         }
 
-        private static string RestoreSavedTags(string input, List<KeyValuePair<int, string>> tags)
+        private static string RestoreSavedAndRemovedTags(string input, List<KeyValuePair<int, string>> tags)
         {
             var s = input;
             for (var index = tags.Count - 1; index >= 0; index--)
@@ -592,8 +597,8 @@ namespace Nikse.SubtitleEdit.Core.Common
 
                 var ch = input[index];
 
-                if (!tagOn && isAssa && ch == '\\' 
-                           && (input.Substring(index).StartsWith("\\N") 
+                if (!tagOn && isAssa && ch == '\\'
+                           && (input.Substring(index).StartsWith("\\N")
                                || input.Substring(index).StartsWith("\\n")
                                || input.Substring(index).StartsWith("\\h")))
                 {
@@ -646,7 +651,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                     if (s.StartsWith("{\\", StringComparison.Ordinal))
                     {
                         tagOn = true;
-                        tagIndex = index;
+                        tagIndex = sb.Length;
                     }
                 }
 
@@ -767,6 +772,16 @@ namespace Nikse.SubtitleEdit.Core.Common
             return value.HasSentenceEnding(string.Empty);
         }
 
+        private static readonly HashSet<char> NeutralSentenceEndingChars = new HashSet<char>
+        {
+            '.', '!', '?', ']', ')', '…', '♪', '؟', '。', '？'
+        };
+
+        private static readonly HashSet<char> GreekSentenceEndingChars = new HashSet<char>
+        {
+            '\u037E', ';'
+        };
+
         public static bool HasSentenceEnding(this string value, string twoLetterLanguageCode)
         {
             if (string.IsNullOrEmpty(value))
@@ -774,17 +789,61 @@ namespace Nikse.SubtitleEdit.Core.Common
                 return false;
             }
 
-            var s = HtmlUtil.RemoveHtmlTags(value, true).TrimEnd('"').TrimEnd('”');
-            if (s == string.Empty)
+            var len = value.Length;
+            var checkIndex = len - 1;
+
+            // skip quotes
+            while (checkIndex >= 0 && (value[checkIndex] == '"' || value[checkIndex] == '”'))
+            {
+                checkIndex--;
+            }
+
+            // value contains only quotes
+            if (checkIndex < 0)
             {
                 return false;
             }
 
-            var last = s[s.Length - 1];
-            return last == '.' || last == '!' || last == '?' || last == ']' || last == ')' || last == '…' || last == '♪' || last == '؟' ||
-                   twoLetterLanguageCode == "el" && last == ';' || twoLetterLanguageCode == "el" && last == '\u037E' ||
-                   last == '-' && s.Length > 3 && s.EndsWith("--", StringComparison.Ordinal) && char.IsLetter(s[s.Length - 3]) ||
-                   last == '—' && s.Length > 2 && char.IsLetter(s[s.Length - 2]);
+
+            var charAtIndex = value[checkIndex];
+            // handles when sentence ending char is adjacent with html/assa closing tags e.g: </i>, </font>, {\\i0}...
+            while (charAtIndex == '>' || charAtIndex == '}')
+            {
+                if (charAtIndex == '>')
+                {
+                    checkIndex = value.LastIndexOf('<', checkIndex) - 1;
+                }
+                else if (charAtIndex == '}')
+                {
+                    checkIndex = value.LastIndexOf('{', checkIndex) - 1;
+                }
+
+                // in this case '>' or '}' is the last char
+                if (checkIndex < 0)
+                {
+                    return false;
+                }
+
+                charAtIndex = value[checkIndex];
+            }
+
+            // ending with dash/hyphen
+            if (charAtIndex == '-')
+            {
+                // foobar--
+                return checkIndex > 1 && char.IsLetter(value[checkIndex - 2]) && value[checkIndex - 1] == '-';
+            }
+
+            // em dash: used in written English to indicate an interruption or break in thought
+            if (charAtIndex == '—') // U+2014
+            {
+                // foobar—
+                return checkIndex > 0 && char.IsLetter(value[checkIndex - 1]);
+            }
+
+            // evaluate culture type
+            var isCultureNeutral = twoLetterLanguageCode == null || twoLetterLanguageCode.Equals("el", StringComparison.OrdinalIgnoreCase) == false;
+            return NeutralSentenceEndingChars.Contains(charAtIndex) || (!isCultureNeutral && GreekSentenceEndingChars.Contains(charAtIndex));
         }
 
         public static string NormalizeUnicode(this string input, Encoding encoding)

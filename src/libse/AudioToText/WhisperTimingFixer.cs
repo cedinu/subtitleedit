@@ -61,7 +61,7 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                 var pctHere = FindPercentage(startPos - 0.05, startPos + 0.05, wavePeaks);
                 if (Math.Abs(pctHere - (-1)) < 0.01)
                 {
-                    if (p.Duration.TotalMilliseconds < minDurationMs)
+                    if (p.DurationTotalMilliseconds < minDurationMs)
                     {
                         s.Paragraphs[index] = oldP;
                     }
@@ -78,7 +78,7 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                         var pct = FindPercentage(startPosBack - 0.05, startPosBack + 0.05, wavePeaks);
                         if (Math.Abs(pct - (-1)) < 0.01)
                         {
-                            if (p.Duration.TotalMilliseconds < minDurationMs)
+                            if (p.DurationTotalMilliseconds < minDurationMs)
                             {
                                 s.Paragraphs[index] = oldP;
                             }
@@ -86,7 +86,7 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                             return s;
                         }
 
-                        if (pct < percentageMax + 1 && p.Duration.TotalSeconds < 5)
+                        if (pct < percentageMax + 1 && p.DurationTotalSeconds < 5)
                         {
                             startPosBack -= 0.025;
                             var pct2 = FindPercentage(startPosBack - 0.05, startPosBack + 0.05, wavePeaks);
@@ -127,7 +127,7 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                         var pctF = FindPercentage(startPosForward - 0.05, startPosForward + 0.05, wavePeaks);
                         if (Math.Abs(pctF - (-1)) < 0.01)
                         {
-                            if (p.Duration.TotalMilliseconds < minDurationMs)
+                            if (p.DurationTotalMilliseconds < minDurationMs)
                             {
                                 s.Paragraphs[index] = oldP;
                             }
@@ -160,7 +160,7 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                 pctHere = FindPercentage(startPos - 0.05, startPos + 0.05, wavePeaks);
                 if (Math.Abs(pctHere - (-1)) < 0.01)
                 {
-                    if (p.Duration.TotalMilliseconds < minDurationMs)
+                    if (p.DurationTotalMilliseconds < minDurationMs)
                     {
                         s.Paragraphs[index] = oldP;
                     }
@@ -174,9 +174,9 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                     while (pctHere < percentageMax && startPos < p.EndTime.TotalSeconds - 1)
                     {
                         pctHere = FindPercentage(startPosForward - 0.05, startPosForward + 0.05, wavePeaks);
-                        if (Math.Abs(pctHere - (- 1)) < 0.01)
+                        if (Math.Abs(pctHere - (-1)) < 0.01)
                         {
-                            if (p.Duration.TotalMilliseconds < 1000)
+                            if (p.DurationTotalMilliseconds < 1000)
                             {
                                 s.Paragraphs[index] = oldP;
                             }
@@ -209,7 +209,7 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
                     }
                 }
 
-                if (p.Duration.TotalMilliseconds < minDurationMs)
+                if (p.DurationTotalMilliseconds < minDurationMs)
                 {
                     s.Paragraphs[index] = oldP;
                 }
@@ -218,16 +218,15 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
             return s;
         }
 
-        public static Subtitle ShortenLongTexts(Subtitle subtitle)
+        public static Subtitle ShortenLongDuration(Subtitle subtitle)
         {
             var s = new Subtitle(subtitle);
 
-            for (var i = 0; i < subtitle.Paragraphs.Count; i++)
+            foreach (var p in s.Paragraphs)
             {
-                var p = subtitle.Paragraphs[i];
-                if (p.Duration.TotalMilliseconds > 8000)
+                if (p.DurationTotalMilliseconds > Configuration.Settings.General.SubtitleMaximumDisplayMilliseconds)
                 {
-                    p.StartTime.TotalMilliseconds = p.EndTime.TotalMilliseconds - 5000;
+                    p.StartTime.TotalMilliseconds = p.EndTime.TotalMilliseconds - Configuration.Settings.General.SubtitleMaximumDisplayMilliseconds;
                 }
             }
 

@@ -29,18 +29,15 @@ namespace Nikse.SubtitleEdit.Core.NetflixQualityCheck
                     calc = CalcFactory.MakeCalculator(nameof(CalcCjk));
                 }
 
-                if (controller.Language == "ar")
-                {
-                    calc = CalcFactory.MakeCalculator(nameof(CalcIgnoreArabicDiacritics));
-                }
-
-                var charactersPerSeconds = Utilities.GetCharactersPerSecond(jp, calc);
+                var charactersPerSeconds = jp.GetCharactersPerSecond(calc);
                 if (charactersPerSeconds > charactersPerSecond && !p.StartTime.IsMaxTime)
                 {
                     var fixedParagraph = new Paragraph(p, false);
-                    while (Utilities.GetCharactersPerSecond(fixedParagraph) > charactersPerSecond)
+                    if (fixedParagraph.GetCharactersPerSecond() > charactersPerSecond)
                     {
-                        fixedParagraph.EndTime.TotalMilliseconds++;
+                        var numberOfCharacters = (double)p.Text.CountCharacters(true);
+                        var maxDurationMilliseconds = numberOfCharacters / Configuration.Settings.General.SubtitleMaximumCharactersPerSeconds * 1000.0;
+                        fixedParagraph.EndTime.TotalMilliseconds = p.StartTime.TotalMilliseconds + maxDurationMilliseconds;
                     }
 
                     controller.AddRecord(p, fixedParagraph, comment, FormattableString.Invariant($"CPS={charactersPerSeconds:0.##}"));

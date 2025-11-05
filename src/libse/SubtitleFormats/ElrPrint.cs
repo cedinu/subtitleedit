@@ -44,11 +44,11 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             return sb.ToString().Trim();
         }
 
-        private object GetDuration(Paragraph p)
+        private static object GetDuration(Paragraph p)
         {
             string s;
             var ts = p.Duration.TimeSpan;
-            var frames = Math.Round(ts.Milliseconds / (TimeCode.BaseUnit / Configuration.Settings.General.CurrentFrameRate));
+            var frames = MillisecondsToFrames(ts.Milliseconds);
             if (frames >= Configuration.Settings.General.CurrentFrameRate - 0.001)
             {
                 s = $"{ts.Seconds + 1:00}:{0:00}";
@@ -57,7 +57,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             {
                 s = $"{ts.Seconds:00}:{MillisecondsToFramesMaxFrameRate(ts.Milliseconds):00}";
             }
-            if (p.Duration.TotalMilliseconds >= 0)
+            if (p.DurationTotalMilliseconds >= 0)
             {
                 return s;
             }

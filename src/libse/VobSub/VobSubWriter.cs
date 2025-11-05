@@ -124,7 +124,7 @@ namespace Nikse.SubtitleEdit.Core.VobSub
 
             // Control Sequence Table
             // Write delay - subtitle duration
-            WriteEndianWord(Convert.ToInt32(p.Duration.TotalMilliseconds * 90.0) >> 10, ms);
+            WriteEndianWord(Convert.ToInt32(p.DurationTotalMilliseconds * 90.0) >> 10, ms);
 
             // next display control sequence table address (use current is last)
             WriteEndianWord(startDisplayControlSequenceTableAddress + 24, ms); // start of display control sequence table address
@@ -240,8 +240,19 @@ namespace Nikse.SubtitleEdit.Core.VobSub
                         mwsub.WriteByte(imageBuffer[bufferIndex++]);
                     }
 
-                    // Pad remaining space
+                    // Pad remaining space, not technically nessesary lots of old things like to assume 2048 blocks
                     long paddingSize = 0x800 - headerSize - toWrite;
+                    if (paddingSize >= 6) {
+                        // add padding stream if we have enough space,
+                        // you'd want to use the pack stuffing bytes if you can't the header,
+                        mwsub.WriteByte(0x00);
+                        mwsub.WriteByte(0x00);
+                        mwsub.WriteByte(0x01);
+                        mwsub.WriteByte(0xBE);
+                        paddingSize -= 6;
+                        mwsub.WriteByte((byte)((paddingSize >> 8) & 0xff));
+                        mwsub.WriteByte((byte)(paddingSize & 0xff));
+                    }
                     for (int x = 0; x < paddingSize; x++)
                     {
                         mwsub.WriteByte(0xff);

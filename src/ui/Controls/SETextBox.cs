@@ -1,97 +1,97 @@
 ﻿using Nikse.SubtitleEdit.Core.Common;
 using Nikse.SubtitleEdit.Core.Enums;
+using Nikse.SubtitleEdit.Logic;
 using System;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Controls.Interfaces;
 
 namespace Nikse.SubtitleEdit.Controls
 {
     /// <summary>
     /// TextBox that can be either a normal text box or a rich text box.
     /// </summary>
-    public sealed class SETextBox : Panel
+    public sealed class SETextBox : Panel, ISelectedText
     {
-        public new event EventHandler TextChanged;
-        public new event KeyEventHandler KeyDown;
-        public new event MouseEventHandler MouseClick;
-        public new event EventHandler Enter;
-        public new event KeyEventHandler KeyUp;
-        public new event EventHandler Leave;
-        public new event MouseEventHandler MouseMove;
-
         private AdvancedTextBox _uiTextBox;
         private SimpleTextBox _simpleTextBox;
 
         public SETextBox()
         {
-            Initialize(Configuration.Settings.General.SubtitleTextBoxSyntaxColor);
-        }
-
-        public void Initialize(bool useSyntaxColoring)
-        {
-            ContextMenuStrip oldContextMenuStrip = null;
-            var oldEnabled = true;
-            var oldText = string.Empty;
-            if (_simpleTextBox != null)
-            {
-                oldContextMenuStrip = _simpleTextBox.ContextMenuStrip;
-                oldEnabled = _simpleTextBox.Enabled;
-                oldText = _simpleTextBox.Text;
-            }
-            else if (_uiTextBox != null)
-            {
-                oldContextMenuStrip = _uiTextBox.ContextMenuStrip;
-                oldEnabled = _uiTextBox.Enabled;
-                oldText = _uiTextBox.Text;
-            }
+            SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                     ControlStyles.UserPaint |
+                     ControlStyles.ResizeRedraw |
+                     ControlStyles.Selectable |
+                     ControlStyles.AllPaintingInWmPaint, true);
 
             BorderStyle = BorderStyle.None;
             Padding = new Padding(1);
             BackColor = SystemColors.WindowFrame;
-            Controls.Clear();
-            _simpleTextBox?.Dispose();
-            _uiTextBox?.Dispose();
-            _simpleTextBox = null;
-            _uiTextBox = null;
-            if (useSyntaxColoring)
+
+            Initialize(Configuration.Settings.General.SubtitleTextBoxSyntaxColor, false);
+        }
+
+        public void Initialize(bool useSyntaxColoring, bool justTextBox)
+        {
+            if (useSyntaxColoring && !justTextBox)
             {
-                _uiTextBox = new AdvancedTextBox { BorderStyle = BorderStyle.None, Multiline = true };
-                InitializeBackingControl(_uiTextBox);
-                UpdateFontAndColors(_uiTextBox);
+                if (_uiTextBox is null)
+                {
+                    _uiTextBox = new AdvancedTextBox();
+                    ConfigureTextBoxEvents(_uiTextBox);
+                }
+
+                _uiTextBox.BorderStyle = BorderStyle.None;
+                _uiTextBox.Multiline = true;
+                ConfigureTextBoxAppearance(_uiTextBox);
             }
             else
             {
-                _simpleTextBox = new SimpleTextBox { BorderStyle = BorderStyle.None, Multiline = true };
-                InitializeBackingControl(_simpleTextBox);
-                UpdateFontAndColors(_simpleTextBox);
-            }
+                if (_simpleTextBox is null)
+                {
+                    _simpleTextBox = new SimpleTextBox();
+                    _simpleTextBox.BorderStyle = BorderStyle.None;
+                    _simpleTextBox.Multiline = true;
+                    ConfigureTextBoxEvents(_simpleTextBox);
+                    _simpleTextBox.VisibleChanged += SimpleTextBox_VisibleChanged;
+                }
 
-            if (oldContextMenuStrip != null)
-            {
-                ContextMenuStrip = oldContextMenuStrip;
+                if (justTextBox)
+                {
+                    _simpleTextBox.ForeColor = UiUtil.ForeColor;
+                    _simpleTextBox.BackColor = UiUtil.BackColor;
+                    BackColor = Color.DarkGray;
+                }
+                else
+                {
+                    ConfigureTextBoxAppearance(_simpleTextBox);
+                }
             }
-
-            Enabled = oldEnabled;
-            Text = oldText;
         }
 
-        private void InitializeBackingControl(Control textBox)
+        private void SimpleTextBox_VisibleChanged(object sender, EventArgs e)
+        {
+            Padding = new Padding(1);
+            BackColor = Color.DarkGray;
+            Invalidate();
+        }
+
+        private void ConfigureTextBoxEvents(Control textBox)
         {
             Controls.Add(textBox);
             textBox.Dock = DockStyle.Fill;
-            textBox.Enter += (sender, args) => { BackColor = SystemColors.Highlight; };
-            textBox.Leave += (sender, args) => { BackColor = SystemColors.WindowFrame; };
-            textBox.TextChanged += (sender, args) => { TextChanged?.Invoke(sender, args); };
-            textBox.KeyDown += (sender, args) => { KeyDown?.Invoke(sender, args); };
-            textBox.MouseClick += (sender, args) => { MouseClick?.Invoke(sender, args); };
-            textBox.Enter += (sender, args) => { Enter?.Invoke(sender, args); };
-            textBox.KeyUp += (sender, args) => { KeyUp?.Invoke(sender, args); };
-            textBox.Leave += (sender, args) => { Leave?.Invoke(sender, args); };
-            textBox.MouseMove += (sender, args) => { MouseMove?.Invoke(sender, args); };
+            textBox.Enter += (sender, args) => BackColor = SystemColors.Highlight;
+            textBox.Leave += (sender, args) => BackColor = SystemColors.WindowFrame;
+            textBox.TextChanged += (sender, args) => OnTextChanged(args);
+            textBox.KeyDown += (sender, args) => OnKeyDown(args);
+            textBox.MouseClick += (sender, args) => OnMouseClick(args);
+            textBox.Enter += (sender, args) => OnEnter(args);
+            textBox.KeyUp += (sender, args) => OnKeyUp(args);
+            textBox.Leave += (sender, args) => OnLeave(args);
+            textBox.MouseMove += (sender, args) => OnMouseMove(args);
         }
-
-        public void UpdateFontAndColors(Control textBox)
+        
+        public void ConfigureTextBoxAppearance(Control textBox)
         {
             if (textBox == null)
             {
@@ -122,218 +122,106 @@ namespace Nikse.SubtitleEdit.Controls
         {
             get
             {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.Font;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    return _uiTextBox.Font;
-                }
-
-                return Font;
+                var activeTextBox = GetActiveTextBox();
+                return activeTextBox != null ? activeTextBox.Font : Font;
             }
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.Font = value;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    _uiTextBox.Font = value;
+                    tb.Font = value;
                 }
             }
         }
 
         public override string Text
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.Text;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    return _uiTextBox.Text;
-                }
-
-                return string.Empty;
-            }
+            get => GetActiveTextBox()?.Text ?? string.Empty;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.Text = value;
-                    return;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    _uiTextBox.Text = value;
+                    tb.Text = value;
                 }
             }
         }
 
         public int SelectionStart
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.SelectionStart;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    return _uiTextBox.SelectionStart;
-                }
-
-                return 0;
-            }
+            get => GetActiveTextBox()?.SelectionStart ?? 0;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.SelectionStart = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.SelectionStart = value;
+                    tb.SelectionStart = value;
                 }
             }
         }
 
         public int SelectionLength
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.SelectionLength;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    return _uiTextBox.SelectionLength;
-                }
-
-                return 0;
-            }
+            get => GetActiveTextBox()?.SelectionLength ?? 0;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.SelectionLength = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.SelectionLength = value;
+                    tb.SelectionLength = value;
                 }
             }
         }
 
         public bool HideSelection
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.HideSelection;
-                }
-
-                return _uiTextBox != null && _uiTextBox.HideSelection;
-            }
+            get => GetActiveTextBox()?.HideSelection == true;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.HideSelection = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.HideSelection = value;
+                    tb.HideSelection = value;
                 }
             }
         }
 
         public string SelectedText
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.SelectedText;
-                }
-
-                if (_uiTextBox != null)
-                {
-                    return _uiTextBox.SelectedText;
-                }
-
-                return string.Empty;
-            }
+            get => GetActiveTextBox()?.SelectedText ?? string.Empty;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.SelectedText = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.SelectedText = value;
+                    tb.SelectedText = value;
                 }
             }
         }
 
         public bool Multiline
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.Multiline;
-                }
-
-                return _uiTextBox != null && _uiTextBox.Multiline;
-            }
+            get => GetActiveTextBox()?.Multiline == true;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.Multiline = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.Multiline = value;
+                    tb.Multiline = value;
                 }
             }
         }
 
         public new bool Enabled
         {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.Enabled;
-                }
-
-                return _uiTextBox == null || _uiTextBox.Enabled;
-            }
+            get => GetActiveTextBox()?.Enabled == true;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.Enabled = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.Enabled = value;
+                    tb.Enabled = value;
                 }
             }
         }
@@ -342,50 +230,52 @@ namespace Nikse.SubtitleEdit.Controls
         {
             get
             {
-                if (_simpleTextBox == null && _uiTextBox == null)
+                var tb = GetActiveTextBox();
+                if (tb is AdvancedTextBox atb)
                 {
-                    return RichTextBoxScrollBars.None;
+                    return atb.ScrollBars;
                 }
 
-                if (_simpleTextBox != null)
+                if (tb is SimpleTextBox stb)
                 {
-                    if (_simpleTextBox.ScrollBars == System.Windows.Forms.ScrollBars.Both)
+                    switch (stb.ScrollBars)
                     {
-                        return RichTextBoxScrollBars.Both;
+                        case System.Windows.Forms.ScrollBars.Both:
+                            return RichTextBoxScrollBars.Both;
+                        case System.Windows.Forms.ScrollBars.Horizontal:
+                            return RichTextBoxScrollBars.Horizontal;
+                        case System.Windows.Forms.ScrollBars.Vertical:
+                            return RichTextBoxScrollBars.Vertical;
+                        default:
+                            return RichTextBoxScrollBars.None;
                     }
-
-                    if (_simpleTextBox.ScrollBars == System.Windows.Forms.ScrollBars.Horizontal)
-                    {
-                        return RichTextBoxScrollBars.Horizontal;
-                    }
-
-                    return _simpleTextBox.ScrollBars == System.Windows.Forms.ScrollBars.Vertical ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
                 }
 
-                return _uiTextBox.ScrollBars;
+                return RichTextBoxScrollBars.None;
             }
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb is SimpleTextBox stb)
                 {
                     if (value == RichTextBoxScrollBars.Both || value == RichTextBoxScrollBars.ForcedBoth)
                     {
-                        _simpleTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+                        stb.ScrollBars = System.Windows.Forms.ScrollBars.Both;
                     }
                     else if (value == RichTextBoxScrollBars.Horizontal || value == RichTextBoxScrollBars.ForcedHorizontal)
                     {
-                        _simpleTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+                        stb.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
                     }
                     else if (value == RichTextBoxScrollBars.Vertical || value == RichTextBoxScrollBars.ForcedVertical)
                     {
-                        _simpleTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+                        stb.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
                     }
                     else
                     {
-                        _simpleTextBox.ScrollBars = System.Windows.Forms.ScrollBars.None;
+                        stb.ScrollBars = System.Windows.Forms.ScrollBars.None;
                     }
                 }
-                else if (_uiTextBox != null)
+                else if (tb is AdvancedTextBox)
                 {
                     // auto show/hide for rich text box just works
                 }
@@ -394,128 +284,34 @@ namespace Nikse.SubtitleEdit.Controls
 
         public override ContextMenuStrip ContextMenuStrip
         {
-            get => _simpleTextBox != null ? _simpleTextBox.ContextMenuStrip : _uiTextBox?.ContextMenuStrip;
+            get => GetActiveTextBox()?.ContextMenuStrip;
             set
             {
-                if (_simpleTextBox != null)
+                var tb = GetActiveTextBox();
+                if (tb != null)
                 {
-                    _simpleTextBox.ContextMenuStrip = value;
-                }
-                else if (_uiTextBox != null)
-                {
-                    _uiTextBox.ContextMenuStrip = value;
+                    tb.ContextMenuStrip = value;
                 }
             }
         }
 
-        public void SelectAll()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.SelectAll();
-            }
-            else
-            {
-                _uiTextBox?.SelectAll();
-            }
-        }
+        public void SelectAll() => GetActiveTextBox()?.SelectAll();
 
-        public void Clear()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.Clear();
-            }
-            else
-            {
-                _uiTextBox?.Clear();
-            }
-        }
+        public void Clear() => GetActiveTextBox()?.Clear();
 
-        public void Undo()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.Undo();
-            }
-            else
-            {
-                _uiTextBox?.Undo();
-            }
-        }
+        public void Undo() => GetActiveTextBox()?.Undo();
 
-        public void ClearUndo()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.ClearUndo();
-            }
-            else
-            {
-                _uiTextBox?.ClearUndo();
-            }
-        }
+        public void ClearUndo() => GetActiveTextBox()?.ClearUndo();
 
-        public void Copy()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.Copy();
-            }
-            else
-            {
-                _uiTextBox?.Copy();
-            }
-        }
+        public void Copy() => GetActiveTextBox()?.Copy();
 
-        public void Cut()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.Cut();
-            }
-            else
-            {
-                _uiTextBox?.Cut();
-            }
-        }
+        public void Cut() => GetActiveTextBox()?.Cut();
 
-        public void Paste()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.Paste();
-            }
-            else
-            {
-                _uiTextBox?.Paste();
-            }
-        }
+        public void Paste() => GetActiveTextBox()?.Paste();
 
-        public override bool Focused
-        {
-            get
-            {
-                if (_simpleTextBox != null)
-                {
-                    return _simpleTextBox.Focused;
-                }
+        public override bool Focused => GetActiveTextBox()?.Focused == true;
 
-                return _uiTextBox != null && _uiTextBox.Focused;
-            }
-        }
-
-        public new void Focus()
-        {
-            if (_simpleTextBox != null)
-            {
-                _simpleTextBox.Focus();
-            }
-            else
-            {
-                _uiTextBox?.Focus();
-            }
-        }
+        public new void Focus() => GetActiveTextBox()?.Focus();
 
         #region LiveSpellCheck
 
@@ -659,24 +455,66 @@ namespace Nikse.SubtitleEdit.Controls
             }
         }
 
-        public async Task CheckForLanguageChange(Subtitle subtitle)
+        public int MaxLength
         {
-            if (_uiTextBox == null)
+            get
             {
-                return;
+                var tb = GetActiveTextBox();
+                return tb?.MaxLength ?? 0;
             }
-
-            await _uiTextBox.CheckForLanguageChange(subtitle);
+            set
+            {
+                var tb = GetActiveTextBox();
+                if (tb != null)
+                {
+                    tb.MaxLength = value;
+                }
+            }
         }
 
-        public async Task InitializeLiveSpellCheck(Subtitle subtitle, int lineNumber)
+        public bool UseSystemPasswordChar
         {
-            if (_uiTextBox == null)
+            get
             {
-                return;
-            }
+                if (GetActiveTextBox() is SimpleTextBox advancedTextBox)
+                {
+                    return advancedTextBox.UseSystemPasswordChar;
+                }
 
-            await _uiTextBox.InitializeLiveSpellCheck(subtitle, lineNumber);
+                return false;
+            }
+            set
+            {
+                if (GetActiveTextBox() is SimpleTextBox stb)
+                {
+                    stb.UseSystemPasswordChar = value;
+                }
+            }
+        }
+
+        public bool ReadOnly
+        {
+            get => GetActiveTextBox()?.ReadOnly == true;
+            set
+            {
+                var tb = GetActiveTextBox();
+                if (tb != null)
+                {
+                    tb.ReadOnly = value;
+                }
+            }
+        }
+
+        public string[] Lines => GetActiveTextBox()?.Lines ?? Array.Empty<string>();
+
+        public void CheckForLanguageChange(Subtitle subtitle)
+        {
+            _uiTextBox?.CheckForLanguageChange(subtitle);
+        }
+
+        public void InitializeLiveSpellCheck(Subtitle subtitle, int lineNumber)
+        {
+            _uiTextBox?.InitializeLiveSpellCheck(subtitle, lineNumber);
         }
 
         public void DisposeHunspellAndDictionaries() => _uiTextBox?.DisposeHunspellAndDictionaries();
@@ -686,5 +524,61 @@ namespace Nikse.SubtitleEdit.Controls
         public void DoAction(SpellCheckAction action) => _uiTextBox?.DoAction(action);
 
         #endregion
+
+        public void SetDarkTheme()
+        {
+            var activeTextBox = GetActiveTextBox();
+            if (activeTextBox == null)
+            {
+                return;
+            }
+
+            activeTextBox.BackColor = DarkTheme.BackColor;
+            activeTextBox.ForeColor = DarkTheme.ForeColor;
+            activeTextBox.HandleCreated += SeTextBoxBoxHandleCreated;
+            DarkTheme.SetWindowThemeDark(activeTextBox);
+            DarkTheme.SetWindowThemeDark(this);
+        }
+
+        public void UndoDarkTheme()
+        {
+            var textBox = GetActiveTextBox();
+            if (textBox == null)
+            {
+                return;
+            }
+
+            textBox.BackColor = SystemColors.Window;
+            textBox.ForeColor = DefaultForeColor;
+            textBox.HandleCreated -= SeTextBoxBoxHandleCreated;
+            DarkTheme.SetWindowThemeNormal(this);
+        }
+
+        private static void SeTextBoxBoxHandleCreated(object sender, EventArgs e) => DarkTheme.SetWindowThemeDark((Control)sender);
+
+        public void ScrollToCaret() => GetActiveTextBox()?.ScrollToCaret();
+
+        private TextBoxBase GetActiveTextBox()
+        {
+            if (_uiTextBox != null)
+            {
+                return _uiTextBox;
+            }
+
+            return _simpleTextBox;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _uiTextBox?.Dispose();
+                _simpleTextBox?.Dispose();
+                _uiTextBox = null;
+                _simpleTextBox = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

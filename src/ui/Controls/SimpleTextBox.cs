@@ -1,6 +1,7 @@
 ﻿using Nikse.SubtitleEdit.Core.Common;
 using Nikse.SubtitleEdit.Logic;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -30,7 +31,7 @@ namespace Nikse.SubtitleEdit.Controls
             KeyDown += SETextBox_KeyDown;
 
             // To fix issue where WM_LBUTTONDOWN got wrong "SelectedText" (only in undocked mode)
-            GotFocus += (sender, args) => { _gotFocusTicks = DateTime.UtcNow.Ticks; };
+            GotFocus += (sender, args) => { _gotFocusTicks = Stopwatch.GetTimestamp(); };
         }
 
         private void SetAlignment()
@@ -208,7 +209,7 @@ namespace Nikse.SubtitleEdit.Controls
                 if (_dragFromThis)
                 {
                     _dragFromThis = false;
-                    var milliseconds = (DateTime.UtcNow.Ticks - _dragStartTicks) / 10000;
+                    var milliseconds = (Stopwatch.GetTimestamp() - _dragStartTicks) / 10000;
                     if (milliseconds < 400)
                     {
                         SelectionLength = 0;
@@ -327,8 +328,70 @@ namespace Nikse.SubtitleEdit.Controls
         private const int WM_DBLCLICK = 0xA3;
         private const int WM_LBUTTONDBLCLK = 0x203;
         private const int WM_LBUTTONDOWN = 0x0201;
+        private const int WM_PASTE = 0x0302;
+
+        private void SafePaste()
+        {
+            if (IsDisposed || !IsHandleCreated || ReadOnly || !Enabled)
+            {
+                return;
+            }
+
+            try
+            {
+                string newText = null;
+                if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
+                {
+                    newText = Clipboard.GetText(TextDataFormat.UnicodeText);
+                }
+                else if (Clipboard.ContainsText(TextDataFormat.Text))
+                {
+                    newText = Clipboard.GetText(TextDataFormat.Text);
+                }
+
+                if (string.IsNullOrEmpty(newText))
+                {
+                    return;
+                }
+
+                if (!Multiline)
+                {
+                    newText = newText.Replace('\r', ' ').Replace('\n', ' ');
+                }
+
+                if (MaxLength > 0)
+                {
+                    var allowed = MaxLength - (TextLength - SelectionLength);
+                    if (allowed <= 0)
+                    {
+                        return;
+                    }
+
+                    if (newText.Length > allowed)
+                    {
+                        newText = newText.Substring(0, allowed);
+                    }
+                }
+
+                SelectedText = newText;
+            }
+            catch
+            {
+                // ignore clipboard/interop errors to avoid crashes
+            }
+        }
+
+        public new void Paste()
+        {
+            SafePaste();
+        }
         protected override void WndProc(ref Message m)
         {
+            if (m.Msg == WM_PASTE)
+            {
+                SafePaste();
+                return;
+            }
             if (m.Msg == WM_DBLCLICK || m.Msg == WM_LBUTTONDBLCLK)
             {
                 UiUtil.SelectWordAtCaret(this);
@@ -337,16 +400,16 @@ namespace Nikse.SubtitleEdit.Controls
 
             if (m.Msg == WM_LBUTTONDOWN)
             {
-                var milliseconds = (DateTime.UtcNow.Ticks - _gotFocusTicks) / 10000;
+                var milliseconds = (Stopwatch.GetTimestamp() - _gotFocusTicks) / 10000;
                 if (milliseconds > 10)
                 {
                     _dragText = SelectedText;
                     _dragStartFrom = SelectionStart;
-                    _dragStartTicks = DateTime.UtcNow.Ticks;
+                    _dragStartTicks = Stopwatch.GetTimestamp();
                 }
             }
 
-            base.WndProc(ref m);
+            base.WndProc(ref m); 
         }
     }
 }

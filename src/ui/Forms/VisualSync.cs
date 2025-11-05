@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using MessageBox = Nikse.SubtitleEdit.Forms.SeMsgBox.MessageBox;
 
 namespace Nikse.SubtitleEdit.Forms
 {
@@ -18,6 +19,7 @@ namespace Nikse.SubtitleEdit.Forms
         private List<Paragraph> _paragraphsOriginal;
         private VideoInfo _videoInfo;
         private string _subtitleFileName;
+        private bool _onlySelectedLines;
         private Subtitle _inputSubtitle;
         private Subtitle _inputOriginalSubtitle;
         private bool _isStartSceneActive;
@@ -51,6 +53,8 @@ namespace Nikse.SubtitleEdit.Forms
 
             MediaPlayerStart.InitializeVolume(Configuration.Settings.General.VideoPlayerDefaultVolume);
             MediaPlayerEnd.InitializeVolume(Configuration.Settings.General.VideoPlayerDefaultVolume);
+            MediaPlayerStart.TryLoadGfx();
+            MediaPlayerEnd.TryLoadGfx();
 
             labelSyncDone.Text = string.Empty;
             _language = LanguageSettings.Current.VisualSync;
@@ -270,8 +274,15 @@ namespace Nikse.SubtitleEdit.Forms
             }
         }
 
+        private bool _forceClose;
+        private DialogResult _dialogResult;
         private void FormVisualSync_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_forceClose)
+            {
+                return;
+            }
+
             _timerHideSyncLabel.Stop();
             labelSyncDone.Text = string.Empty;
             timer1.Stop();
@@ -320,9 +331,21 @@ namespace Nikse.SubtitleEdit.Forms
             {
                 DialogResult = DialogResult.Cancel;
             }
+
+            if (!e.Cancel)
+            {
+                e.Cancel = true; // Hack as FormClosing will crash if any Forms are created here (e.g. a msgbox).
+                _forceClose = true;
+                _dialogResult = DialogResult;
+                TaskDelayHelper.RunDelayed(TimeSpan.FromMilliseconds(10), () =>
+                {
+                    DialogResult = _dialogResult;
+                    Close();
+                });
+            }
         }
 
-        internal void Initialize(Bitmap bitmap, Subtitle subtitle, Subtitle original, string fileName, string title, double frameRate)
+        internal void Initialize(Bitmap bitmap, Subtitle subtitle, Subtitle original, string fileName, string title, double frameRate, bool onlySelectedLines)
         {
             if (bitmap != null)
             {
@@ -333,6 +356,7 @@ namespace Nikse.SubtitleEdit.Forms
             _inputSubtitle = subtitle;
             _inputOriginalSubtitle = original;
             _subtitleFileName = fileName;
+            _onlySelectedLines = onlySelectedLines;
             Text = title;
         }
 
@@ -355,7 +379,7 @@ namespace Nikse.SubtitleEdit.Forms
 
             FillStartAndEndTexts();
 
-            if (comboBoxStartTexts.Items.Count > Configuration.Settings.Tools.StartSceneIndex)
+            if (!_onlySelectedLines && comboBoxStartTexts.Items.Count > Configuration.Settings.Tools.StartSceneIndex && comboBoxStartTexts.Items.Count > Configuration.Settings.Tools.StartSceneIndex + 1)
             {
                 comboBoxStartTexts.SelectedIndex = Configuration.Settings.Tools.StartSceneIndex;
             }
@@ -364,7 +388,7 @@ namespace Nikse.SubtitleEdit.Forms
                 comboBoxStartTexts.SelectedIndex = 0;
             }
 
-            if (comboBoxEndTexts.Items.Count > Configuration.Settings.Tools.EndSceneIndex)
+            if (!_onlySelectedLines && comboBoxEndTexts.Items.Count > Configuration.Settings.Tools.EndSceneIndex && comboBoxEndTexts.Items.Count > Configuration.Settings.Tools.EndSceneIndex + 1)
             {
                 comboBoxEndTexts.SelectedIndex = comboBoxEndTexts.Items.Count - (Configuration.Settings.Tools.EndSceneIndex + 1);
             }
@@ -435,7 +459,7 @@ namespace Nikse.SubtitleEdit.Forms
             double subEnd = _paragraphs[comboBoxEndTexts.SelectedIndex].StartTime.TotalMilliseconds / TimeCode.BaseUnit;
 
             // Both end times must be greater than start time.
-            if (!(videoPlayerCurrentEndPos > videoPlayerCurrentStartPos && subEnd > videoPlayerCurrentStartPos) ||
+            if (!(videoPlayerCurrentEndPos > videoPlayerCurrentStartPos && subEnd > subStart) ||
                 comboBoxStartTexts.SelectedIndex >= comboBoxEndTexts.SelectedIndex)
             {
                 MessageBox.Show(_language.StartSceneMustComeBeforeEndScene, "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);

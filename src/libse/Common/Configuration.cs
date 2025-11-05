@@ -13,18 +13,20 @@ namespace Nikse.SubtitleEdit.Core.Common
     {
         private static readonly Lazy<Configuration> Instance = new Lazy<Configuration>(() => new Configuration());
 
-        private readonly Lazy<Settings> _settings;
+        private Lazy<Settings.Settings> _settings;
         private readonly IEnumerable<Encoding> _encodings;
 
         public static readonly string BaseDirectory = GetBaseDirectory();
         public static readonly string DataDirectory = GetDataDirectory();
+        public static string DataDirectoryOverride = string.Empty;
         public static readonly string TesseractOriginalDirectory = BaseDirectory + "Tesseract302" + Path.DirectorySeparatorChar;
         public static readonly string DictionariesDirectory = DataDirectory + "Dictionaries" + Path.DirectorySeparatorChar;
         public static readonly string SpectrogramsDirectory = DataDirectory + "Spectrograms" + Path.DirectorySeparatorChar;
         public static readonly string ShotChangesDirectory = DataDirectory + "ShotChanges" + Path.DirectorySeparatorChar;
+        public static readonly string TimeCodesDirectory = DataDirectory + "TimeCodes" + Path.DirectorySeparatorChar;
         public static readonly string AutoBackupDirectory = DataDirectory + "AutoBackup" + Path.DirectorySeparatorChar;
         public static readonly string VobSubCompareDirectory = DataDirectory + "VobSub" + Path.DirectorySeparatorChar;
-        public static readonly string TesseractDirectory = DataDirectory + "Tesseract530" + Path.DirectorySeparatorChar;
+        public static readonly string TesseractDirectory = DataDirectory + "Tesseract550" + Path.DirectorySeparatorChar;
         public static readonly string Tesseract302Directory = DataDirectory + "Tesseract302" + Path.DirectorySeparatorChar;
         public static readonly string WaveformsDirectory = DataDirectory + "Waveforms" + Path.DirectorySeparatorChar;
         public static readonly string PluginsDirectory = DataDirectory + "Plugins";
@@ -33,6 +35,8 @@ namespace Nikse.SubtitleEdit.Core.Common
         public static readonly string SettingsFileName = DataDirectory + "Settings.xml";
         public static readonly string TesseractDataDirectory = GetTesseractDataDirectory();
         public static readonly string Tesseract302DataDirectory = GetTesseract302DataDirectory();
+        public static readonly string PaddleOcrDirectory = DataDirectory + "PaddleOCR3-1";
+        public static readonly string GoogleLensDirectory = DataDirectory + "Google-Lens";
 
         public static readonly string DefaultLinuxFontName = "DejaVu Serif";
 
@@ -46,7 +50,8 @@ namespace Nikse.SubtitleEdit.Core.Common
 
             foreach (var pluginFileName in Directory.GetFiles(PluginsDirectory, "*.*"))
             {
-                if (pluginFileName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                if (pluginFileName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) && 
+                    !pluginFileName.EndsWith("DeeplProTranslate.dll", StringComparison.OrdinalIgnoreCase))
                 {
                     plugins.Add(pluginFileName);
                 }
@@ -58,7 +63,12 @@ namespace Nikse.SubtitleEdit.Core.Common
         private Configuration()
         {
             _encodings = GetAvailableEncodings();
-            _settings = new Lazy<Settings>(Settings.GetSettings);
+            _settings = new Lazy<Settings.Settings>(Core.Settings.Settings.GetSettings);
+        }
+
+        public void SetSettings(Settings.Settings settings)
+        {
+            _settings = new Lazy<Settings.Settings>(() => settings);
         }
 
         private const int PlatformWindows = 1;
@@ -112,23 +122,25 @@ namespace Nikse.SubtitleEdit.Core.Common
                  : PlatformWindows;
         }
 
-        public static Settings Settings => Instance.Value._settings.Value;
+        public static Settings.Settings Settings => Instance.Value._settings.Value;
 
         public static IEnumerable<Encoding> AvailableEncodings => Instance.Value._encodings;
 
         private static string GetInstallerPath()
         {
             const string valueName = "InstallLocation";
-            var value = RegistryUtil.GetValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SubtitleEdit_is1", valueName);
-            if (value != null && Directory.Exists(value))
-            {
-                return value;
-            }
+            string[] paths = {
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SubtitleEdit_is1",
+                @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SubtitleEdit_is1"
+            };
 
-            value = RegistryUtil.GetValue(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SubtitleEdit_is1", valueName);
-            if (value != null && Directory.Exists(value))
+            foreach (var path in paths)
             {
-                return value;
+                var value = RegistryUtil.GetValue(path, valueName);
+                if (Directory.Exists(value))
+                {
+                    return value;
+                }
             }
 
             return null;
@@ -152,6 +164,11 @@ namespace Nikse.SubtitleEdit.Core.Common
                 debugOrReleaseFolderName = "Debug";
 #endif
                 return $@"{assembly.Location.Substring(0, srcTestResultsIndex)}\src\Test\bin\{debugOrReleaseFolderName}\";
+            }
+
+            if (!string.IsNullOrEmpty(DataDirectoryOverride) && Directory.Exists(DataDirectoryOverride))
+            {
+                return DataDirectoryOverride.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal) ? DataDirectoryOverride : DataDirectoryOverride + Path.DirectorySeparatorChar;
             }
 
             var appDataRoamingPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Subtitle Edit");
@@ -291,6 +308,5 @@ namespace Nikse.SubtitleEdit.Core.Common
 
             return encodings.AsEnumerable();
         }
-
     }
 }

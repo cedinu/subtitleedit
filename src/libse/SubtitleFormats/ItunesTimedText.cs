@@ -1,6 +1,7 @@
 ﻿using Nikse.SubtitleEdit.Core.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 namespace Nikse.SubtitleEdit.Core.SubtitleFormats
@@ -107,7 +108,12 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 dropMode = "dropNTSC";
             }
 
-            const string language = "en-US";
+            var language = LanguageAutoDetect.AutoDetectGoogleLanguage(subtitle);
+            if (!string.IsNullOrEmpty(Configuration.Settings.SubtitleSettings.TimedTextItunesLanguage))
+            {
+                language = Configuration.Settings.SubtitleSettings.TimedTextItunesLanguage;
+            }
+
             var xmlStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + Environment.NewLine +
             "<tt xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.w3.org/ns/ttml\" xmlns:tt=\"http://www.w3.org/ns/ttml\" xmlns:tts=\"http://www.w3.org/ns/ttml#styling\" xmlns:ttp=\"http://www.w3.org/ns/ttml#parameter\" xml:lang=\"" + language + "\" ttp:timeBase=\"smpte\" ttp:frameRate=\"" + frameRate + "\" ttp:frameRateMultiplier=\"" + frameRateMultiplier + "\" ttp:dropMode=\"" + dropMode + "\">" + Environment.NewLine +
             "   <head>" + Environment.NewLine +
@@ -117,7 +123,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             "         <style tts:fontSize=\"100%\" tts:color=\"white\" tts:fontStyle=\"italic\" tts:fontWeight=\"normal\" tts:fontFamily=\"sansSerif\" xml:id=\"italic\"/>" + Environment.NewLine +
             "      </styling>" + Environment.NewLine +
             "      <layout>" + Environment.NewLine +
-            "        <region xml:id=\"top\" tts:origin=\"" + Configuration.Settings.SubtitleSettings.TimedTextItunesTopOrigin + "\" tts:extent=\"" + Configuration.Settings.SubtitleSettings.TimedTextItunesTopExtent + "]\" tts:textAlign=\"center\" tts:displayAlign=\"before\"/>" + Environment.NewLine +
+            "        <region xml:id=\"top\" tts:origin=\"" + Configuration.Settings.SubtitleSettings.TimedTextItunesTopOrigin + "\" tts:extent=\"" + Configuration.Settings.SubtitleSettings.TimedTextItunesTopExtent + "\" tts:textAlign=\"center\" tts:displayAlign=\"before\"/>" + Environment.NewLine +
             "        <region xml:id=\"bottom\" tts:origin=\"" + Configuration.Settings.SubtitleSettings.TimedTextItunesBottomOrigin + "\" tts:extent=\"" + Configuration.Settings.SubtitleSettings.TimedTextItunesBottomExtent + "\" tts:textAlign=\"center\" tts:displayAlign=\"after\"/>" + Environment.NewLine +
             "      </layout>" + Environment.NewLine +
             "   </head>" + Environment.NewLine +
@@ -236,29 +242,35 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                 }
             }
 
+            var hasAlignmentTags = subtitle.Paragraphs.Any(p => p.Text.Contains("{\\an", StringComparison.Ordinal));
             var headerStyles = GetStylesFromHeader(subtitle.Header);
+            var isDefaultAlignmentBottom = body != null && body.Attributes != null && body.Attributes["region"] != null && body.Attributes["region"].InnerText == "bottom";
             foreach (var p in subtitle.Paragraphs)
             {
                 var paragraph = xml.CreateElement("p", "http://www.w3.org/ns/ttml");
                 var text = p.Text;
 
-                var regionP = xml.CreateAttribute("region");
-                if (text.StartsWith("{\\an7}", StringComparison.Ordinal) || text.StartsWith("{\\an8}", StringComparison.Ordinal) || text.StartsWith("{\\an9}", StringComparison.Ordinal))
+                if (hasAlignmentTags || !isDefaultAlignmentBottom) 
                 {
-                    if (hasTopRegion)
+                    var regionP = xml.CreateAttribute("region");
+                    if (text.StartsWith("{\\an7}", StringComparison.Ordinal) || text.StartsWith("{\\an8}", StringComparison.Ordinal) || text.StartsWith("{\\an9}", StringComparison.Ordinal))
                     {
-                        regionP.InnerText = "top";
+                        if (hasTopRegion)
+                        {
+                            regionP.InnerText = "top";
+                            paragraph.Attributes.Append(regionP);
+                        }
+                    }
+                    else if (hasBottomRegion)
+                    {
+                        regionP.InnerText = "bottom";
                         paragraph.Attributes.Append(regionP);
                     }
-                }
-                else if (hasBottomRegion)
-                {
-                    regionP.InnerText = "bottom";
-                    paragraph.Attributes.Append(regionP);
-                }
-                if (text.StartsWith("{\\an", StringComparison.Ordinal) && text.Length > 6 && text[5] == '}')
-                {
-                    text = text.Remove(0, 6);
+
+                    if (text.StartsWith("{\\an", StringComparison.Ordinal) && text.Length > 6 && text[5] == '}')
+                    {
+                        text = text.Remove(0, 6);
+                    }
                 }
 
                 if (convertedFromSubStationAlpha)
@@ -310,7 +322,7 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
                             styles.Push(currentStyle);
                             currentStyle = xml.CreateNode(XmlNodeType.Element, "span", null);
                             paragraph.AppendChild(currentStyle);
-                            var attr = xml.CreateAttribute("tts:fontStyle", "http://www.w3.org/ns/ttml#styling");
+                            var attr = CreateParagraphStyleAttribute(xml);
                             attr.InnerText = "italic";
                             currentStyle.Attributes.Append(attr);
                             skipCount = 2;
@@ -406,6 +418,17 @@ namespace Nikse.SubtitleEdit.Core.SubtitleFormats
             }
 
             return xmlString;
+        }
+
+        private static XmlAttribute CreateParagraphStyleAttribute(XmlDocument xml)
+        {
+            if (string.IsNullOrEmpty(Configuration.Settings.SubtitleSettings.TimedTextItunesStyleAttribute) ||
+                Configuration.Settings.SubtitleSettings.TimedTextItunesStyleAttribute == "tts:fontStyle")
+            {
+                return xml.CreateAttribute("tts:fontStyle", "http://www.w3.org/ns/ttml#styling");
+            }
+
+            return xml.CreateAttribute(Configuration.Settings.SubtitleSettings.TimedTextItunesStyleAttribute);
         }
     }
 }

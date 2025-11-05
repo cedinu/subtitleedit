@@ -66,6 +66,11 @@ namespace Nikse.SubtitleEdit.Forms
                 comboBoxLanguage.Text = attr.InnerText;
             }
 
+            if (!string.IsNullOrEmpty(Configuration.Settings.SubtitleSettings.TimedTextItunesLanguage))
+            {
+                comboBoxLanguage.Text = Configuration.Settings.SubtitleSettings.TimedTextItunesLanguage;
+            }
+
             attr = _xml.DocumentElement.Attributes["ttp:timeBase"];
             if (attr != null)
             {
@@ -136,6 +141,12 @@ namespace Nikse.SubtitleEdit.Forms
                     comboBoxFileExtensions.SelectedIndex = index;
                     break;
                 }
+            }
+
+            comboBoxStyleAttribute.SelectedIndex = 0;
+            if (Configuration.Settings.SubtitleSettings.TimedTextItunesStyleAttribute == "style")
+            {
+                comboBoxStyleAttribute.SelectedIndex = 1;
             }
 
             textBoxTopOrigin.Text = Configuration.Settings.SubtitleSettings.TimedTextItunesTopOrigin;
@@ -316,6 +327,8 @@ namespace Nikse.SubtitleEdit.Forms
 
             _subtitle.Header = _xml.OuterXml;
 
+            Configuration.Settings.SubtitleSettings.TimedTextItunesLanguage = comboBoxLanguage.Text;
+
             Configuration.Settings.SubtitleSettings.TimedTextItunesTimeCodeFormat = comboBoxTimeCodeFormat.SelectedItem.ToString();
             Configuration.Settings.SubtitleSettings.TimedText10FileExtension = comboBoxFileExtensions.SelectedItem.ToString();
 
@@ -323,6 +336,7 @@ namespace Nikse.SubtitleEdit.Forms
             Configuration.Settings.SubtitleSettings.TimedTextItunesTopExtent = textBoxTopExtent.Text;
             Configuration.Settings.SubtitleSettings.TimedTextItunesBottomOrigin = textBoxBottomOrigin.Text;
             Configuration.Settings.SubtitleSettings.TimedTextItunesBottomExtent = textBoxBottomExtent.Text;
+            Configuration.Settings.SubtitleSettings.TimedTextItunesStyleAttribute = comboBoxStyleAttribute.Text;
 
             DialogResult = DialogResult.OK;
         }

@@ -1,4 +1,5 @@
 ﻿using Nikse.SubtitleEdit.Core.Common;
+using Nikse.SubtitleEdit.Core.Http;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,7 +20,7 @@ namespace Nikse.SubtitleEdit.Core.VobSub.Ocr.Service
     public class GoogleCloudVisionApi : IOcrStrategy
     {
         private readonly string _apiKey;
-        private readonly HttpClient _httpClient;
+        private readonly IDownloader _httpClient;
 
         public string GetName()
         {
@@ -152,7 +153,7 @@ namespace Nikse.SubtitleEdit.Core.VobSub.Ocr.Service
         public GoogleCloudVisionApi(string apiKey)
         {
             _apiKey = apiKey;
-            _httpClient = HttpClientHelper.MakeHttpClient();
+            _httpClient = DownloaderFactory.MakeHttpClient();
             _httpClient.BaseAddress = new Uri("https://vision.googleapis.com/v1/images:annotate");
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
@@ -195,12 +196,12 @@ namespace Nikse.SubtitleEdit.Core.VobSub.Ocr.Service
                 var result = _httpClient.PostAsync(uri, new StringContent(requestBodyString)).Result;
                 if ((int)result.StatusCode == 400)
                 {
-                    throw new OcrException("API key invalid (or perhaps billing is not enabled)?");
+                    throw new OcrException("API key invalid (or perhaps billing/API is not enabled)?");
                 }
 
                 if ((int)result.StatusCode == 403)
                 {
-                    throw new OcrException("\"Perhaps billing is not enabled (or API key is invalid)?\"");
+                    throw new OcrException("\"Perhaps billing is not enabled (or API not enabled or API key is invalid)?\"");
                 }
 
                 if (!result.IsSuccessStatusCode)

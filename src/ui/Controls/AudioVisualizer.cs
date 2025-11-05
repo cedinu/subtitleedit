@@ -10,6 +10,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Core.Forms;
+using System.Diagnostics;
+using System.Drawing.Imaging;
 
 namespace Nikse.SubtitleEdit.Controls
 {
@@ -72,6 +75,8 @@ namespace Nikse.SubtitleEdit.Controls
         }
 
         public int ClosenessForBorderSelection { get; set; } = 15;
+        public float SpectrogramAlpha { get; set; } = 1.0f;
+        public int WaveformAlpha { get; set; } = 255;
         private const int MinimumSelectionMilliseconds = 100;
 
         private long _buttonDownTimeTicks;
@@ -95,6 +100,7 @@ namespace Nikse.SubtitleEdit.Controls
         private Subtitle _subtitle;
         private bool _noClear;
         private double _gapAtStart = -1;
+        private const int WM_MOUSEHWHEEL = 0x020E;
 
         private SpectrogramData _spectrogram;
         private const int SpectrogramDisplayHeight = 128;
@@ -115,6 +121,7 @@ namespace Nikse.SubtitleEdit.Controls
         public event EventHandler OnZoomedChanged;
         public event EventHandler OnInsertAtVideoPosition;
         public event EventHandler OnPasteAtVideoPosition;
+        public event EventHandler OnSelectAll;
 
         private double _wholeParagraphMinMilliseconds;
         private double _wholeParagraphMaxMilliseconds = double.MaxValue;
@@ -129,7 +136,7 @@ namespace Nikse.SubtitleEdit.Controls
         public const double ZoomMaximum = 2.5;
         private double _zoomFactor = 1.0; // 1.0=no zoom
 
-        public const int ShotChangeSnapPixels = 8;
+        public int ShotChangeSnapPixels = 8;
 
         public double ZoomFactor
         {
@@ -150,12 +157,13 @@ namespace Nikse.SubtitleEdit.Controls
                 if (Math.Abs(_zoomFactor - value) > 0.01)
                 {
                     _zoomFactor = value;
+                    UpdateSnappingDistance();
                     Invalidate();
                 }
             }
         }
 
-        public const double VerticalZoomMinimum = 1.0;
+        public const double VerticalZoomMinimum = 0.1;
         public const double VerticalZoomMaximum = 20.0;
         private double _verticalZoomFactor = 1.0; // 1.0=no zoom
 
@@ -226,6 +234,22 @@ namespace Nikse.SubtitleEdit.Controls
                 }
             }
         }
+
+        private bool _combineSpectrogramAndWaveform;
+
+        public bool CombineSpectrogramAndWaveform
+        {
+            get => _combineSpectrogramAndWaveform;
+            set
+            {
+                if (_combineSpectrogramAndWaveform != value)
+                {
+                    _combineSpectrogramAndWaveform = value;
+                    Invalidate();
+                }
+            }
+        }
+
 
         public bool AllowOverlap { get; set; }
 
@@ -325,6 +349,8 @@ namespace Nikse.SubtitleEdit.Controls
                 _subtitle = new Subtitle();
                 _noClear = false;
                 _wavePeaks = value;
+
+                UpdateSnappingDistance();
             }
         }
 
@@ -391,6 +417,8 @@ namespace Nikse.SubtitleEdit.Controls
             ShowSpectrogram = true;
             ShowWaveform = true;
             InsertAtVideoPositionShortcut = UiUtil.GetKeys(Configuration.Settings.Shortcuts.MainWaveformInsertAtCurrentPosition);
+
+            UpdateSnappingDistance();
         }
 
         protected override bool IsInputKey(Keys keyData)
@@ -451,7 +479,7 @@ namespace Nikse.SubtitleEdit.Controls
             foreach (var p in displayableParagraphs)
             {
                 if (displayableParagraphs.Count > 30 &&
-                    (p.Duration.TotalMilliseconds < 0.01 || p.StartTime.TotalMilliseconds - lastStartTime < 90))
+                    (p.DurationTotalMilliseconds < 0.01 || p.StartTime.TotalMilliseconds - lastStartTime < 90))
                 {
                     continue;
                 }
@@ -479,7 +507,7 @@ namespace Nikse.SubtitleEdit.Controls
 
         public void SetPosition(double startPositionSeconds, Subtitle subtitle, double currentVideoPositionSeconds, int subtitleIndex, ListView.SelectedIndexCollection selectedIndexes)
         {
-            if (TimeSpan.FromTicks(DateTime.UtcNow.Ticks - _lastMouseWheelScroll).TotalSeconds > 0.25)
+            if (TimeSpan.FromTicks(Stopwatch.GetTimestamp() - _lastMouseWheelScroll).TotalSeconds > 0.25)
             { // don't set start position when scrolling with mouse wheel as it will make a bad (jumping back) forward scrolling
                 StartPositionSeconds = startPositionSeconds;
             }
@@ -556,6 +584,10 @@ namespace Nikse.SubtitleEdit.Controls
                 var showSpectrogram = _showSpectrogram && IsSpectrogramAvailable;
                 var showSpectrogramOnly = showSpectrogram && !_showWaveform;
                 var waveformHeight = Height - (showSpectrogram ? SpectrogramDisplayHeight : 0);
+                if (CombineSpectrogramAndWaveform && showSpectrogram)
+                {
+                    waveformHeight = Height;
+                }
 
                 // background
                 graphics.Clear(BackgroundColor);
@@ -569,14 +601,14 @@ namespace Nikse.SubtitleEdit.Controls
                 // spectrogram
                 if (showSpectrogram)
                 {
-                    DrawSpectrogram(graphics);
+                    DrawSpectrogram(graphics, waveformHeight);
                 }
 
                 // waveform
                 if (_showWaveform)
                 {
-                    using (var penNormal = new Pen(Color))
-                    using (var penSelected = new Pen(SelectedColor)) // selected paragraph
+                    using (var penNormal = new Pen(Color.FromArgb(this.WaveformAlpha, Color)))
+                    using (var penSelected = new Pen(Color.FromArgb(this.WaveformAlpha, SelectedColor))) // selected paragraph
                     {
                         var isSelectedHelper = new IsSelectedHelper(_allSelectedParagraphs, _wavePeaks.SampleRate);
                         var baseHeight = (int)(_wavePeaks.HighestPeak / _verticalZoomFactor);
@@ -1077,7 +1109,7 @@ namespace Nikse.SubtitleEdit.Controls
 
                             if (Configuration.Settings.VideoControls.WaveformDrawCps)
                             {
-                                text = $"{Utilities.GetCharactersPerSecond(paragraph):0.00}" + Environment.NewLine + text;
+                                text = $"{paragraph.GetCharactersPerSecond():0.00}" + Environment.NewLine + text;
                             }
                         }
                         else
@@ -1089,7 +1121,7 @@ namespace Nikse.SubtitleEdit.Controls
 
                             if (Configuration.Settings.VideoControls.WaveformDrawCps)
                             {
-                                text = string.Format(LanguageSettings.Current.Waveform.CharsSecX, Utilities.GetCharactersPerSecond(paragraph)) + Environment.NewLine + text;
+                                text = string.Format(LanguageSettings.Current.Waveform.CharsSecX, paragraph.GetCharactersPerSecond()) + Environment.NewLine + text;
                             }
                         }
                     }
@@ -1188,7 +1220,7 @@ namespace Nikse.SubtitleEdit.Controls
             _firstMove = true;
             if (e.Button == MouseButtons.Left)
             {
-                _buttonDownTimeTicks = DateTime.UtcNow.Ticks;
+                _buttonDownTimeTicks = Stopwatch.GetTimestamp();
 
                 Cursor = Cursors.VSplit;
                 double seconds = RelativeXPositionToSeconds(e.X);
@@ -1726,12 +1758,13 @@ namespace Nikse.SubtitleEdit.Controls
 
                                 _mouseDownParagraph.StartTime.TotalMilliseconds = milliseconds;
 
-                                if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift)
+                                if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift &&
+                                    _shotChanges?.Count > 0)
                                 {
-                                    var nearestShotChange = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs((x * 1000) - milliseconds) < Math.Abs((y * 1000) - milliseconds) ? x : y) : -9999;
-                                    if (Math.Abs(e.X - SecondsToXPosition(nearestShotChange - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                    var nearestShotChange = ShotChangeHelper.GetClosestShotChange(_shotChanges, new TimeCode(milliseconds));
+                                    if (nearestShotChange != null && Math.Abs(e.X - SecondsToXPosition(nearestShotChange.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                     {
-                                        _mouseDownParagraph.StartTime.TotalMilliseconds = nearestShotChange * 1000;
+                                        _mouseDownParagraph.StartTime.TotalMilliseconds = (nearestShotChange.Value * 1000) + TimeCodesBeautifierUtils.GetInCuesGapMs();
                                     }
                                 }
 
@@ -1746,10 +1779,10 @@ namespace Nikse.SubtitleEdit.Controls
 
                                     if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift)
                                     {
-                                        var nearestShotChange = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs((x * 1000) - milliseconds) < Math.Abs((y * 1000) - milliseconds) ? x : y) : -9999;
-                                        if (Math.Abs(e.X - SecondsToXPosition(nearestShotChange - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                        var nearestShotChange = ShotChangeHelper.GetClosestShotChange(_shotChanges, new TimeCode(milliseconds));
+                                        if (nearestShotChange != null && Math.Abs(e.X - SecondsToXPosition(nearestShotChange.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                         {
-                                            NewSelectionParagraph.StartTime.TotalMilliseconds = nearestShotChange * 1000;
+                                            NewSelectionParagraph.StartTime.TotalMilliseconds = (nearestShotChange.Value * 1000) + TimeCodesBeautifierUtils.GetInCuesGapMs();
                                         }
                                     }
 
@@ -1785,10 +1818,10 @@ namespace Nikse.SubtitleEdit.Controls
 
                                 if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift)
                                 {
-                                    var nearestShotChange = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs((x * 1000) - milliseconds) < Math.Abs((y * 1000) - milliseconds) ? x : y) : -9999;
-                                    if (Math.Abs(e.X - SecondsToXPosition(nearestShotChange - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                    var nearestShotChange = ShotChangeHelper.GetClosestShotChange(_shotChanges, new TimeCode(milliseconds));
+                                    if (nearestShotChange != null && Math.Abs(e.X - SecondsToXPosition(nearestShotChange.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                     {
-                                        _mouseDownParagraph.EndTime.TotalMilliseconds = nearestShotChange * 1000;
+                                        _mouseDownParagraph.EndTime.TotalMilliseconds = (nearestShotChange.Value * 1000) - TimeCodesBeautifierUtils.GetOutCuesGapMs();
                                     }
                                 }
 
@@ -1803,10 +1836,10 @@ namespace Nikse.SubtitleEdit.Controls
 
                                     if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift)
                                     {
-                                        var nearestShotChange = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs((x * 1000) - milliseconds) < Math.Abs((y * 1000) - milliseconds) ? x : y) : -9999;
-                                        if (Math.Abs(e.X - SecondsToXPosition(nearestShotChange - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                        var nearestShotChange = ShotChangeHelper.GetClosestShotChange(_shotChanges, new TimeCode(milliseconds));
+                                        if (nearestShotChange != null && Math.Abs(e.X - SecondsToXPosition(nearestShotChange.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                         {
-                                            NewSelectionParagraph.EndTime.TotalMilliseconds = nearestShotChange * 1000;
+                                            NewSelectionParagraph.EndTime.TotalMilliseconds = (nearestShotChange.Value * 1000) - TimeCodesBeautifierUtils.GetOutCuesGapMs();
                                         }
                                     }
 
@@ -1827,25 +1860,27 @@ namespace Nikse.SubtitleEdit.Controls
                         }
                         else if (_mouseDownParagraphType == MouseDownParagraphType.Whole)
                         {
-                            var durationMilliseconds = _mouseDownParagraph.Duration.TotalMilliseconds;
+                            var durationMilliseconds = _mouseDownParagraph.DurationTotalMilliseconds;
                             var oldStart = _mouseDownParagraph.StartTime.TotalMilliseconds;
                             _mouseDownParagraph.StartTime.TotalMilliseconds = milliseconds - _moveWholeStartDifferenceMilliseconds;
                             _mouseDownParagraph.EndTime.TotalMilliseconds = _mouseDownParagraph.StartTime.TotalMilliseconds + durationMilliseconds;
 
                             if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift)
                             {
-                                var nearestShotChangeInFront = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs((x * 1000) - _mouseDownParagraph.StartTime.TotalMilliseconds) < Math.Abs((y * 1000) - _mouseDownParagraph.StartTime.TotalMilliseconds) ? x : y) : -9999;
-                                var nearestShotChangeInBack = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs((x * 1000) - _mouseDownParagraph.EndTime.TotalMilliseconds) < Math.Abs((y * 1000) - _mouseDownParagraph.EndTime.TotalMilliseconds) ? x : y) : -9999;
+                                var nearestShotChangeInFront = ShotChangeHelper.GetClosestShotChange(_shotChanges, _mouseDownParagraph.StartTime);
+                                var nearestShotChangeInBack = ShotChangeHelper.GetClosestShotChange(_shotChanges, _mouseDownParagraph.EndTime);
 
-                                if (Math.Abs(SecondsToXPosition(_mouseDownParagraph.StartTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInFront - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                if (nearestShotChangeInFront != null && Math.Abs(SecondsToXPosition(_mouseDownParagraph.StartTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInFront.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                 {
-                                    _mouseDownParagraph.StartTime.TotalMilliseconds = nearestShotChangeInFront * 1000;
-                                    _mouseDownParagraph.EndTime.TotalMilliseconds = (nearestShotChangeInFront * 1000) + durationMilliseconds;
+                                    var nearestShotChangeInFrontMs = (nearestShotChangeInFront.Value * 1000) + TimeCodesBeautifierUtils.GetInCuesGapMs();
+                                    _mouseDownParagraph.StartTime.TotalMilliseconds = nearestShotChangeInFrontMs;
+                                    _mouseDownParagraph.EndTime.TotalMilliseconds = nearestShotChangeInFrontMs + durationMilliseconds;
                                 }
-                                else if (Math.Abs(SecondsToXPosition(_mouseDownParagraph.EndTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInBack - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                else if (nearestShotChangeInBack != null && Math.Abs(SecondsToXPosition(_mouseDownParagraph.EndTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInBack.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                 {
-                                    _mouseDownParagraph.EndTime.TotalMilliseconds = nearestShotChangeInBack * 1000;
-                                    _mouseDownParagraph.StartTime.TotalMilliseconds = (nearestShotChangeInBack * 1000) - durationMilliseconds;
+                                    var nearestShotChangeInBackMs = (nearestShotChangeInBack.Value * 1000) - TimeCodesBeautifierUtils.GetOutCuesGapMs();
+                                    _mouseDownParagraph.EndTime.TotalMilliseconds = nearestShotChangeInBackMs;
+                                    _mouseDownParagraph.StartTime.TotalMilliseconds = nearestShotChangeInBackMs - durationMilliseconds;
                                 }
                             }
 
@@ -1896,17 +1931,17 @@ namespace Nikse.SubtitleEdit.Controls
 
                             if (Configuration.Settings.VideoControls.WaveformSnapToShotChanges && ModifierKeys != Keys.Shift)
                             {
-                                var nearestShotChangeInFront = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs(x - startTotalSeconds) < Math.Abs(y - startTotalSeconds) ? x : y) : -9999;
-                                var nearestShotChangeInBack = _shotChanges.Count > 0 ? _shotChanges.Aggregate((x, y) => Math.Abs(x - endTotalSeconds) < Math.Abs(y - endTotalSeconds) ? x : y) : -9999;
+                                var nearestShotChangeInFront = ShotChangeHelper.GetClosestShotChange(_shotChanges, TimeCode.FromSeconds(startTotalSeconds));
+                                var nearestShotChangeInBack = ShotChangeHelper.GetClosestShotChange(_shotChanges, TimeCode.FromSeconds(endTotalSeconds));
 
-                                if (Math.Abs(SecondsToXPosition(NewSelectionParagraph.StartTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInFront - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                if (nearestShotChangeInFront != null && Math.Abs(SecondsToXPosition(NewSelectionParagraph.StartTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInFront.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                 {
-                                    NewSelectionParagraph.StartTime.TotalMilliseconds = nearestShotChangeInFront * 1000;
+                                    NewSelectionParagraph.StartTime.TotalMilliseconds = (nearestShotChangeInFront.Value * 1000) + TimeCodesBeautifierUtils.GetInCuesGapMs();
                                     Invalidate();
                                 }
-                                if (Math.Abs(SecondsToXPosition(NewSelectionParagraph.EndTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInBack - _startPositionSeconds)) < ShotChangeSnapPixels)
+                                if (nearestShotChangeInBack != null && Math.Abs(SecondsToXPosition(NewSelectionParagraph.EndTime.TotalSeconds - _startPositionSeconds) - SecondsToXPosition(nearestShotChangeInBack.Value - _startPositionSeconds)) < ShotChangeSnapPixels)
                                 {
-                                    NewSelectionParagraph.EndTime.TotalMilliseconds = nearestShotChangeInBack * 1000;
+                                    NewSelectionParagraph.EndTime.TotalMilliseconds = (nearestShotChangeInBack.Value * 1000) - TimeCodesBeautifierUtils.GetOutCuesGapMs();
                                     Invalidate();
                                 }
                             }
@@ -2076,7 +2111,7 @@ namespace Nikse.SubtitleEdit.Controls
             if (e.Button == MouseButtons.Left && OnSingleClick != null)
             {
                 var diff = Math.Abs(_mouseMoveStartX - e.X);
-                if (_mouseMoveStartX == -1 || _mouseMoveEndX == -1 || diff < 10 && TimeSpan.FromTicks(DateTime.UtcNow.Ticks - _buttonDownTimeTicks).TotalSeconds < 0.25)
+                if (_mouseMoveStartX == -1 || _mouseMoveEndX == -1 || diff < 10 && TimeSpan.FromTicks(Stopwatch.GetTimestamp() - _buttonDownTimeTicks).TotalSeconds < 0.25)
                 {
                     if (ModifierKeys == Keys.Shift && SelectedParagraph != null)
                     {
@@ -2129,7 +2164,7 @@ namespace Nikse.SubtitleEdit.Controls
                         {
                             _oldParagraph = new Paragraph(SelectedParagraph);
                             _mouseDownParagraph = SelectedParagraph;
-                            var durationMilliseconds = _mouseDownParagraph.Duration.TotalMilliseconds;
+                            var durationMilliseconds = _mouseDownParagraph.DurationTotalMilliseconds;
                             _mouseDownParagraph.StartTime.TotalMilliseconds = milliseconds;
                             _mouseDownParagraph.EndTime.TotalMilliseconds = _mouseDownParagraph.StartTime.TotalMilliseconds + durationMilliseconds;
                             OnTimeChanged?.Invoke(this, new ParagraphEventArgs(seconds, _mouseDownParagraph, _oldParagraph));
@@ -2199,19 +2234,18 @@ namespace Nikse.SubtitleEdit.Controls
             }
             else if (e.KeyData == InsertAtVideoPositionShortcut)
             {
-                if (OnInsertAtVideoPosition != null)
-                {
-                    OnInsertAtVideoPosition.Invoke(this, null);
-                    e.SuppressKeyPress = true;
-                }
+                OnInsertAtVideoPosition?.Invoke(this, null);
+                e.SuppressKeyPress = true;
             }
             else if (e.KeyCode == Keys.V && e.Modifiers == Keys.Control) //Ctrl+v = Paste from clipboard
             {
-                if (OnPasteAtVideoPosition != null)
-                {
-                    OnPasteAtVideoPosition.Invoke(this, null);
-                    e.SuppressKeyPress = true;
-                }
+                OnPasteAtVideoPosition?.Invoke(this, null);
+                e.SuppressKeyPress = true;
+            }
+            else if (e.KeyCode == Keys.A && e.Modifiers == Keys.Control) //Ctrl+a
+            {
+                OnSelectAll?.Invoke(this, null);
+                e.SuppressKeyPress = true;
             }
             else if (e.KeyData == Move100MsLeft)
             {
@@ -2265,6 +2299,20 @@ namespace Nikse.SubtitleEdit.Controls
             VerticalZoomFactor /= 1.1;
         }
 
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            // support horizontal mousepad panning
+
+            if (m.Msg == WM_MOUSEHWHEEL)
+            {
+                int delta = (short)((m.WParam.ToInt64() >> 16) & 0xffff);
+
+                HandleWaveFormScroll(delta);
+            }
+        }
+
         private void WaveformMouseWheel(object sender, MouseEventArgs e)
         {
             // The scroll wheel could work in theory without the waveform loaded (it would be
@@ -2309,6 +2357,11 @@ namespace Nikse.SubtitleEdit.Controls
                 delta *= -1;
             }
 
+            HandleWaveFormScroll(delta);
+        }
+
+        private void HandleWaveFormScroll(int delta)
+        {
             if (Locked)
             {
                 _currentVideoPositionSeconds += delta / 256.0;
@@ -2317,7 +2370,7 @@ namespace Nikse.SubtitleEdit.Controls
             else
             {
                 StartPositionSeconds += delta / 256.0;
-                _lastMouseWheelScroll = DateTime.UtcNow.Ticks;
+                _lastMouseWheelScroll = Stopwatch.GetTimestamp();
                 if (_currentVideoPositionSeconds < _startPositionSeconds || _currentVideoPositionSeconds >= EndPositionSeconds)
                 {
                     OnPositionSelected?.Invoke(this, new ParagraphEventArgs(_startPositionSeconds, null));
@@ -2369,7 +2422,7 @@ namespace Nikse.SubtitleEdit.Controls
             Invalidate();
         }
 
-        private void DrawSpectrogram(Graphics graphics)
+        private void DrawSpectrogram(Graphics graphics, int height) // Add transparency parameter
         {
             var width = (int)Math.Round((EndPositionSeconds - _startPositionSeconds) / _spectrogram.SampleDuration);
             using (var bmpCombined = new Bitmap(width, _spectrogram.FftSize / 2))
@@ -2387,8 +2440,36 @@ namespace Nikse.SubtitleEdit.Controls
                     imageIndex++;
                 }
 
-                var displayHeight = _showWaveform ? SpectrogramDisplayHeight : Height;
-                graphics.DrawImage(bmpCombined, new Rectangle(0, Height - displayHeight, Width, displayHeight));
+                if (CombineSpectrogramAndWaveform)
+                {
+                    var destRect = new Rectangle(0, Height - height, Width, height);
+
+                    // Create ImageAttributes
+                    using (ImageAttributes imageAttributes = new ImageAttributes())
+                    {
+                        // Create a color matrix for transparency
+                        float[][] colorMatrixElements =
+                        {
+                            new float[] { 1, 0, 0, 0, 0 },
+                            new float[] { 0, 1, 0, 0, 0 },
+                            new float[] { 0, 0, 1, 0, 0 },
+                            new float[] { 0, 0, 0, this.SpectrogramAlpha, 0 },
+                            new float[] { 0, 0, 0, 0, 1 }
+                        };
+                        ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
+
+                        // Set the color matrix in ImageAttributes
+                        imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+                        // Draw the image with transparency
+                        graphics.DrawImage(bmpCombined, destRect, 0, 0, bmpCombined.Width, bmpCombined.Height, GraphicsUnit.Pixel, imageAttributes);
+                    }
+                }
+                else
+                {
+                    var displayHeight = _showWaveform ? SpectrogramDisplayHeight : Height;
+                    graphics.DrawImage(bmpCombined, new Rectangle(0, Height - displayHeight, Width, displayHeight));
+                }
             }
         }
 
@@ -2717,6 +2798,22 @@ namespace Nikse.SubtitleEdit.Controls
             }
 
             return -1;
+        }
+
+        private void UpdateSnappingDistance()
+        {
+            if (_wavePeaks != null)
+            {
+                var largestGapInFrames = Math.Max(Configuration.Settings.BeautifyTimeCodes.Profile.InCuesGap, Configuration.Settings.BeautifyTimeCodes.Profile.OutCuesGap);
+                var pixelsPerFrame = (_wavePeaks.SampleRate * _zoomFactor) / Configuration.Settings.General.CurrentFrameRate;
+                var snappingDistance = (int)Math.Round(pixelsPerFrame * Math.Max(1, largestGapInFrames));
+
+                ShotChangeSnapPixels = Math.Max(8, snappingDistance);
+            }
+            else
+            {
+                ShotChangeSnapPixels = 8;
+            }
         }
     }
 }

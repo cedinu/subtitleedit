@@ -408,19 +408,19 @@ nl.SetupAppTitle=Setup - Subtitle Edit
 nl.SetupWindowTitle=Setup - Subtitle Edit {#app_ver}
 [CustomMessages]
 nl.comp_translations=Vertalingen
-nl.msg_AskToDownNET=Subtitle Edit vereist .NET Framework 4.8. Download en instaleer deze software alstublieft en doe de setup opnieuw.%n%nWilt u nu .NET Framework 4.8 instaleren?
-nl.msg_DeleteSettings=Wilt u de instellingen en persoonlijke aanpassingen in de woordenboeken van Subtitle Edit verwijderen?%n%nAls u Subtitle Edit opnieuw installeert hoeft u deze niet te verwijderen.
-nl.msg_OptimizingPerformance=Prestatie optimaliseren...
-nl.run_VisitWebsite=Bezoek Subtitle Edit Website
-nl.sm_com_Changelog=Subtitle Edit Changelog
+nl.msg_AskToDownNET=Voor Subtitle Edit is .NET Framework 4.8 vereist. Download en installeer deze software en voer Setup opnieuw uit.%n%nWilt u .NET Framework 4.8 nu installeren?
+nl.msg_DeleteSettings=Wilt u de instellingen en persoonlijke aanpassingen in de woordenboeken van Subtitle Edit verwijderen?%n%nAls u Subtitle Edit opnieuw wilt installeren, hoeft u deze niet te verwijderen.
+nl.msg_OptimizingPerformance=Prestaties optimaliseren...
+nl.run_VisitWebsite=Website van Subtitle Edit bezoeken
+nl.sm_com_Changelog=Recente wijzigingen in Subtitle Edit
 nl.tsk_AllUsers=Voor alle gebruikers
 nl.tsk_CurrentUser=Alleen voor huidige gebruiker
 nl.tsk_Other=Anders:
-nl.tsk_ResetDictionaries=Herstel woordenboeken en verwijder elke persoonlijke toevoeging
-nl.tsk_ResetSettings=Herstel Subtitle Edit settings
-nl.tsk_SetFileTypes=Koppel veelgebruikte ondertitelbestanden aan Subtitle Edit
-nl.types_custom=Gebruiker specifieke installatie
-nl.types_default=Standaard installatie
+nl.tsk_ResetDictionaries=Woordenboeken en aangepaste namen verwijderen
+nl.tsk_ResetSettings=Instellingen van Subtitle Edit verwijderen
+nl.tsk_SetFileTypes=Veelgebruikte ondertitelbestanden openen met Subtitle Edit
+nl.types_custom=Aangepaste installatie
+nl.types_default=Standaardinstallatie
 
 ; Polish
 [Messages]
@@ -452,7 +452,7 @@ pt.msg_AskToDownNET=O Subtitle Edit necessita do .NET Framework 4.8. Por favor, 
 pt.msg_DeleteSettings=Deseja remover as definições do Subtitle Edit e quaisquer alterações feitas nos dicionários?%n%nSe planeia reinstalar o Subtitle Edit não necessita de remover estes itens.
 pt.msg_OptimizingPerformance=A optimizar o desempenho...
 pt.run_VisitWebsite=Visitar o site do Subtitle Edit
-pt.sm_com_Changelog=Relatório de alterações do Subtitle Edit
+pt.sm_com_Changelog=Registo de alterações do Subtitle Edit
 pt.tsk_AllUsers=Todos os utilizadores
 pt.tsk_CurrentUser=Utilizador atual
 pt.tsk_Other=Outro:
@@ -460,7 +460,7 @@ pt.tsk_ResetDictionaries=Repor os Dicionários e remover quaisquer nomes persona
 pt.tsk_ResetSettings=Repor as definições do Subtitle Edit
 pt.tsk_SetFileTypes=Associar os ficheiros de texto SubRip (.srt) ao Subtitle Edit
 pt.types_custom=Instalação personalizada
-pt.types_default=Instalação padrão
+pt.types_default=Instalação predefinida
 
 ; Portuguese (Brazil)
 [Messages]
@@ -488,19 +488,19 @@ ro.SetupAppTitle=Setup - Subtitle Edit
 ro.SetupWindowTitle=Setup - Subtitle Edit {#app_ver}
 [CustomMessages]
 ro.comp_translations=Traduceri
-ro.msg_AskToDownNET=Subtitle Edit necesită .NET Framework 4.8. Te rog să descarci şi să instalezi .NET Framework şi apoi să reiei instalarea.%n%nVrei să descarci acum .NET Framework 4.8?
-ro.msg_DeleteSettings=Vrei să ştergi de asemenea setările şi personalizările făcute în dicţionare?%n%nDacă ai de gând să reinstalezi Subtitle Edit, nu este nevoie să le ştergi.
-ro.msg_OptimizingPerformance=Optimizare în desfășurare...
-ro.run_VisitWebsite=Vizitează pagina Web a programului Subtitle Edit
-ro.sm_com_Changelog=Jurnalul modificărilor în programul Subtitle Edit
-ro.tsk_AllUsers=Pentru toţi utilizatorii
+ro.msg_AskToDownNET=Subtitle Edit necesita .NET Framework 4.8. Te rog să descarci si sa instalezi .NET Framework si apoi sa reiei instalarea.%n%nVrei sa descarci acum .NET Framework 4.8?
+ro.msg_DeleteSettings=Vrei sa elimini de asemenea setarile si personalizarile facute in dictionare?%n%nDaca ai de gand sa reinstalezi Subtitle Edit, nu este nevoie sa le elimini.
+ro.msg_OptimizingPerformance=Optimizare in desfasurare...
+ro.run_VisitWebsite=Viziteaza pagina Web a programului Subtitle Edit
+ro.sm_com_Changelog=Jurnalul modificarilor in programul Subtitle Edit
+ro.tsk_AllUsers=Pentru toti utilizatorii
 ro.tsk_CurrentUser=Pentru utilizatorul curent
 ro.tsk_Other=Altele:
-ro.tsk_ResetDictionaries=Resetează Dicționarele și șterge toate numele personalizate
-ro.tsk_ResetSettings=Resetează configurarea programului Subtitle Edit
-ro.tsk_SetFileTypes=Asociați fișierele de subtitrare comune cu Subtitle Edit
-ro.types_custom=Instalare personalizată
-ro.types_default=Instalare predefinită
+ro.tsk_ResetDictionaries=Reseteaza Dictionarele si elimina toate denumirile personalizate
+ro.tsk_ResetSettings=Reseteaza configurarea programului Subtitle Edit
+ro.tsk_SetFileTypes=Asocierea fisierelor de subtitrare comune cu Subtitle Edit
+ro.types_custom=Instalare personalizata
+ro.types_default=Instalare predefinita
 
 ; Russian
 [Messages]
@@ -627,20 +627,20 @@ th.types_default=Default installation
 tr.SetupAppTitle=Setup - Subtitle Edit
 tr.SetupWindowTitle=Setup - Subtitle Edit {#app_ver}
 [CustomMessages]
-tr.comp_translations=Translations
-tr.msg_AskToDownNET=Subtitle Edit requires the .NET Framework 4.8. Please download and install the .NET Framework and run setup again.%n%nDo you want to download the .NET Framework 4.8 now?
-tr.msg_DeleteSettings=Do you also want to delete Subtitle Edit's settings and any custom changes you made in the dictionaries?%n%nIf you plan on reinstalling Subtitle Edit you do not have to delete them.
-tr.msg_OptimizingPerformance=Optimizing performance...
-tr.run_VisitWebsite=Visit Subtitle Edit's Website
-tr.sm_com_Changelog=Subtitle Edit's Changelog
-tr.tsk_AllUsers=For all users
-tr.tsk_CurrentUser=For the current user only
-tr.tsk_Other=Other:
-tr.tsk_ResetDictionaries=Reset Dictionaries and delete any custom names
-tr.tsk_ResetSettings=Reset Subtitle Edit's settings
-tr.tsk_SetFileTypes=Associate common subtitle files with Subtitle Edit
-tr.types_custom=Custom installation
-tr.types_default=Default installation
+tr.comp_translations=Çeviriler
+tr.msg_AskToDownNET=Subtitle Edit .NET Framework 4.8 gerektirir. Lütfen .NET Framework'ü indirip kurun ve kurulumu tekrar çalıştırın.%n%nŞimdi .NET Framework 4.8'i indirmek istiyor musunuz?
+tr.msg_DeleteSettings=Ayrıca Subtitle Edit'in ayarlarını ve sözlüklerde yaptığınız özel değişiklikleri silmek istiyor musunuz?%n%nSubtitle Edit'i yeniden yüklemeyi planlıyorsanız bunları silmek zorunda değilsiniz.
+tr.msg_OptimizingPerformance=Performans optimize ediliyor...
+tr.run_VisitWebsite=Subtitle Edit'in Web Sitesini Ziyaret Edin
+tr.sm_com_Changelog=Subtitle Edit'in Değişiklik Günlüğü
+tr.tsk_AllUsers=Tüm kullanıcılar için
+tr.tsk_CurrentUser=Sadece geçerli kullanıcı için
+tr.tsk_Other=Diğer:
+tr.tsk_ResetDictionaries=Sözlükleri sıfırlayın ve özel adları silin
+tr.tsk_ResetSettings=Subtitle Edit ayarlarını sıfırla
+tr.tsk_SetFileTypes=Ortak alt yazı dosyalarını Subtitle Edit ile ilişkilendirin
+tr.types_custom=Özel kurulum
+tr.types_default=Varsayılan kurulum
 
 ; Ukrainian
 [Messages]
@@ -684,23 +684,23 @@ vi.types_default=Default installation
 
 ; Chinese Simplified
 [Messages]
-zh.SetupAppTitle=Setup - Subtitle Edit
-zh.SetupWindowTitle=Setup - Subtitle Edit {#app_ver}
+zh.SetupAppTitle=安装程序 - Subtitle Edit
+zh.SetupWindowTitle=安装程序 - Subtitle Edit {#app_ver}
 [CustomMessages]
-zh.comp_translations=Translations
-zh.msg_AskToDownNET=Subtitle Edit requires the .NET Framework 4.8. Please download and install the .NET Framework and run setup again.%n%nDo you want to download the .NET Framework 4.8 now?
-zh.msg_DeleteSettings=Do you also want to delete Subtitle Edit's settings and any custom changes you made in the dictionaries?%n%nIf you plan on reinstalling Subtitle Edit you do not have to delete them.
-zh.msg_OptimizingPerformance=Optimizing performance...
-zh.run_VisitWebsite=Visit Subtitle Edit's Website
-zh.sm_com_Changelog=Subtitle Edit's Changelog
-zh.tsk_AllUsers=For all users
-zh.tsk_CurrentUser=For the current user only
-zh.tsk_Other=Other:
-zh.tsk_ResetDictionaries=Reset Dictionaries and delete any custom names
-zh.tsk_ResetSettings=Reset Subtitle Edit's settings
-zh.tsk_SetFileTypes=Associate common subtitle files with Subtitle Edit
-zh.types_custom=Custom installation
-zh.types_default=Default installation
+zh.comp_translations=翻译
+zh.msg_AskToDownNET=Subtitle Edit 需要 .NET Framework 4.8。请下载并安装 .NET Framework，然后重新运行本安装程序。%n%n您现在要下载 .NET Framework 4.8 吗？
+zh.msg_DeleteSettings=您是否还想删除 Subtitle Edit 的设置以及您在词典中进行的任何自定义更改？%n%n如果您打算重新安装 Subtitle Edit，则不必删除它们。
+zh.msg_OptimizingPerformance=优化性能……
+zh.run_VisitWebsite=前往 Subtitle Edit 的网站
+zh.sm_com_Changelog=Subtitle Edit 的更新日志
+zh.tsk_AllUsers=为所有用户安装
+zh.tsk_CurrentUser=仅为当前用户安装
+zh.tsk_Other=其他：
+zh.tsk_ResetDictionaries=重置词典并删除用户词汇表
+zh.tsk_ResetSettings=重置 Subtitle Edit 设置
+zh.tsk_SetFileTypes=将典型字幕文件格式关联到 Subtitle Edit
+zh.types_custom=自定义安装
+zh.types_default=典型安装
 
 ; Chinese Traditional
 [Messages]

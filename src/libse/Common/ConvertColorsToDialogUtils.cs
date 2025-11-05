@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Nikse.SubtitleEdit.Core.Common
 {
@@ -29,10 +30,20 @@ namespace Nikse.SubtitleEdit.Core.Common
 
                 while (index < p.Text.Length)
                 {
-                    if (index + "<font color".Length <= p.Text.Length && p.Text.SafeSubstring(index, "<font color".Length).ToLowerInvariant() == "<font color")
+                    bool isHtmlColor = index + "<font color".Length <= p.Text.Length && p.Text.SafeSubstring(index, "<font color".Length).ToLowerInvariant() == "<font color";
+                    bool isVttColor = index + "<c.".Length <= p.Text.Length && p.Text.SafeSubstring(index, "<c.".Length).ToLowerInvariant() == "<c.";
+
+                    if (isHtmlColor || isVttColor)
                     {
                         // New color
-                        newColor = p.Text.SafeSubstring(p.Text.IndexOf("=", index) + 1, p.Text.IndexOf(">", index) - p.Text.IndexOf("=", index) - 1).Replace("\"", "");
+                        if (isVttColor)
+                        {
+                            newColor = p.Text.SafeSubstring(p.Text.IndexOf(".", index) + 1, p.Text.IndexOf(">", index) - p.Text.IndexOf(".", index) - 1);
+                        }
+                        else
+                        {
+                            newColor = p.Text.SafeSubstring(p.Text.IndexOf("=", index) + 1, p.Text.IndexOf(">", index) - p.Text.IndexOf("=", index) - 1).Replace("\"", "");
+                        }
 
                         if (currentColor == null)
                         {
@@ -41,12 +52,24 @@ namespace Nikse.SubtitleEdit.Core.Common
                         else if (currentColor != newColor)
                         {
                             // Don't insert dash if there is already a dash, but DO insert a dash if it is an interruption
-                            if (p.Text.SafeSubstring(index, 1) != "-" && p.Text.SafeSubstring(index - 1, 1) != "-" 
+                            if (p.Text.SafeSubstring(index, 1) != "-" && p.Text.SafeSubstring(index - 1, 1) != "-"
                                 && (p.Text.SafeSubstring(index - 2, 2) != "- " || p.Text.SafeSubstring(index - 3, 3) == "-- "))
                             {
                                 if (dashFirstLine && !firstLineAdded)
                                 {
-                                    p.Text = dash + p.Text;
+                                    if (p.Text.StartsWith("{"))
+                                    {
+                                        var lastBraceIndex = p.Text.LastIndexOf("}");
+                                        p.Text = p.Text.SafeSubstring(0, lastBraceIndex + 1) + dash + p.Text.SafeSubstring(lastBraceIndex + 1);
+                                    }
+                                    else
+                                    {
+                                        var oldLength = p.Text.Length;
+                                        var newLength = p.Text.TrimStart('-', ' ').Length;
+                                        p.Text = dash + p.Text.TrimStart('-', ' ');
+                                        index += newLength - oldLength;
+                                    }
+
                                     index += dash.Length;
 
                                     firstLineAdded = true;
@@ -76,10 +99,22 @@ namespace Nikse.SubtitleEdit.Core.Common
                     }
                     else if (index + "</font>".Length <= p.Text.Length && p.Text.SafeSubstring(index, "</font>".Length).ToLowerInvariant() == "</font>")
                     {
-                        // End of color
+                        // End of HTML color
                         endOfColor = true;
 
                         index += "</font>".Length;
+                    }
+                    else if (index + "</c>".Length <= p.Text.Length && p.Text.SafeSubstring(index, "</c>".Length).ToLowerInvariant() == "</c>")
+                    {
+                        // End of VTT color
+                        endOfColor = true;
+
+                        index += "</c>".Length;
+                    }
+                    else if (index + "{".Length <= p.Text.Length && p.Text.SafeSubstring(index, "{".Length) == "{")
+                    {
+                        // ASS tag, jump over
+                        index = p.Text.IndexOf("}", index) + 1;
                     }
                     else if (index + 1 <= p.Text.Length && p.Text.SafeSubstring(index, 1) == " " || p.Text.SafeSubstring(index, 1) == "\r" || p.Text.SafeSubstring(index, 1) == "\n")
                     {
@@ -102,12 +137,21 @@ namespace Nikse.SubtitleEdit.Core.Common
                                 if (currentColor != newColor)
                                 {
                                     // Don't insert dash if there is already a dash, but DO insert a dash if it is an interruption
-                                    if (p.Text.SafeSubstring(index, 1) != "-" && p.Text.SafeSubstring(index - 1, 1) != "-" 
+                                    if (p.Text.SafeSubstring(index, 1) != "-" && p.Text.SafeSubstring(index - 1, 1) != "-"
                                         && (p.Text.SafeSubstring(index - 2, 2) != "- " || p.Text.SafeSubstring(index - 3, 3) == "-- "))
                                     {
                                         if (dashFirstLine && !firstLineAdded)
                                         {
-                                            p.Text = dash + p.Text;
+                                            if (p.Text.StartsWith("{"))
+                                            {
+                                                var lastBraceIndex = p.Text.LastIndexOf("}");
+                                                p.Text = p.Text.SafeSubstring(0, lastBraceIndex + 1) + dash + p.Text.SafeSubstring(lastBraceIndex + 1);
+                                            }
+                                            else
+                                            {
+                                                p.Text = dash + p.Text;
+                                            }
+
                                             index += dash.Length;
 
                                             firstLineAdded = true;
@@ -115,17 +159,30 @@ namespace Nikse.SubtitleEdit.Core.Common
 
                                         if (!addNewLines && p.Text.SafeSubstring(index - 1, 1) != " " && p.Text.SafeSubstring(index - 1, 1) != "\r" && p.Text.SafeSubstring(index - 1, 1) != "\n")
                                         {
+                                            if (p.Text.SafeSubstring(index, 1) == ".")
+                                            {
+                                                index++;
+                                            }
+
                                             p.Text = p.Text.SafeSubstring(0, index) + " " + p.Text.SafeSubstring(index);
                                             index += 1;
                                         }
                                         else if (addNewLines && p.Text.SafeSubstring(index - 1, 1) != "\r" && p.Text.SafeSubstring(index - 1, 1) != "\n")
                                         {
-                                            p.Text = p.Text.SafeSubstring(0, index) + Environment.NewLine + p.Text.SafeSubstring(index);
-                                            index += Environment.NewLine.Length;
+                                            if (p.Text.SafeSubstring(index + 1, 1) != "\r" && p.Text.SafeSubstring(index + 1, 1) != "\n" &&
+                                                index < p.Text.Length-1)
+                                            {
+                                                p.Text = p.Text.SafeSubstring(0, index) + Environment.NewLine + p.Text.SafeSubstring(index);
+                                                index += Environment.NewLine.Length;
+                                            }
                                         }
 
-                                        p.Text = p.Text.SafeSubstring(0, index) + dash + p.Text.SafeSubstring(index);
-                                        index += dash.Length;
+                                        if (p.Text.SafeSubstring(index + 1, 1) != "\r" && p.Text.SafeSubstring(index + 1, 1) != "\n" &&
+                                                index < p.Text.Length - 1)
+                                        {
+                                            p.Text = p.Text.SafeSubstring(0, index) + dash + p.Text.SafeSubstring(index);
+                                            index += dash.Length;
+                                        }
                                     }
 
                                     currentColor = newColor;
@@ -141,11 +198,18 @@ namespace Nikse.SubtitleEdit.Core.Common
                 if (removeColorTags)
                 {
                     p.Text = HtmlUtil.RemoveColorTags(p.Text);
+
+                    if (p.Text.Contains("<c."))
+                    {
+                        p.Text = Regex.Replace(p.Text, @"<c(\.[\w\d]+)?>(.*?)</c>", "$2");
+                    }
+
                     p.Text = p.Text.Replace("  ", " ").Replace(" " + Environment.NewLine, Environment.NewLine);
-                } 
+                }
                 else
                 {
                     p.Text = p.Text.Replace(" </font> ", "</font> ").Replace(" </font>" + Environment.NewLine, "</font>" + Environment.NewLine);
+                    p.Text = p.Text.Replace(" </c> ", "</c> ").Replace(" </c>" + Environment.NewLine, "</c>" + Environment.NewLine);
                 }
 
                 p.Text = p.Text.Trim();
@@ -169,7 +233,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                 {
                     return value.Substring(startIndex);
                 }
-            } 
+            }
             catch (ArgumentOutOfRangeException)
             {
                 return defaultValue;

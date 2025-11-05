@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Nikse.SubtitleEdit.Core.Settings;
 
 namespace Nikse.SubtitleEdit.Logic
 {
@@ -66,7 +67,7 @@ namespace Nikse.SubtitleEdit.Logic
             return LibMpvDynamic.GetVideoInfo(fileName);
         }
 
-        private static long _lastShowSubTicks = DateTime.UtcNow.Ticks;
+        private static long _lastShowSubTicks = Stopwatch.GetTimestamp();
         private static int _lastShowSubHash;
 
         public static int ShowSubtitle(Subtitle subtitle, VideoPlayerContainer videoPlayerContainer, SubtitleFormat format)
@@ -84,7 +85,7 @@ namespace Nikse.SubtitleEdit.Logic
                 if (p.StartTime.TotalMilliseconds <= positionInMilliseconds + 0.01 && p.EndTime.TotalMilliseconds >= positionInMilliseconds - 0.01)
                 {
                     string text = p.Text.Replace("|", Environment.NewLine);
-                    bool isInfo = p == subtitle.Paragraphs[0] && (Math.Abs(p.StartTime.TotalMilliseconds) < 0.01 && Math.Abs(p.Duration.TotalMilliseconds) < 0.01 || Math.Abs(p.StartTime.TotalMilliseconds - Pac.PacNullTime.TotalMilliseconds) < 0.01);
+                    bool isInfo = p == subtitle.Paragraphs[0] && (Math.Abs(p.StartTime.TotalMilliseconds) < 0.01 && Math.Abs(p.DurationTotalMilliseconds) < 0.01 || Math.Abs(p.StartTime.TotalMilliseconds - Pac.PacNullTime.TotalMilliseconds) < 0.01);
                     if (!isInfo)
                     {
                         if (videoPlayerContainer.LastParagraph != p)
@@ -114,7 +115,7 @@ namespace Nikse.SubtitleEdit.Logic
 
         private static void TimeOutRefresh(Subtitle subtitle, VideoPlayerContainer videoPlayerContainer, SubtitleFormat format, Paragraph p = null)
         {
-            if (DateTime.UtcNow.Ticks - _lastShowSubTicks > 10000 * 1000) // more than 1+ seconds ago
+            if (Stopwatch.GetTimestamp() - _lastShowSubTicks > 10000 * 1000) // more than 1+ seconds ago
             {
                 var newHash = subtitle.GetFastHashCode(string.Empty);
                 if (newHash != _lastShowSubHash)
@@ -123,7 +124,7 @@ namespace Nikse.SubtitleEdit.Logic
                     _lastShowSubHash = newHash;
                 }
 
-                _lastShowSubTicks = DateTime.UtcNow.Ticks;
+                _lastShowSubTicks = Stopwatch.GetTimestamp();
             }
         }
 
@@ -297,7 +298,7 @@ namespace Nikse.SubtitleEdit.Logic
             {
                 videoPlayerContainer.VideoWidth = videoInfo.Width;
                 videoPlayerContainer.VideoHeight = videoInfo.Height;
-                videoPlayerContainer.VideoPlayer.Resize(videoPlayerContainer.PanelPlayer.Width, videoPlayerContainer.PanelPlayer.Height);
+                videoPlayerContainer.VideoPlayer?.Resize(videoPlayerContainer.PanelPlayer.Width, videoPlayerContainer.PanelPlayer.Height);
             }
         }
 
@@ -506,7 +507,7 @@ namespace Nikse.SubtitleEdit.Logic
                 }
                 else if (control is SETextBox seTextBox)
                 {
-                    seTextBox.UpdateFontAndColors(seTextBox);
+                    seTextBox.ConfigureTextBoxAppearance(seTextBox);
                 }
                 else if (control is TextBox)
                 {
@@ -552,20 +553,26 @@ namespace Nikse.SubtitleEdit.Logic
 
         private static bool IsFontPresent(string fontName)
         {
-            try
+            var fontStyles = new[] { FontStyle.Bold, FontStyle.Italic, FontStyle.Regular };
+            Font font = null;
+
+            foreach (var style in fontStyles)
             {
-                // Bold + italic + regular must be present
-                _ = new Font(fontName, 9, FontStyle.Bold);
-                _ = new Font(fontName, 9, FontStyle.Italic);
-                _ = new Font(fontName, 9, FontStyle.Regular);
-                return true;
-            }
-            catch
-            {
-                // ignore
+                try
+                {
+                    font = new Font(fontName, 9, style);
+                }
+                catch
+                {
+                    return false;
+                }
+                finally
+                {
+                    font?.Dispose();
+                }
             }
 
-            return false;
+            return true;
         }
 
         public static Font GetDefaultFont()
@@ -590,6 +597,7 @@ namespace Nikse.SubtitleEdit.Logic
         {
             form.AutoScaleMode = AutoScaleMode.Dpi;
             form.Font = GetDefaultFont();
+            form.Icon = Properties.Resources.SEIcon;
         }
 
         public static void FixFonts(Control form, int iterations = 5)
@@ -607,15 +615,6 @@ namespace Nikse.SubtitleEdit.Logic
         }
 
         internal static void FixFonts(ToolStripItem item)
-        {
-            item.Font = GetDefaultFont();
-            if (Configuration.Settings.General.UseDarkTheme)
-            {
-                DarkTheme.SetDarkTheme(item);
-            }
-        }
-
-        internal static void FixFonts(ToolStripComboBox item)
         {
             item.Font = GetDefaultFont();
             if (Configuration.Settings.General.UseDarkTheme)
@@ -648,23 +647,6 @@ namespace Nikse.SubtitleEdit.Logic
                                 }
                             }
                         }
-                    }
-                }
-            }
-
-            if (form is TimeUpDown timeUpDown)
-            {
-                using (var g = Graphics.FromHwnd(IntPtr.Zero))
-                {
-                    var width = g.MeasureString("00:00:00.000", form.Font).Width;
-                    if (timeUpDown.MaskedTextBox.Width < width - 3)
-                    {
-                        timeUpDown.MaskedTextBox.Font = new Font(timeUpDown.MaskedTextBox.Font.FontFamily, timeUpDown.MaskedTextBox.Font.Size - 1);
-                    }
-                    width = g.MeasureString("00:00:00.000", form.Font).Width;
-                    if (timeUpDown.MaskedTextBox.Width < width - 3)
-                    {
-                        timeUpDown.MaskedTextBox.Font = new Font(timeUpDown.MaskedTextBox.Font.FontFamily, timeUpDown.MaskedTextBox.Font.Size - 1);
                     }
                 }
             }
@@ -779,30 +761,18 @@ namespace Nikse.SubtitleEdit.Logic
             label.Text = sb.ToString();
         }
 
-        public static void InitializeSubtitleFormatComboBox(ToolStripComboBox comboBox, SubtitleFormat format)
-        {
-            InitializeSubtitleFormatComboBox(comboBox.ComboBox, format);
-            comboBox.DropDownWidth += 5; // .Net quirk?
-        }
-
-        public static void InitializeSubtitleFormatComboBox(ComboBox comboBox, SubtitleFormat format)
+        public static void InitializeSubtitleFormatComboBox(NikseComboBox comboBox, SubtitleFormat format)
         {
             InitializeSubtitleFormatComboBox(comboBox, new List<string> { format.FriendlyName }, format.FriendlyName);
         }
 
-        public static void InitializeSubtitleFormatComboBox(ToolStripComboBox comboBox, string selectedName)
-        {
-            InitializeSubtitleFormatComboBox(comboBox.ComboBox, selectedName);
-            comboBox.DropDownWidth += 5; // .Net quirk?
-        }
-
-        public static void InitializeSubtitleFormatComboBox(ComboBox comboBox, string selectedName)
+        public static void InitializeSubtitleFormatComboBox(NikseComboBox comboBox, string selectedName)
         {
             var formatNames = SubtitleFormat.AllSubtitleFormats.Where(format => !format.IsVobSubIndexFile).Select(format => format.FriendlyName);
             InitializeSubtitleFormatComboBox(comboBox, formatNames.ToList(), selectedName);
         }
 
-        public static void InitializeSubtitleFormatComboBox(ComboBox comboBox, List<string> formatNames, string selectedName)
+        public static void InitializeSubtitleFormatComboBox(NikseComboBox comboBox, List<string> formatNames, string selectedName)
         {
             var selectedIndex = 0;
             using (var graphics = comboBox.CreateGraphics())
@@ -826,17 +796,17 @@ namespace Nikse.SubtitleEdit.Logic
                     }
                 }
 
-                comboBox.DropDownWidth = (int)Math.Round(maxWidth + 7.5);
+                comboBox.DropDownWidth = (int)Math.Round(maxWidth + 17.5);
             }
 
             comboBox.BeginUpdate();
             comboBox.Items.Clear();
-            comboBox.Items.AddRange(formatNames.ToArray<object>());
+            comboBox.Items.AddItems(formatNames);
             comboBox.SelectedIndex = selectedIndex;
             comboBox.EndUpdate();
         }
 
-        public static void InitializeTextEncodingComboBox(ComboBox comboBox)
+        public static void InitializeTextEncodingComboBox(NikseComboBox comboBox)
         {
             var defaultEncoding = Configuration.Settings.General.DefaultEncoding;
             var selectedItem = (TextEncoding)null;
@@ -884,7 +854,7 @@ namespace Nikse.SubtitleEdit.Logic
                 }
                 comboBox.DropDownWidth = (int)Math.Round(maxWidth + 7.5);
             }
-            comboBox.Items.AddRange(encList.ToArray<object>());
+            comboBox.Items.AddItems(encList);
             if (selectedItem == null)
             {
                 comboBox.SelectedIndex = TextEncoding.Utf8WithBomIndex; // UTF-8 if DefaultEncoding is not found
@@ -902,20 +872,19 @@ namespace Nikse.SubtitleEdit.Logic
             {
                 Configuration.Settings.General.DefaultEncoding = textEncodingListItem.DisplayName;
             }
-            comboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
-            comboBox.AutoCompleteMode = AutoCompleteMode.Append;
         }
 
-        public static TextEncoding GetTextEncodingComboBoxCurrentEncoding(ComboBox comboBox)
+        public static TextEncoding GetTextEncodingComboBoxCurrentEncoding(NikseComboBox comboBox)
         {
             if (comboBox.SelectedIndex > 0 && comboBox.SelectedItem is TextEncoding textEncodingListItem)
             {
                 return textEncodingListItem;
             }
+
             return new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithBom);
         }
 
-        public static void SetTextEncoding(ToolStripComboBox comboBoxEncoding, string encodingName)
+        public static void SetTextEncoding(NikseComboBox comboBoxEncoding, string encodingName)
         {
             if (encodingName == TextEncoding.Utf8WithBom)
             {
@@ -1052,25 +1021,6 @@ namespace Nikse.SubtitleEdit.Logic
             }
         }
 
-        public static void SelectWordAtCaret(SETextBox textBox)
-        {
-            var text = textBox.Text;
-            var endIndex = textBox.SelectionStart;
-            var startIndex = endIndex;
-
-            while (startIndex > 0 && !IsSpaceCategory(CharUnicodeInfo.GetUnicodeCategory(text[startIndex - 1])) && !BreakChars.Contains(text[startIndex - 1]))
-            {
-                startIndex--;
-            }
-            textBox.SelectionStart = startIndex;
-
-            while (endIndex < text.Length && !IsSpaceCategory(CharUnicodeInfo.GetUnicodeCategory(text[endIndex])) && !BreakChars.Contains(text[endIndex]))
-            {
-                endIndex++;
-            }
-            textBox.SelectionLength = endIndex - startIndex;
-        }
-
         public static void SelectWordAtCaret(TextBox textBox)
         {
             var text = textBox.Text;
@@ -1173,6 +1123,36 @@ namespace Nikse.SubtitleEdit.Logic
         public static void AutoSizeLastColumn(this ListView listView) =>
             listView.Columns[listView.Columns.Count - 1].Width = -2;
 
+        public static void CheckAll(this ListView lv)
+        {
+            lv.BeginUpdate();
+            foreach (ListViewItem item in lv.Items)
+            {
+                item.Checked = true;
+            }
+            lv.EndUpdate();
+        }
+
+        public static void InvertCheck(this ListView lv)
+        {
+            lv.BeginUpdate();
+            foreach (ListViewItem item in lv.Items)
+            {
+                item.Checked = !item.Checked;
+            }
+            lv.EndUpdate();
+        }
+
+        public static void UncheckAll(this ListView lv)
+        {
+            lv.BeginUpdate();
+            foreach (ListViewItem item in lv.Items)
+            {
+                item.Checked = false;
+            }
+            lv.EndUpdate();
+        }
+
         public static void SelectAll(this ListView lv)
         {
             lv.BeginUpdate();
@@ -1247,6 +1227,8 @@ namespace Nikse.SubtitleEdit.Logic
         public static Color BackColor => Configuration.Settings.General.UseDarkTheme ? Configuration.Settings.General.DarkThemeBackColor : Control.DefaultBackColor;
 
         public static Color ForeColor => Configuration.Settings.General.UseDarkTheme ? Configuration.Settings.General.DarkThemeForeColor : Control.DefaultForeColor;
+
+        public static Color WarningColor => Configuration.Settings.General.UseDarkTheme ? Color.Yellow : Color.DarkGoldenrod;
 
         public static void OpenFolderFromFileName(string fileName)
         {
@@ -1383,8 +1365,24 @@ namespace Nikse.SubtitleEdit.Logic
             }
         }
 
-        public static string DecimalSeparator => CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+        public static string GetBeautifyTimeCodesProfilePresetName(BeautifyTimeCodesSettings.BeautifyTimeCodesProfile.Preset preset)
+        {
+            switch (preset)
+            {
+                case BeautifyTimeCodesSettings.BeautifyTimeCodesProfile.Preset.Default:
+                    return LanguageSettings.Current.BeautifyTimeCodesProfile.PresetDefault;
+                case BeautifyTimeCodesSettings.BeautifyTimeCodesProfile.Preset.Netflix:
+                    return LanguageSettings.Current.BeautifyTimeCodesProfile.PresetNetflix;
+                case BeautifyTimeCodesSettings.BeautifyTimeCodesProfile.Preset.SDI:
+                    return LanguageSettings.Current.BeautifyTimeCodesProfile.PresetSDI;
+                default:
+                    return preset.ToString();
+            }
+        }
 
+        public static string DecimalSeparator => CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+        public static Color GreenBackgroundColor => Configuration.Settings.General.UseDarkTheme ? DarkTheme.GreenBackColor : ColorTranslator.FromHtml("#6ebe6e");
+        public static Color GreenBackgroundColorAlternate => Configuration.Settings.General.UseDarkTheme ? DarkTheme.GreenBackColorAlternate : ColorTranslator.FromHtml("#6ecf5e");
         public static Control FindFocusedControl(Control control)
         {
             var container = control as ContainerControl;
@@ -1397,7 +1395,7 @@ namespace Nikse.SubtitleEdit.Logic
             return control;
         }
 
-        public static void SetNumericUpDownValue(NumericUpDown numericUpDown, int value)
+        public static void SetNumericUpDownValue(NikseUpDown numericUpDown, int value)
         {
             if (value < numericUpDown.Minimum)
             {
@@ -1411,6 +1409,28 @@ namespace Nikse.SubtitleEdit.Logic
             {
                 numericUpDown.Value = value;
             }
+        }
+
+        public static bool SkipSingleLetterShortcut(string typeName, KeyEventArgs e)
+        {
+            // do not check for shortcuts if text is being entered and a textbox is focused
+            var textBoxTypes = new List<string> { "AdvancedTextBox", "SimpleTextBox", "SETextBox", "NikseTextBox", "TextBox", "RichTextBox" };
+            if (textBoxTypes.Contains(typeName) &&
+                ((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) ||
+                 (e.KeyCode >= Keys.OemSemicolon && e.KeyCode <= Keys.OemBackslash) ||
+                 e.KeyCode >= Keys.NumPad0 && e.KeyCode <= Keys.NumPad9 ||
+                 e.KeyValue >= 48 && e.KeyValue <= 57 ||
+                 e.KeyCode == Keys.Multiply ||
+                 e.KeyCode == Keys.Add ||
+                 e.KeyCode == Keys.Subtract ||
+                 e.KeyCode == Keys.Divide ||
+                 e.KeyCode == Keys.Space) &&
+                !Configuration.Settings.General.AllowLetterShortcutsInTextBox)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -207,7 +207,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                 {
                     tagOn = true;
                 }
-                else if (ch == '<' || ch == '}')
+                else if (ch == '>' || ch == '}')
                 {
                     tagOn = false;
                 }
@@ -247,10 +247,16 @@ namespace Nikse.SubtitleEdit.Core.Common
 
         private string Fix(string original, string lastLine, List<string> nameList, CultureInfo subtitleCulture, double millisecondsFromLast)
         {
+            if (lastLine == null)
+            {
+                lastLine = string.Empty;
+            }
+            lastLine = HtmlUtil.RemoveHtmlTags(lastLine, true).Trim();
+
             var text = original;
             if (FixNormal)
             {
-                if (FixNormalOnlyAllUppercase && text != text.ToUpper(subtitleCulture))
+                if (FixNormalOnlyAllUppercase && HtmlUtil.RemoveHtmlTags(text, true) != HtmlUtil.RemoveHtmlTags(text, true).ToUpper(subtitleCulture))
                 {
                     return text;
                 }
@@ -258,7 +264,7 @@ namespace Nikse.SubtitleEdit.Core.Common
                 if (text.Length > 1)
                 {
                     // first all to lower
-                    text = text.ToLower(subtitleCulture).Trim();
+                    text = text.ToLowercaseButKeepTags().Trim();
                     text = text.FixExtraSpaces();
                     var st = new StrippableText(text);
                     st.FixCasing(nameList, false, true, true, lastLine, millisecondsFromLast); // fix all casing but names (that's a separate option)
@@ -268,12 +274,12 @@ namespace Nikse.SubtitleEdit.Core.Common
             else if (FixMakeUppercase)
             {
                 var st = new StrippableText(text);
-                text = st.Pre + st.StrippedText.ToUpper(subtitleCulture) + st.Post;
+                text = st.Pre + MakeUpperCaseExceptTags(st.StrippedText) + st.Post;
                 text = HtmlUtil.FixUpperTags(text); // tags inside text
             }
             else if (FixMakeLowercase)
             {
-                text = text.ToLower(subtitleCulture);
+                text = MakeLowerCaseExceptTags(text);
             }
             else if (FixMakeProperCase)
             {
@@ -297,6 +303,92 @@ namespace Nikse.SubtitleEdit.Core.Common
             }
 
             return text;
+        }
+
+        private string MakeUpperCaseExceptTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
+
+            var sb = new StringBuilder(text.Length);
+            var insideAngle = false;
+            var insideCurly = false;
+
+            foreach (char c in text)
+            {
+                if (c == '<')
+                {
+                    insideAngle = true;
+                }
+                else if (c == '>')
+                {
+                    insideAngle = false;
+                }
+                else if (c == '{')
+                {
+                    insideCurly = true;
+                }
+                else if (c == '}')
+                {
+                    insideCurly = false;
+                }
+
+                if (insideAngle || insideCurly)
+                {
+                    sb.Append(c);
+                }
+                else
+                {
+                    sb.Append(char.ToUpper(c));
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private string MakeLowerCaseExceptTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
+
+            var sb = new StringBuilder(text.Length);
+            var insideAngle = false;
+            var insideCurly = false;
+
+            foreach (char c in text)
+            {
+                if (c == '<')
+                {
+                    insideAngle = true;
+                }
+                else if (c == '>')
+                {
+                    insideAngle = false;
+                }
+                else if (c == '{')
+                {
+                    insideCurly = true;
+                }
+                else if (c == '}')
+                {
+                    insideCurly = false;
+                }
+
+                if (insideAngle || insideCurly)
+                {
+                    sb.Append(c);
+                }
+                else
+                {
+                    sb.Append(char.ToLower(c));
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

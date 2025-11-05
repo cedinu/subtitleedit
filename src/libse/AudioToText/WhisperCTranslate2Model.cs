@@ -19,11 +19,17 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
 
         private readonly string[] _fileNames = { "model.bin", "config.json", "vocabulary.txt", "tokenizer.json" };
 
-        public string ModelFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache", "whisper-ctranslate2");
+        public string ModelFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache", "huggingface", "hub");
 
         public void CreateModelFolder()
         {
             var cacheFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache");
+            if (!Directory.Exists(cacheFolder))
+            {
+                Directory.CreateDirectory(cacheFolder);
+            }
+
+            cacheFolder = Path.Combine(cacheFolder, "hub");
             if (!Directory.Exists(cacheFolder))
             {
                 Directory.CreateDirectory(cacheFolder);
@@ -35,71 +41,119 @@ namespace Nikse.SubtitleEdit.Core.AudioToText
             }
         }
 
-        // See https://github.com/jordimas/whisper-ctranslate2/blob/main/src/whisper_ctranslate2/models.py
         public WhisperModel[] Models => new[]
         {
             new WhisperModel
             {
                 Name = "tiny.en",
                 Size = "74 MB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/c4d1be0a2003ce00bb721abd23e7a34925a6f0c0d21d5c416f11c763ee7f7b15.tiny-en/"),
-                Folder = "c4d1be0a2003ce00bb721abd23e7a34925a6f0c0d21d5c416f11c763ee7f7b15.tiny-en",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/main"),
+                Folder = "models--Systran--faster-whisper-tiny.en/snapshots/0d3d19a32d3338f10357c0889762bd8d64bbdeba",
             },
             new WhisperModel
             {
                 Name = "tiny",
                 Size = "74 MB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/dc6a7765cdc8ae7822b1c3068a2f966eddc2549eda7e67406cae915a8c19430c.tiny/"),
-                Folder = "dc6a7765cdc8ae7822b1c3068a2f966eddc2549eda7e67406cae915a8c19430c.tiny",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-tiny/resolve/main"),
+                Folder = "models--Systran--faster-whisper-tiny/snapshots/d90ca5fe260221311c53c58e660288d3deb8d356",
             },
             new WhisperModel
             {
                 Name = "base.en",
                 Size = "142 MB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/2ca96777261aeadd48e30bc5f26fd3ee462f4921dbc1f38dfd826a67c761c9b2.base-en/"),
-                Folder = "2ca96777261aeadd48e30bc5f26fd3ee462f4921dbc1f38dfd826a67c761c9b2.base-en",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-base.en/resolve/main"),
+                Folder = "models--Systran--faster-whisper-base.en/snapshots/3d3d5dee26484f91867d81cb899cfcf72b96be6c",
             },
             new WhisperModel
             {
                 Name = "base",
                 Size = "142 MB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/d7c4df31737340263ce37933bda1e77a38367dbb09cda7433ce1ee0c58ce1a60.base/"),
-                Folder = "d7c4df31737340263ce37933bda1e77a38367dbb09cda7433ce1ee0c58ce1a60.base",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-base/resolve/main"),
+                Folder = "models--Systran--faster-whisper-base/snapshots/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66",
             },
             new WhisperModel
             {
                 Name = "small.en",
                 Size = "472 MB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/e2c14bb0f6a8a69afe12fbe1d82fa0c41494d4bde9615bdf399da5665f43cbc4.small-en/"),
-                Folder = "e2c14bb0f6a8a69afe12fbe1d82fa0c41494d4bde9615bdf399da5665f43cbc4.small-en",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-small.en/resolve/main"),
+                Folder = "models--Systran--faster-whisper-small.en/snapshots/d1d751a5f8271d482d14ca55d9e2deeebbae577f",
             },
             new WhisperModel
             {
                 Name = "small",
                 Size = "472 MB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/936cd99363be80fa388c0c5006e846d8cd42834c6cf8156a7c300723a3bf929f.small/"),
-                Folder = "936cd99363be80fa388c0c5006e846d8cd42834c6cf8156a7c300723a3bf929f.small",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-small/resolve/main"),
+                Folder = "models--Systran--faster-whisper-small/snapshots/536b0662742c02347bc0e980a01041f333bce120",
             },
             new WhisperModel
             {
                 Name = "medium",
                 Size = "1.5 GB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/d8b91e278db3041c3b41bf879716281edf5cfa7b0025823cc174b5429877d2bc.medium/"),
-                Folder = "d8b91e278db3041c3b41bf879716281edf5cfa7b0025823cc174b5429877d2bc.medium",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-medium/resolve/main"),
+                Folder = "models--Systran--faster-whisper-medium/snapshots/08e178d48790749d25932bbc082711ddcfdfbc4f",
             },
             new WhisperModel
             {
                 Name = "medium.en",
                 Size = "1.5 GB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/22d42d3e69ce9149bfd52c07d357e4cb72b992fb602805d6bb39f331400d6742.mediu-en/"),
-                Folder = "22d42d3e69ce9149bfd52c07d357e4cb72b992fb602805d6bb39f331400d6742.mediu-en",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-medium.en/resolve/main"),
+                Folder = "models--Systran--faster-whisper-medium.en/snapshots/a29b04bd15381511a9af671baec01072039215e3",
+            },
+            new WhisperModel
+            {
+                Name = "large-v1",
+                Size = "3.1 GB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-large-v1/resolve/main"),
+                Folder = "models--Systran--faster-whisper-large-v1/snapshots/b07c8d4be0be90092aa01a29c975077acb8d15c9",
             },
             new WhisperModel
             {
                 Name = "large-v2",
-                Size = "2.9 GB",
-                Urls = MakeUrls("https://huggingface.co/datasets/jordimas/whisper-ct2-v2/resolve/main/ff9f410b63b3d996274c895f6209e9b9ab01d497815b21c2d35ae336ab7d7f20.large-v2/"),
-                Folder = "ff9f410b63b3d996274c895f6209e9b9ab01d497815b21c2d35ae336ab7d7f20.large-v2",
+                Size = "3.1 GB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-large-v2/resolve/main"),
+                Folder = "models--Systran--faster-whisper-large-v2/snapshots/f0fe81560cb8b68660e564f55dd99207059c092e",
+            },
+            new WhisperModel
+            {
+                Name = "large-v3",
+                Size = "3.1 GB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-whisper-large-v3/resolve/main"),
+                Folder = "models--Systran--faster-whisper-large-v3/snapshots/edaa852ec7e145841d8ffdb056a99866b5f0a478",
+            },
+            new WhisperModel
+            {
+                Name = "large-v3-turbo",
+                Size = "1.6 GB",
+                Urls = MakeUrls("https://huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo/resolve/main"),
+                Folder = "models--mobiuslabsgmbh--faster-whisper-large-v3-turbo/snapshots/0c94664816ec82be77b20e824c8e8675995b0029",
+            },
+            new WhisperModel
+            {
+                Name = "distil-small.en",
+                Size = "332 MB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-distil-whisper-small.en/resolve/main"),
+                Folder = "models--Systran--faster-distil-whisper-small.en/snapshots/ef77d90526ccd62cde3808ee70626a01e5cf83e4",
+            },
+            new WhisperModel
+            {
+                Name = "distil-medium.en",
+                Size = "789 MB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-distil-whisper-medium.en/resolve/main"),
+                Folder = "models--Systran--faster-distil-whisper-medium.en/snapshots/80ddfce281f77766d8943d63109199fc8145dfa5",
+            },
+            new WhisperModel
+            {
+                Name = "distil-large-v2",
+                Size = "1.5 GB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-distil-whisper-large-v2/resolve/main"),
+                Folder = "models--Systran--faster-distil-whisper-large-v2/snapshots/fe9b404fc56de3f7c38606ef9ba6fd83526d05e4",
+            },
+            new WhisperModel
+            {
+                Name = "distil-large-v3",
+                Size = "1.5 GB",
+                Urls = MakeUrls("https://huggingface.co/Systran/faster-distil-whisper-large-v3/resolve/main"),
+                Folder = "models--Systran--faster-distil-whisper-large-v3/snapshots/c3058b475261292e64a0412df1d2681c06260fab",
             },
         };
 
